@@ -1079,6 +1079,16 @@ vscf_recipient_cipher_start_decryption_with_kek(vscf_recipient_cipher_t *self, v
     VSCF_ASSERT(vscf_key_wrap_is_implemented(key_wrap));
     VSCF_ASSERT(vsc_data_is_valid(message_info));
 
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t random_status = vscf_ctr_drbg_setup_defaults(random);
+        if (random_status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return random_status;
+        }
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
     vsc_buffer_destroy(&self->decryption_recipient_id);
     vsc_buffer_destroy(&self->decryption_kek_id);
     vsc_buffer_destroy(&self->decryption_kek);
@@ -1102,7 +1112,7 @@ vscf_recipient_cipher_start_decryption_with_kek(vscf_recipient_cipher_t *self, v
             self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_BROKEN;
         }
     } else {
-        self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT;
+        self->decryption_state = vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO;
         self->message_info_buffer = vsc_buffer_new_with_capacity(16);
         self->message_info_expected_len = 0;
     }

@@ -183,24 +183,6 @@ static size_t
 vscf_message_info_der_serializer_serialize_password_recipient_info(vscf_message_info_der_serializer_t *self, const vscf_password_recipient_info_t *password_recipient_info);
 
 static size_t
-vscf_message_info_der_serializer_serialized_kek_recipient_info_len(const vscf_message_info_der_serializer_t *self, const vscf_kek_recipient_info_t *kek_recipient_info);
-
-//
-//  KEKRecipientInfo ::= SEQUENCE {
-//      version CMSVersion, -- always set to 4
-//      kekid KEKIdentifier,
-//      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-//      encryptedKey EncryptedKey }
-//
-//  KEKIdentifier ::= SEQUENCE {
-//      keyIdentifier OCTET STRING,
-//      date GeneralizedTime OPTIONAL,
-//      other OtherKeyAttribute OPTIONAL }
-//
-static size_t
-vscf_message_info_der_serializer_serialize_kek_recipient_info(vscf_message_info_der_serializer_t *self, const vscf_kek_recipient_info_t *kek_recipient_info);
-
-static size_t
 vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info);
 
 //
@@ -392,27 +374,12 @@ static void
 vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
-//  KEKRecipientInfo ::= SEQUENCE {
-//      version CMSVersion, -- always set to 4
-//      kekid KEKIdentifier,
-//      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-//      encryptedKey EncryptedKey }
-//
-//  KEKIdentifier ::= SEQUENCE {
-//      keyIdentifier OCTET STRING,
-//      date GeneralizedTime OPTIONAL,
-//      other OtherKeyAttribute OPTIONAL }
-//
-static void
-vscf_message_info_der_serializer_deserialize_kek_recipient_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
-
-//
 //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
 //
 //  RecipientInfo ::= CHOICE {
 //      ktri KeyTransRecipientInfo,
 //      kari [1] KeyAgreeRecipientInfo, -- not supported
-//      kekri [2] KEKRecipientInfo,
+//      kekri [2] KEKRecipientInfo, -- not supported
 //      pwri [3] PasswordRecipientInfo,
 //      ori [4] OtherRecipientInfo -- not supported
 //  }

@@ -3301,6 +3301,39 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_r
     
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1addKekRecipient (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkekId, jbyteArray jkek, jobject jkeyWrap) {
+    // Wrap input data
+    byte* kek_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkekId, NULL);
+    vsc_data_t kek_id = vsc_data(kek_id_arr, (*jenv)->GetArrayLength(jenv, jkekId));
+    
+    // Wrap input data
+    byte* kek_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkek, NULL);
+    vsc_data_t kek = vsc_data(kek_arr, (*jenv)->GetArrayLength(jenv, jkek));
+    
+    // Wrap Java interfaces
+    jclass key_wrap_cls = (*jenv)->GetObjectClass(jenv, jkeyWrap);
+    if (NULL == key_wrap_cls) {
+        VSCF_ASSERT("Class KeyWrap not found.");
+    }
+    jfieldID key_wrap_fidCtx = (*jenv)->GetFieldID(jenv, key_wrap_cls, "cCtx", "J");
+    if (NULL == key_wrap_fidCtx) {
+        VSCF_ASSERT("Class 'KeyWrap' has no field 'cCtx'.");
+    }
+    jlong key_wrap_c_ctx = (*jenv)->GetLongField(jenv, jkeyWrap, key_wrap_fidCtx);
+    vscf_impl_t */*6*/ key_wrap = *(vscf_impl_t */*6*/*)&key_wrap_c_ctx;
+    
+    // Cast class context
+    vscf_recipient_cipher_t /*9*/* recipient_cipher_ctx = *(vscf_recipient_cipher_t /*9*/**) &c_ctx;
+    
+    vscf_recipient_cipher_add_kek_recipient(recipient_cipher_ctx /*a1*/, kek_id /*a3*/, kek /*a3*/, key_wrap /*a6*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkekId, (jbyte*) kek_id_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkek, (jbyte*) kek_arr, 0);
+    
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1clearRecipients (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_recipient_cipher_t /*9*/* recipient_cipher_ctx = *(vscf_recipient_cipher_t /*9*/**) &c_ctx;
@@ -3456,6 +3489,50 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vsc_buffer_delete(out);
     
     return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startDecryptionWithKek (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkekId, jbyteArray jkek, jobject jkeyWrap, jbyteArray jmessageInfo) {
+    // Wrap input data
+    byte* kek_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkekId, NULL);
+    vsc_data_t kek_id = vsc_data(kek_id_arr, (*jenv)->GetArrayLength(jenv, jkekId));
+    
+    // Wrap input data
+    byte* kek_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkek, NULL);
+    vsc_data_t kek = vsc_data(kek_arr, (*jenv)->GetArrayLength(jenv, jkek));
+    
+    // Wrap Java interfaces
+    jclass key_wrap_cls = (*jenv)->GetObjectClass(jenv, jkeyWrap);
+    if (NULL == key_wrap_cls) {
+        VSCF_ASSERT("Class KeyWrap not found.");
+    }
+    jfieldID key_wrap_fidCtx = (*jenv)->GetFieldID(jenv, key_wrap_cls, "cCtx", "J");
+    if (NULL == key_wrap_fidCtx) {
+        VSCF_ASSERT("Class 'KeyWrap' has no field 'cCtx'.");
+    }
+    jlong key_wrap_c_ctx = (*jenv)->GetLongField(jenv, jkeyWrap, key_wrap_fidCtx);
+    vscf_impl_t */*6*/ key_wrap = *(vscf_impl_t */*6*/*)&key_wrap_c_ctx;
+    
+    // Wrap input data
+    byte* message_info_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jmessageInfo, NULL);
+    vsc_data_t message_info = vsc_data(message_info_arr, (*jenv)->GetArrayLength(jenv, jmessageInfo));
+    
+    // Cast class context
+    vscf_recipient_cipher_t /*9*/* recipient_cipher_ctx = *(vscf_recipient_cipher_t /*9*/**) &c_ctx;
+    
+    vscf_status_t status = vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher_ctx /*a1*/, kek_id /*a3*/, kek /*a3*/, key_wrap /*a6*/, message_info /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkekId, (jbyte*) kek_id_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkek, (jbyte*) kek_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jmessageInfo, (jbyte*) message_info_arr, 0);
+    
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startDecryptionWithKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jrecipientId, jobject jprivateKey, jbyteArray jmessageInfo) {

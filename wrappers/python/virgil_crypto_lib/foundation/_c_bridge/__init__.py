@@ -42,6 +42,7 @@ from ._vscf_oid_id import VscfOidId
 from ._vscf_group_msg_type import VscfGroupMsgType
 from ._vscf_cipher_state import VscfCipherState
 from ._vscf_key_recipient_list import vscf_key_recipient_list_t
+from ._vscf_kek_recipient_list import vscf_kek_recipient_list_t
 from ._vscf_list_key_value_node import vscf_list_key_value_node_t
 from ._vscf_simple_swu import vscf_simple_swu_t
 from ._vscf_message_padding import vscf_message_padding_t

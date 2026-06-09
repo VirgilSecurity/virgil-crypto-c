@@ -5518,6 +5518,59 @@ PHP_FUNCTION(vscf_recipient_cipher_add_key_recipient_php) {
 }
 
 //
+// Wrap method: vscf_recipient_cipher_add_kek_recipient
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_recipient_cipher_add_kek_recipient_php,
+    0 /*return_reference*/,
+    4 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_kek_id, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_kek, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_key_wrap, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_recipient_cipher_add_kek_recipient_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_kek_id = NULL;
+    size_t in_kek_id_blen = 0;
+    char *in_kek = NULL;
+    size_t in_kek_blen = 0;
+    zval *in_key_wrap = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_kek_id, in_kek_id_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_kek, in_kek_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_RESOURCE_EX(in_key_wrap, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_recipient_cipher_t *recipient_cipher = zend_fetch_resource_ex(in_ctx, vscf_recipient_cipher_t_php_res_name(), le_vscf_recipient_cipher_t());
+    vsc_data_t kek_id = vsc_data((const byte*)in_kek_id, in_kek_id_blen);
+    vsc_data_t kek = vsc_data((const byte*)in_kek, in_kek_blen);
+    vscf_impl_t *key_wrap = zend_fetch_resource_ex(in_key_wrap, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vscf_recipient_cipher_add_kek_recipient(recipient_cipher, kek_id, kek, key_wrap);
+
+}
+
+//
 // Wrap method: vscf_recipient_cipher_clear_recipients
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -6064,6 +6117,69 @@ PHP_FUNCTION(vscf_recipient_cipher_finish_encryption_php) {
     else {
         zend_string_free(out_out);
     }
+}
+
+//
+// Wrap method: vscf_recipient_cipher_start_decryption_with_kek
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_recipient_cipher_start_decryption_with_kek_php,
+    0 /*return_reference*/,
+    5 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_kek_id, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_kek, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_key_wrap, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_message_info, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_recipient_cipher_start_decryption_with_kek_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_kek_id = NULL;
+    size_t in_kek_id_blen = 0;
+    char *in_kek = NULL;
+    size_t in_kek_blen = 0;
+    zval *in_key_wrap = NULL;
+    char *in_message_info = NULL;
+    size_t in_message_info_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_kek_id, in_kek_id_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_kek, in_kek_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_RESOURCE_EX(in_key_wrap, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_message_info, in_message_info_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_recipient_cipher_t *recipient_cipher = zend_fetch_resource_ex(in_ctx, vscf_recipient_cipher_t_php_res_name(), le_vscf_recipient_cipher_t());
+    vsc_data_t kek_id = vsc_data((const byte*)in_kek_id, in_kek_id_blen);
+    vsc_data_t kek = vsc_data((const byte*)in_kek, in_kek_blen);
+    vscf_impl_t *key_wrap = zend_fetch_resource_ex(in_key_wrap, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t message_info = vsc_data((const byte*)in_message_info, in_message_info_blen);
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, kek_id, kek, key_wrap, message_info);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
 }
 
 //
@@ -43609,6 +43725,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_recipient_cipher_delete_php, arginfo_vscf_recipient_cipher_delete_php)
     PHP_FE(vscf_recipient_cipher_has_key_recipient_php, arginfo_vscf_recipient_cipher_has_key_recipient_php)
     PHP_FE(vscf_recipient_cipher_add_key_recipient_php, arginfo_vscf_recipient_cipher_add_key_recipient_php)
+    PHP_FE(vscf_recipient_cipher_add_kek_recipient_php, arginfo_vscf_recipient_cipher_add_kek_recipient_php)
     PHP_FE(vscf_recipient_cipher_clear_recipients_php, arginfo_vscf_recipient_cipher_clear_recipients_php)
     PHP_FE(vscf_recipient_cipher_add_signer_php, arginfo_vscf_recipient_cipher_add_signer_php)
     PHP_FE(vscf_recipient_cipher_clear_signers_php, arginfo_vscf_recipient_cipher_clear_signers_php)
@@ -43620,6 +43737,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_recipient_cipher_encryption_out_len_php, arginfo_vscf_recipient_cipher_encryption_out_len_php)
     PHP_FE(vscf_recipient_cipher_process_encryption_php, arginfo_vscf_recipient_cipher_process_encryption_php)
     PHP_FE(vscf_recipient_cipher_finish_encryption_php, arginfo_vscf_recipient_cipher_finish_encryption_php)
+    PHP_FE(vscf_recipient_cipher_start_decryption_with_kek_php, arginfo_vscf_recipient_cipher_start_decryption_with_kek_php)
     PHP_FE(vscf_recipient_cipher_start_decryption_with_key_php, arginfo_vscf_recipient_cipher_start_decryption_with_key_php)
     PHP_FE(vscf_recipient_cipher_start_verified_decryption_with_key_php, arginfo_vscf_recipient_cipher_start_verified_decryption_with_key_php)
     PHP_FE(vscf_recipient_cipher_decryption_out_len_php, arginfo_vscf_recipient_cipher_decryption_out_len_php)

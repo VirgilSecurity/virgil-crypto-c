@@ -98,6 +98,10 @@ public class RecipientCipher implements AutoCloseable {
         FoundationJNI.INSTANCE.recipientCipher_addKeyRecipient(this.cCtx, recipientId, publicKey);
     }
 
+    public void addKekRecipient(byte[] kekId, byte[] kek, KeyWrap keyWrap) {
+        FoundationJNI.INSTANCE.recipientCipher_addKekRecipient(this.cCtx, kekId, kek, keyWrap);
+    }
+
     public void clearRecipients() {
         FoundationJNI.INSTANCE.recipientCipher_clearRecipients(this.cCtx);
     }
@@ -140,6 +144,10 @@ public class RecipientCipher implements AutoCloseable {
 
     public byte[] finishEncryption() throws FoundationException {
         return FoundationJNI.INSTANCE.recipientCipher_finishEncryption(this.cCtx);
+    }
+
+    public void startDecryptionWithKek(byte[] kekId, byte[] kek, KeyWrap keyWrap, byte[] messageInfo) throws FoundationException {
+        FoundationJNI.INSTANCE.recipientCipher_startDecryptionWithKek(this.cCtx, kekId, kek, keyWrap, messageInfo);
     }
 
     public void startDecryptionWithKey(byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException {

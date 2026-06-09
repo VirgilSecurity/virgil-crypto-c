@@ -266,6 +266,8 @@ public class FoundationJNI {
 
     public native void recipientCipher_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey);
 
+    public native void recipientCipher_addKekRecipient(long cCtx, byte[] kekId, byte[] kek, KeyWrap keyWrap);
+
     public native void recipientCipher_clearRecipients(long cCtx);
 
     public native void recipientCipher_addSigner(long cCtx, byte[] signerId, PrivateKey privateKey) throws FoundationException;
@@ -287,6 +289,8 @@ public class FoundationJNI {
     public native byte[] recipientCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
 
     public native byte[] recipientCipher_finishEncryption(long cCtx) throws FoundationException;
+
+    public native void recipientCipher_startDecryptionWithKek(long cCtx, byte[] kekId, byte[] kek, KeyWrap keyWrap, byte[] messageInfo) throws FoundationException;
 
     public native void recipientCipher_startDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException;
 
