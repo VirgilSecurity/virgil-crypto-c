@@ -261,6 +261,12 @@ VSCF_PUBLIC void
 vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *public_key);
 
 //
+//  Add recipient defined with a KEK identifier and key wrap algorithm.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_add_kek_recipient(vscf_recipient_cipher_t *self, vsc_data_t kek_id, vsc_data_t kek, vscf_impl_t *key_wrap);
+
+//
 //  Remove all recipients.
 //
 VSCF_PUBLIC void
@@ -342,6 +348,13 @@ vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Initiate decryption process with a pre-shared symmetric key (KEK).
+//  Message Info can be empty if it was embedded to encrypted data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_recipient_cipher_start_decryption_with_kek(vscf_recipient_cipher_t *self, vsc_data_t kek_id, vsc_data_t kek, vscf_impl_t *key_wrap, vsc_data_t message_info) VSCF_NODISCARD;
 
 //
 //  Initiate decryption process with a recipient private key.

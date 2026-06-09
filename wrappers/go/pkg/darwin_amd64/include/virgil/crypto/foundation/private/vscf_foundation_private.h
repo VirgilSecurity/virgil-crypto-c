@@ -53,8 +53,10 @@
 #ifndef VSCF_FOUNDATION_PRIVATE_H_INCLUDED
 #define VSCF_FOUNDATION_PRIVATE_H_INCLUDED
 
+#include "vscf_aes128_kw_defs.h"
 #include "vscf_aes256_cbc_defs.h"
 #include "vscf_aes256_gcm_defs.h"
+#include "vscf_aes256_kw_defs.h"
 #include "vscf_alg_api.h"
 #include "vscf_alg_info_api.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
@@ -109,6 +111,8 @@
 #include "vscf_kdf1_defs.h"
 #include "vscf_kdf2_defs.h"
 #include "vscf_kdf_api.h"
+#include "vscf_kek_recipient_info_defs.h"
+#include "vscf_kek_recipient_info_list_defs.h"
 #include "vscf_kem_api.h"
 #include "vscf_key_alg_api.h"
 #include "vscf_key_api.h"
@@ -123,6 +127,7 @@
 #include "vscf_key_recipient_info_list_defs.h"
 #include "vscf_key_serializer_api.h"
 #include "vscf_key_signer_api.h"
+#include "vscf_key_wrap_api.h"
 #include "vscf_mac_api.h"
 #include "vscf_mbedtls_bridge_entropy.h"
 #include "vscf_mbedtls_bridge_random.h"

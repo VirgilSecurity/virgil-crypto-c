@@ -79,6 +79,7 @@
 #include "vscf_key_recipient_list.h"
 #include "vscf_signer_list.h"
 #include "vscf_padding_cipher.h"
+#include "vscf_kek_recipient_list.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -130,6 +131,7 @@ struct vscf_recipient_cipher_t {
     //
     vscf_impl_t *signer_hash;
     vscf_key_recipient_list_t *key_recipients;
+    vscf_kek_recipient_list_t *kek_recipients;
     vscf_signer_list_t *signers;
     vsc_buffer_t *master_key;
     vsc_buffer_t *derived_keys;
@@ -137,6 +139,9 @@ struct vscf_recipient_cipher_t {
     vsc_buffer_t *decryption_recipient_id;
     vscf_impl_t *decryption_recipient_key;
     vsc_buffer_t *decryption_password;
+    vsc_buffer_t *decryption_kek_id;
+    vsc_buffer_t *decryption_kek;
+    vscf_impl_t *decryption_kek_wrap;
     vscf_impl_t *decryption_cipher;
     vscf_impl_t *decryption_padding;
     vscf_padding_cipher_t *padding_cipher;

@@ -67,6 +67,7 @@
 #include "vscf_message_info_custom_params.h"
 #include "vscf_footer_info.h"
 #include "vscf_impl.h"
+#include "vscf_kek_recipient_info_list.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -99,6 +100,7 @@ struct vscf_message_info_t {
     VSCF_ATOMIC size_t refcnt;
     vscf_key_recipient_info_list_t *key_recipients;
     vscf_password_recipient_info_list_t *password_recipients;
+    vscf_kek_recipient_info_list_t *kek_recipients;
     vscf_impl_t *data_encryption_alg_info;
     vscf_message_info_custom_params_t *custom_params;
     vscf_impl_t *cipher_kdf_alg_info;

@@ -69,6 +69,8 @@
 #include "vscf_message_info_custom_params.h"
 #include "vscf_footer_info.h"
 #include "vscf_impl.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -149,6 +151,12 @@ VSCF_PRIVATE void
 vscf_message_info_add_password_recipient(vscf_message_info_t *self, vscf_password_recipient_info_t **password_recipient_ref);
 
 //
+//  Add recipient that is defined by a pre-shared KEK.
+//
+VSCF_PRIVATE void
+vscf_message_info_add_kek_recipient(vscf_message_info_t *self, vscf_kek_recipient_info_t **kek_recipient_ref);
+
+//
 //  Set information about algorithm that was used for data encryption.
 //
 VSCF_PRIVATE void
@@ -177,6 +185,18 @@ vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self);
 //
 VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
+
+//
+//  Return list with a "kek recipient info" elements.
+//
+VSCF_PUBLIC const vscf_kek_recipient_info_list_t *
+vscf_message_info_kek_recipient_info_list(const vscf_message_info_t *self);
+
+//
+//  Return list with a "kek recipient info" elements.
+//
+VSCF_PRIVATE vscf_kek_recipient_info_list_t *
+vscf_message_info_kek_recipient_info_list_modifiable(vscf_message_info_t *self);
 
 //
 //  Remove all recipients.
