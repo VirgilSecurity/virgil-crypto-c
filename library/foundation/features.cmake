@@ -70,6 +70,7 @@ option(VSCF_ECIES "Enable class 'ecies'." ON)
 option(VSCF_ECIES_ENVELOPE "Enable class 'ecies envelope'." ON)
 option(VSCF_RECIPIENT_CIPHER "Enable class 'recipient cipher'." ON)
 option(VSCF_KEY_RECIPIENT_LIST "Enable class 'key recipient list'." ON)
+option(VSCF_KEK_RECIPIENT_LIST "Enable class 'kek recipient list'." ON)
 option(VSCF_LIST_KEY_VALUE_NODE "Enable class 'list key value node'." ON)
 option(VSCF_MESSAGE_INFO_CUSTOM_PARAMS "Enable class 'message info custom params'." ON)
 option(VSCF_KEY_PROVIDER "Enable class 'key provider'." ON)
@@ -217,6 +218,7 @@ mark_as_advanced(
         VSCF_ECIES_ENVELOPE
         VSCF_RECIPIENT_CIPHER
         VSCF_KEY_RECIPIENT_LIST
+        VSCF_KEK_RECIPIENT_LIST
         VSCF_LIST_KEY_VALUE_NODE
         VSCF_MESSAGE_INFO_CUSTOM_PARAMS
         VSCF_KEY_PROVIDER
@@ -718,11 +720,29 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_MESSAGE_INFO_DER_SERIALIZER)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_WRAP)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_KEY_WRAP - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_RECIPIENT_LIST)
     message("-- error --")
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_KEY_RECIPIENT_LIST - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEK_RECIPIENT_LIST)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_KEK_RECIPIENT_LIST - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -795,6 +815,15 @@ if(VSCF_KEY_RECIPIENT_LIST AND NOT VSCF_PUBLIC_KEY)
     message("--")
     message("Feature VSCF_KEY_RECIPIENT_LIST depends on the feature:")
     message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEK_RECIPIENT_LIST AND NOT VSCF_KEY_WRAP)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEK_RECIPIENT_LIST depends on the feature:")
+    message("     VSCF_KEY_WRAP - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

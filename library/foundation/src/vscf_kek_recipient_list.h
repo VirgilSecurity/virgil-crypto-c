@@ -43,20 +43,15 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'recipient cipher' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-#define VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#ifndef VSCF_KEK_RECIPIENT_LIST_H_INCLUDED
+#define VSCF_KEK_RECIPIENT_LIST_H_INCLUDED
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -69,17 +64,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_message_info.h"
-#include "vscf_message_info_footer.h"
 #include "vscf_impl.h"
-#include "vscf_padding_params.h"
-#include "vscf_message_info_der_serializer.h"
-#include "vscf_recipient_cipher_decryption_state.h"
-#include "vscf_key_recipient_list.h"
-#include "vscf_signer_list.h"
-#include "vscf_padding_cipher.h"
-#include "vscf_kek_recipient_list.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -99,64 +84,107 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'recipient cipher' context.
+//  Handle 'kek recipient list' context.
 //
-struct vscf_recipient_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSCF_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'cipher'.
-    //
-    vscf_impl_t *encryption_cipher;
-    //
-    //  Dependency to the interface 'padding'.
-    //
-    vscf_impl_t *encryption_padding;
-    //
-    //  Dependency to the class 'padding params'.
-    //
-    vscf_padding_params_t *padding_params;
-    //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *signer_hash;
-    vscf_key_recipient_list_t *key_recipients;
-    vscf_kek_recipient_list_t *kek_recipients;
-    vscf_signer_list_t *signers;
-    vsc_buffer_t *master_key;
-    vsc_buffer_t *derived_keys;
-    vsc_buffer_t *data_digest;
-    vsc_buffer_t *decryption_recipient_id;
-    vscf_impl_t *decryption_recipient_key;
-    vsc_buffer_t *decryption_password;
-    vsc_buffer_t *decryption_kek_id;
-    vsc_buffer_t *decryption_kek;
-    vscf_impl_t *decryption_kek_wrap;
-    vscf_impl_t *decryption_cipher;
-    vscf_impl_t *decryption_padding;
-    vscf_padding_cipher_t *padding_cipher;
-    vscf_impl_t *verifier_hash;
-    vscf_message_info_t *message_info;
-    vscf_message_info_der_serializer_t *message_info_der_serializer;
-    vsc_buffer_t *message_info_buffer;
-    vscf_message_info_footer_t *message_info_footer;
-    vsc_buffer_t *message_info_footer_enc;
-    size_t message_info_expected_len;
-    size_t processed_encrypted_data_len;
-    vscf_recipient_cipher_decryption_state_t decryption_state;
-    bool is_signed_operation;
-    vsc_buffer_t *decryption_staging;
-};
+typedef struct vscf_kek_recipient_list_t vscf_kek_recipient_list_t;
+
+//
+//  Return size of 'vscf_kek_recipient_list_t'.
+//
+VSCF_PUBLIC size_t
+vscf_kek_recipient_list_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_kek_recipient_list_init(vscf_kek_recipient_list_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_kek_recipient_list_cleanup(vscf_kek_recipient_list_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_kek_recipient_list_t *
+vscf_kek_recipient_list_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCF_PUBLIC void
+vscf_kek_recipient_list_delete(vscf_kek_recipient_list_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_kek_recipient_list_new ()'.
+//
+VSCF_PUBLIC void
+vscf_kek_recipient_list_destroy(vscf_kek_recipient_list_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_kek_recipient_list_t *
+vscf_kek_recipient_list_shallow_copy(vscf_kek_recipient_list_t *self);
+
+//
+//  Add new item to the list.
+//
+VSCF_PUBLIC void
+vscf_kek_recipient_list_add(vscf_kek_recipient_list_t *self, vsc_data_t kek_id, vsc_data_t kek, vscf_impl_t *key_wrap);
+
+//
+//  Return true if given list has kek recipient.
+//
+VSCF_PUBLIC bool
+vscf_kek_recipient_list_has_kek_recipient(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return KEK identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_kek_recipient_list_kek_id(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return KEK bytes.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_kek_recipient_list_kek(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return key wrap implementation.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_kek_recipient_list_key_wrap(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return true if list has next item.
+//
+VSCF_PUBLIC bool
+vscf_kek_recipient_list_has_next(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC const vscf_kek_recipient_list_t *
+vscf_kek_recipient_list_next(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return true if list has previous item.
+//
+VSCF_PUBLIC bool
+vscf_kek_recipient_list_has_prev(const vscf_kek_recipient_list_t *self);
+
+//
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_kek_recipient_list_t *
+vscf_kek_recipient_list_prev(const vscf_kek_recipient_list_t *self);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -169,5 +197,5 @@ struct vscf_recipient_cipher_t {
 #endif
 
 //  @footer
-#endif // VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#endif // VSCF_KEK_RECIPIENT_LIST_H_INCLUDED
 //  @end

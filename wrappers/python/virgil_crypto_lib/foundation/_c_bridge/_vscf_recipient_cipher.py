@@ -116,6 +116,13 @@ Note, operation has O(N) time complexity."""
         vscf_recipient_cipher_add_key_recipient.restype = None
         return vscf_recipient_cipher_add_key_recipient(ctx, recipient_id, public_key)
 
+    def vscf_recipient_cipher_add_kek_recipient(self, ctx, kek_id, kek, key_wrap):
+        """Add recipient defined with a KEK identifier and key wrap algorithm."""
+        vscf_recipient_cipher_add_kek_recipient = self._lib.vscf_recipient_cipher_add_kek_recipient
+        vscf_recipient_cipher_add_kek_recipient.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, vsc_data_t, POINTER(vscf_impl_t)]
+        vscf_recipient_cipher_add_kek_recipient.restype = None
+        return vscf_recipient_cipher_add_kek_recipient(ctx, kek_id, kek, key_wrap)
+
     def vscf_recipient_cipher_clear_recipients(self, ctx):
         """Remove all recipients."""
         vscf_recipient_cipher_clear_recipients = self._lib.vscf_recipient_cipher_clear_recipients
@@ -209,6 +216,14 @@ algorithm information, etc."""
         vscf_recipient_cipher_finish_encryption.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
         vscf_recipient_cipher_finish_encryption.restype = c_int
         return vscf_recipient_cipher_finish_encryption(ctx, out)
+
+    def vscf_recipient_cipher_start_decryption_with_kek(self, ctx, kek_id, kek, key_wrap, message_info):
+        """Initiate decryption process with a pre-shared symmetric key (KEK).
+Message Info can be empty if it was embedded to encrypted data."""
+        vscf_recipient_cipher_start_decryption_with_kek = self._lib.vscf_recipient_cipher_start_decryption_with_kek
+        vscf_recipient_cipher_start_decryption_with_kek.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, vsc_data_t, POINTER(vscf_impl_t), vsc_data_t]
+        vscf_recipient_cipher_start_decryption_with_kek.restype = c_int
+        return vscf_recipient_cipher_start_decryption_with_kek(ctx, kek_id, kek, key_wrap, message_info)
 
     def vscf_recipient_cipher_start_decryption_with_key(self, ctx, recipient_id, private_key, message_info):
         """Initiate decryption process with a recipient private key.

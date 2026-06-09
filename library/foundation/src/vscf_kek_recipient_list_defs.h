@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,13 +44,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'recipient cipher' types definition.
+//  Class 'kek recipient list' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-#define VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#ifndef VSCF_KEK_RECIPIENT_LIST_DEFS_H_INCLUDED
+#define VSCF_KEK_RECIPIENT_LIST_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_atomic.h"
+#include "vscf_kek_recipient_list.h"
+#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -62,35 +69,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_message_info.h"
-#include "vscf_message_info_footer.h"
-#include "vscf_impl.h"
-#include "vscf_padding_params.h"
-#include "vscf_message_info_der_serializer.h"
-#include "vscf_recipient_cipher_decryption_state.h"
-#include "vscf_key_recipient_list.h"
-#include "vscf_signer_list.h"
-#include "vscf_padding_cipher.h"
-#include "vscf_kek_recipient_list.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -99,9 +82,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'recipient cipher' context.
+//  Handle 'kek recipient list' context.
 //
-struct vscf_recipient_cipher_t {
+struct vscf_kek_recipient_list_t {
     //
     //  Function do deallocate self context.
     //
@@ -110,53 +93,18 @@ struct vscf_recipient_cipher_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'cipher'.
-    //
-    vscf_impl_t *encryption_cipher;
-    //
-    //  Dependency to the interface 'padding'.
-    //
-    vscf_impl_t *encryption_padding;
-    //
-    //  Dependency to the class 'padding params'.
-    //
-    vscf_padding_params_t *padding_params;
-    //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *signer_hash;
-    vscf_key_recipient_list_t *key_recipients;
-    vscf_kek_recipient_list_t *kek_recipients;
-    vscf_signer_list_t *signers;
-    vsc_buffer_t *master_key;
-    vsc_buffer_t *derived_keys;
-    vsc_buffer_t *data_digest;
-    vsc_buffer_t *decryption_recipient_id;
-    vscf_impl_t *decryption_recipient_key;
-    vsc_buffer_t *decryption_password;
-    vsc_buffer_t *decryption_kek_id;
-    vsc_buffer_t *decryption_kek;
-    vscf_impl_t *decryption_kek_wrap;
-    vscf_impl_t *decryption_cipher;
-    vscf_impl_t *decryption_padding;
-    vscf_padding_cipher_t *padding_cipher;
-    vscf_impl_t *verifier_hash;
-    vscf_message_info_t *message_info;
-    vscf_message_info_der_serializer_t *message_info_der_serializer;
-    vsc_buffer_t *message_info_buffer;
-    vscf_message_info_footer_t *message_info_footer;
-    vsc_buffer_t *message_info_footer_enc;
-    size_t message_info_expected_len;
-    size_t processed_encrypted_data_len;
-    vscf_recipient_cipher_decryption_state_t decryption_state;
-    bool is_signed_operation;
-    vsc_buffer_t *decryption_staging;
+
+    vsc_buffer_t *kek_id;
+
+    vsc_buffer_t *kek;
+
+    vscf_impl_t *key_wrap;
+
+    vscf_kek_recipient_list_t *next;
+
+    vscf_kek_recipient_list_t *prev;
 };
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -164,10 +112,12 @@ struct vscf_recipient_cipher_t {
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
 
+
 //  @footer
-#endif // VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#endif // VSCF_KEK_RECIPIENT_LIST_DEFS_H_INCLUDED
 //  @end

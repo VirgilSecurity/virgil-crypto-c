@@ -139,6 +139,22 @@ func (obj *RecipientCipher) AddKeyRecipient(recipientId []byte, publicKey Public
 }
 
 /*
+* Add recipient defined with a KEK identifier and key wrap algorithm.
+*/
+func (obj *RecipientCipher) AddKekRecipient(kekId []byte, kek []byte, keyWrap KeyWrap) {
+    kekIdData := helperWrapData (kekId)
+    kekData := helperWrapData (kek)
+
+    C.vscf_recipient_cipher_add_kek_recipient(obj.cCtx, kekIdData, kekData, (*C.vscf_impl_t)(unsafe.Pointer(keyWrap.Ctx())))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(keyWrap)
+
+    return
+}
+
+/*
 * Remove all recipients.
 */
 func (obj *RecipientCipher) ClearRecipients() {
@@ -324,6 +340,29 @@ func (obj *RecipientCipher) FinishEncryption() ([]byte, error) {
     runtime.KeepAlive(obj)
 
     return outBuf.getData(), nil
+}
+
+/*
+* Initiate decryption process with a pre-shared symmetric key (KEK).
+* Message Info can be empty if it was embedded to encrypted data.
+*/
+func (obj *RecipientCipher) StartDecryptionWithKek(kekId []byte, kek []byte, keyWrap KeyWrap, messageInfo []byte) error {
+    kekIdData := helperWrapData (kekId)
+    kekData := helperWrapData (kek)
+    messageInfoData := helperWrapData (messageInfo)
+
+    proxyResult := C.vscf_recipient_cipher_start_decryption_with_kek(obj.cCtx, kekIdData, kekData, (*C.vscf_impl_t)(unsafe.Pointer(keyWrap.Ctx())), messageInfoData)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(keyWrap)
+
+    return nil
 }
 
 /*
