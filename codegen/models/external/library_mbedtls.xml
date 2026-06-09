@@ -12,6 +12,9 @@
     <feature name="SHA512 C"/>
     <feature name="CIPHER C"/>
     <feature name="AES C"/>
+    <feature name="NIST KW C">
+        <require feature="AES C"/>
+    </feature>
     <feature name="GCM C"/>
     <feature name="MD C"/>
     <feature name="BIGNUM C"/>

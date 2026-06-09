@@ -80,6 +80,8 @@ const initSha384 = require('./Sha384');
 const initSha512 = require('./Sha512');
 const initAes256Gcm = require('./Aes256Gcm');
 const initAes256Cbc = require('./Aes256Cbc');
+const initAes128Kw = require('./Aes128Kw');
+const initAes256Kw = require('./Aes256Kw');
 const initAsn1rd = require('./Asn1rd');
 const initAsn1wr = require('./Asn1wr');
 const initRsaPublicKey = require('./RsaPublicKey');
@@ -179,6 +181,8 @@ const initProject = options => {
             modules.Sha512 = initSha512(foundationModule, modules);
             modules.Aes256Gcm = initAes256Gcm(foundationModule, modules);
             modules.Aes256Cbc = initAes256Cbc(foundationModule, modules);
+            modules.Aes128Kw = initAes128Kw(foundationModule, modules);
+            modules.Aes256Kw = initAes256Kw(foundationModule, modules);
             modules.Asn1rd = initAsn1rd(foundationModule, modules);
             modules.Asn1wr = initAsn1wr(foundationModule, modules);
             modules.RsaPublicKey = initRsaPublicKey(foundationModule, modules);

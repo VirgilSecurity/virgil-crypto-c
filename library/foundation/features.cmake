@@ -139,6 +139,8 @@ option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
 option(VSCF_SHA512 "Enable implementation 'sha512'." ON)
 option(VSCF_AES256_GCM "Enable implementation 'aes256 gcm'." ON)
 option(VSCF_AES256_CBC "Enable implementation 'aes256 cbc'." ON)
+option(VSCF_AES128_KW "Enable implementation 'aes128 kw'." ON)
+option(VSCF_AES256_KW "Enable implementation 'aes256 kw'." ON)
 option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
 option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
@@ -282,6 +284,8 @@ mark_as_advanced(
         VSCF_SHA512
         VSCF_AES256_GCM
         VSCF_AES256_CBC
+        VSCF_AES128_KW
+        VSCF_AES256_KW
         VSCF_ASN1RD
         VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
@@ -1426,6 +1430,42 @@ if(VSCF_AES256_CBC AND NOT VSCF_CIPHER_ALG_INFO)
     message("--")
     message("Feature VSCF_AES256_CBC depends on the feature:")
     message("     VSCF_CIPHER_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES128_KW AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES128_KW depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES128_KW AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES128_KW depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_KW AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_KW depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_KW AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_KW depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

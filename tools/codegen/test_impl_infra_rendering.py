@@ -63,8 +63,8 @@ class TestApiModule(unittest.TestCase):
         iface_names_from_ir = sorted(i.name for i in self.pir.interfaces)
         expected = [f"vscf_api_tag_{n.replace(' ', '_').upper()}" for n in iface_names_from_ir]
         self.assertEqual(iface_constants, expected)
-        # Must match the reference count (33 interfaces)
-        self.assertEqual(len(iface_constants), 33)
+        # Must match the reference count (34 interfaces)
+        self.assertEqual(len(iface_constants), 34)
 
     def test_api_tag_enum_sorted_alphabetically(self):
         enum = self.root.find(".//c_enum[@name='vscf_api_tag_t']")
@@ -147,7 +147,7 @@ class TestImplModule(unittest.TestCase):
         impl_names_from_ir = sorted(i.name for i in self.pir.implementations)
         expected = [f"vscf_impl_tag_{n.replace(' ', '_').upper()}" for n in impl_names_from_ir]
         self.assertEqual(impl_constants, expected)
-        self.assertEqual(len(impl_constants), 53)
+        self.assertEqual(len(impl_constants), 56)
 
     def test_impl_tag_enum_sorted_alphabetically(self):
         enum = self.root.find(".//c_enum[@name='vscf_impl_tag_t']")

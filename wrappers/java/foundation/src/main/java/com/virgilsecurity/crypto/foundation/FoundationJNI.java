@@ -730,6 +730,42 @@ public class FoundationJNI {
 
     public native byte[] aes256Cbc_finish(long cCtx) throws FoundationException;
 
+    public native long aes128Kw_new();
+
+    public native void aes128Kw_close(long cCtx);
+
+    public native AlgId aes128Kw_algId(long cCtx);
+
+    public native AlgInfo aes128Kw_produceAlgInfo(long cCtx);
+
+    public native void aes128Kw_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native int aes128Kw_wrappedLen(long cCtx, int dataLen);
+
+    public native int aes128Kw_unwrappedLen(long cCtx, int dataLen);
+
+    public native byte[] aes128Kw_wrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
+    public native byte[] aes128Kw_unwrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
+    public native long aes256Kw_new();
+
+    public native void aes256Kw_close(long cCtx);
+
+    public native AlgId aes256Kw_algId(long cCtx);
+
+    public native AlgInfo aes256Kw_produceAlgInfo(long cCtx);
+
+    public native void aes256Kw_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native int aes256Kw_wrappedLen(long cCtx, int dataLen);
+
+    public native int aes256Kw_unwrappedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Kw_wrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
+    public native byte[] aes256Kw_unwrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
     public native long asn1rd_new();
 
     public native void asn1rd_close(long cCtx);

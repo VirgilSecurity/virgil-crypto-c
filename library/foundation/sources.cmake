@@ -464,6 +464,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes128_kw.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_kw.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1rd.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -902,6 +912,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_cbc.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_cbc_defs.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.h>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes128_kw.h>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes128_kw_defs.h>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw_internal.h>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_kw.h>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_kw_defs.h>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw_internal.h>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1rd.h>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1rd_defs.h>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd_internal.h>"
@@ -1230,6 +1246,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_defs.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.c>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw.c>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw_defs.c>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw_internal.c>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw.c>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw_defs.c>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw_internal.c>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd.c>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd_defs.c>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd_internal.c>"

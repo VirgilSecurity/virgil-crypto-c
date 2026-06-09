@@ -178,6 +178,34 @@
     </implementation>
 
 
+    <implementation name="aes128 kw">
+        Implementation of AES-128 Key Wrap algorithm (RFC 3394).
+
+        <interface name="alg"/>
+        <interface name="key wrap"/>
+
+        <require library="mbedtls" feature="NIST KW C"/>
+        <require library="mbedtls" feature="AES C"/>
+        <require header="mbedtls/nist_kw.h"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+    </implementation>
+
+
+    <implementation name="aes256 kw">
+        Implementation of AES-256 Key Wrap algorithm (RFC 3394).
+
+        <interface name="alg"/>
+        <interface name="key wrap"/>
+
+        <require library="mbedtls" feature="NIST KW C"/>
+        <require library="mbedtls" feature="AES C"/>
+        <require header="mbedtls/nist_kw.h"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+    </implementation>
+
+
     <implementation name="asn1rd">
         This is MbedTLS implementation of ASN.1 reader.
 

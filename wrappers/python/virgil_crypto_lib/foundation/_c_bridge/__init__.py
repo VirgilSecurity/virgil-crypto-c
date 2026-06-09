@@ -118,6 +118,10 @@ from ._vscf_aes256_gcm import vscf_aes256_gcm_t
 from ._vscf_aes256_gcm import VscfAes256Gcm
 from ._vscf_aes256_cbc import vscf_aes256_cbc_t
 from ._vscf_aes256_cbc import VscfAes256Cbc
+from ._vscf_aes128_kw import vscf_aes128_kw_t
+from ._vscf_aes128_kw import VscfAes128Kw
+from ._vscf_aes256_kw import vscf_aes256_kw_t
+from ._vscf_aes256_kw import VscfAes256Kw
 from ._vscf_asn1rd import vscf_asn1rd_t
 from ._vscf_asn1rd import VscfAsn1rd
 from ._vscf_asn1wr import vscf_asn1wr_t

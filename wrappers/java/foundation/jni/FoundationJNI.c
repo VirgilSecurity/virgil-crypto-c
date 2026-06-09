@@ -1307,6 +1307,12 @@ char* getAlgClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ob
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
         break;
+    case vscf_impl_tag_AES128_KW:
+        strcat (classFullName, "Aes128Kw");
+        break;
+    case vscf_impl_tag_AES256_KW:
+        strcat (classFullName, "Aes256Kw");
+        break;
     case vscf_impl_tag_HMAC:
         strcat (classFullName, "Hmac");
         break;
@@ -1673,6 +1679,51 @@ char* getKemClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ob
 
 jobject wrapKem (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj) {
     char *classFullName = getKemClassName(jenv, jobj, c_obj);
+    jclass cls = (*jenv)->FindClass(jenv, classFullName);
+    if (NULL == cls) {
+        free(classFullName);
+        VSCF_ASSERT("Class not found.");
+    }
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
+    if (NULL == methodID) {
+        VSCF_ASSERT("Class has no 'getInstance' method.");
+    }
+
+    jlong c_ctx = 0;
+    *(const vscf_impl_t /*1*/**) &c_ctx = c_obj;
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, c_ctx);
+}
+
+char* getKeyWrapClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj) {
+    if (!vscf_key_wrap_is_implemented(c_obj)) {
+        VSCF_ASSERT("Given C implementation does not implement interface KeyWrap.");
+    }
+    char *classFullName = malloc(200);
+    strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
+    vscf_impl_tag_t implTag = vscf_impl_tag(c_obj);
+    switch(implTag) {
+    case vscf_impl_tag_AES128_KW:
+        strcat (classFullName, "Aes128Kw");
+        break;
+    case vscf_impl_tag_AES256_KW:
+        strcat (classFullName, "Aes256Kw");
+        break;
+    default:
+        free(classFullName);
+        VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
+    }
+    return classFullName;
+}
+
+jobject wrapKeyWrap (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj) {
+    char *classFullName = getKeyWrapClassName(jenv, jobj, c_obj);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
     if (NULL == cls) {
         free(classFullName);
@@ -6688,6 +6739,288 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     }
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_aes128_kw_t **)&c_ctx = vscf_aes128_kw_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_aes128_kw_delete(*(vscf_aes128_kw_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    const vscf_alg_id_t proxyResult = vscf_aes128_kw_alg_id(aes128_kw_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+    
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_aes128_kw_produce_alg_info(aes128_kw_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    vscf_status_t status = vscf_aes128_kw_restore_alg_info(aes128_kw_ctx /*a1*/, alg_info /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1wrappedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes128_kw_wrapped_len(aes128_kw_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1unwrappedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes128_kw_unwrapped_len(aes128_kw_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1wrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkek, jbyteArray jdata) {
+    // Wrap input data
+    byte* kek_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkek, NULL);
+    vsc_data_t kek = vsc_data(kek_arr, (*jenv)->GetArrayLength(jenv, jkek));
+    
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes128_kw_wrapped_len(aes128_kw_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes128_kw_wrap(aes128_kw_ctx /*a1*/, kek /*a3*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkek, (jbyte*) kek_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes128Kw_1unwrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkek, jbyteArray jdata) {
+    // Wrap input data
+    byte* kek_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkek, NULL);
+    vsc_data_t kek = vsc_data(kek_arr, (*jenv)->GetArrayLength(jenv, jkek));
+    
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes128_kw_t /*9*/* aes128_kw_ctx = *(vscf_aes128_kw_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes128_kw_unwrapped_len(aes128_kw_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes128_kw_unwrap(aes128_kw_ctx /*a1*/, kek /*a3*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkek, (jbyte*) kek_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_aes256_kw_t **)&c_ctx = vscf_aes256_kw_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_aes256_kw_delete(*(vscf_aes256_kw_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    const vscf_alg_id_t proxyResult = vscf_aes256_kw_alg_id(aes256_kw_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+    
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_aes256_kw_produce_alg_info(aes256_kw_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    vscf_status_t status = vscf_aes256_kw_restore_alg_info(aes256_kw_ctx /*a1*/, alg_info /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1wrappedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_kw_wrapped_len(aes256_kw_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1unwrappedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_kw_unwrapped_len(aes256_kw_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1wrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkek, jbyteArray jdata) {
+    // Wrap input data
+    byte* kek_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkek, NULL);
+    vsc_data_t kek = vsc_data(kek_arr, (*jenv)->GetArrayLength(jenv, jkek));
+    
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_kw_wrapped_len(aes256_kw_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes256_kw_wrap(aes256_kw_ctx /*a1*/, kek /*a3*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkek, (jbyte*) kek_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Kw_1unwrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkek, jbyteArray jdata) {
+    // Wrap input data
+    byte* kek_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkek, NULL);
+    vsc_data_t kek = vsc_data(kek_arr, (*jenv)->GetArrayLength(jenv, jkek));
+    
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes256_kw_t /*9*/* aes256_kw_ctx = *(vscf_aes256_kw_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_kw_unwrapped_len(aes256_kw_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes256_kw_unwrap(aes256_kw_ctx /*a1*/, kek /*a3*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkek, (jbyte*) kek_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
     vsc_buffer_delete(out);
     
     return ret;
