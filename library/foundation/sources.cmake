@@ -429,6 +429,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_wrap.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -877,6 +882,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_padding_api.h>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kem.h>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kem_api.h>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_wrap.h>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_wrap_api.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha224_defs.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.h>"
@@ -1203,6 +1210,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_padding_api.c>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kem.c>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kem_api.c>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_wrap.c>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_wrap_api.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_defs.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.c>"

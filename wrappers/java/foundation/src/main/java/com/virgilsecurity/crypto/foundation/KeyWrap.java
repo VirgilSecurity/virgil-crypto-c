@@ -1,5 +1,4 @@
-<?php
-/**
+/*
 * Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
@@ -35,36 +34,15 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace Virgil\CryptoWrapper\Foundation;
+package com.virgilsecurity.crypto.foundation;
 
-class AlgId extends Enum
-{
+public interface KeyWrap extends Alg {
+    int wrappedLen(int dataLen);
 
-    private const NONE = 0;
-    private const SHA224 = 1;
-    private const SHA256 = 2;
-    private const SHA384 = 3;
-    private const SHA512 = 4;
-    private const KDF1 = 5;
-    private const KDF2 = 6;
-    private const RSA = 7;
-    private const ED25519 = 8;
-    private const CURVE25519 = 9;
-    private const SECP256R1 = 10;
-    private const AES256_GCM = 11;
-    private const AES256_CBC = 12;
-    private const AES128_KW = 13;
-    private const AES192_KW = 14;
-    private const AES256_KW = 15;
-    private const HMAC = 16;
-    private const HKDF = 17;
-    private const PKCS5_PBKDF2 = 18;
-    private const PKCS5_PBES2 = 19;
-    private const COMPOUND_KEY = 20;
-    private const HYBRID_KEY = 21;
-    private const FALCON = 22;
-    private const RANDOM_PADDING = 23;
-    private const ML_KEM_768 = 24;
-    private const ML_DSA_65 = 25;
+    int unwrappedLen(int dataLen);
+
+    byte[] wrap(byte[] kek, byte[] data) throws FoundationException;
+
+    byte[] unwrap(byte[] kek, byte[] data) throws FoundationException;
 
 }

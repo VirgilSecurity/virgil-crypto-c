@@ -34,34 +34,29 @@
 
 
 from ctypes import *
+from abc import *
 
 
-class AlgId(object):
-    """Define implemented algorithm identificator."""
+class KeyWrap(object):
+    """Provide interface for symmetric key wrapping algorithms (RFC 3394)."""
+    __metaclass__ = ABCMeta
 
-    NONE = 0
-    SHA224 = 1
-    SHA256 = 2
-    SHA384 = 3
-    SHA512 = 4
-    KDF1 = 5
-    KDF2 = 6
-    RSA = 7
-    ED25519 = 8
-    CURVE25519 = 9
-    SECP256R1 = 10
-    AES256_GCM = 11
-    AES256_CBC = 12
-    AES128_KW = 13
-    AES192_KW = 14
-    AES256_KW = 15
-    HMAC = 16
-    HKDF = 17
-    PKCS5_PBKDF2 = 18
-    PKCS5_PBES2 = 19
-    COMPOUND_KEY = 20
-    HYBRID_KEY = 21
-    FALCON = 22
-    RANDOM_PADDING = 23
-    ML_KEM_768 = 24
-    ML_DSA_65 = 25
+    @abstractmethod
+    def wrapped_len(self, data_len):
+        """Return buffer length required to hold a wrapped key for the given plain key length."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def unwrapped_len(self, data_len):
+        """Return buffer length required to hold an unwrapped key for the given wrapped key length."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def wrap(self, kek, data):
+        """Wrap given key data using the Key Encryption Key (KEK)."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def unwrap(self, kek, data):
+        """Unwrap given key data using the Key Encryption Key (KEK)."""
+        raise NotImplementedError()

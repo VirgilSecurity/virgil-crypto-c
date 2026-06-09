@@ -132,6 +132,7 @@ option(VSCF_MESSAGE_INFO_SERIALIZER "Enable interface 'message info serializer'.
 option(VSCF_MESSAGE_INFO_FOOTER_SERIALIZER "Enable interface 'message info footer serializer'." ON)
 option(VSCF_PADDING "Enable interface 'padding'." ON)
 option(VSCF_KEM "Enable interface 'kem'." ON)
+option(VSCF_KEY_WRAP "Enable interface 'key wrap'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
@@ -274,6 +275,7 @@ mark_as_advanced(
         VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
         VSCF_PADDING
         VSCF_KEM
+        VSCF_KEY_WRAP
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384

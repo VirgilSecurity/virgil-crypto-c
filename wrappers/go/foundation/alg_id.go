@@ -20,14 +20,17 @@ const (
     AlgIdSecp256r1 AlgId = 10
     AlgIdAes256Gcm AlgId = 11
     AlgIdAes256Cbc AlgId = 12
-    AlgIdHmac AlgId = 13
-    AlgIdHkdf AlgId = 14
-    AlgIdPkcs5Pbkdf2 AlgId = 15
-    AlgIdPkcs5Pbes2 AlgId = 16
-    AlgIdCompoundKey AlgId = 17
-    AlgIdHybridKey AlgId = 18
-    AlgIdFalcon AlgId = 19
-    AlgIdRandomPadding AlgId = 20
-    AlgIdMlKem768 AlgId = 21
-    AlgIdMlDsa65 AlgId = 22
+    AlgIdAes128Kw AlgId = 13
+    AlgIdAes192Kw AlgId = 14
+    AlgIdAes256Kw AlgId = 15
+    AlgIdHmac AlgId = 16
+    AlgIdHkdf AlgId = 17
+    AlgIdPkcs5Pbkdf2 AlgId = 18
+    AlgIdPkcs5Pbes2 AlgId = 19
+    AlgIdCompoundKey AlgId = 20
+    AlgIdHybridKey AlgId = 21
+    AlgIdFalcon AlgId = 22
+    AlgIdRandomPadding AlgId = 23
+    AlgIdMlKem768 AlgId = 24
+    AlgIdMlDsa65 AlgId = 25
 )

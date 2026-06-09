@@ -156,3 +156,4 @@ from .message_info_serializer import MessageInfoSerializer
 from .message_info_footer_serializer import MessageInfoFooterSerializer
 from .padding import Padding
 from .kem import Kem
+from .key_wrap import KeyWrap

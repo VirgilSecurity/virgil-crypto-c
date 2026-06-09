@@ -32,80 +32,21 @@
 //
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+
 import Foundation
 import VSCFoundation
 
-@objc public enum OidId: Int {
-    case none
+@objc(VSCFKeyWrap) public protocol KeyWrap : CContext, Alg {
 
-    case rsa
+    /// Return buffer length required to hold a wrapped key for the given plain key length.
+    @objc func wrappedLen(dataLen: Int) -> Int
 
-    case ed25519
+    /// Return buffer length required to hold an unwrapped key for the given wrapped key length.
+    @objc func unwrappedLen(dataLen: Int) -> Int
 
-    case curve25519
+    /// Wrap given key data using the Key Encryption Key (KEK).
+    @objc func wrap(kek: Data, data: Data) throws -> Data
 
-    case sha224
-
-    case sha256
-
-    case sha384
-
-    case sha512
-
-    case kdf1
-
-    case kdf2
-
-    case aes256Gcm
-
-    case aes256Cbc
-
-    case aes128Kw
-
-    case aes192Kw
-
-    case aes256Kw
-
-    case pkcs5Pbkdf2
-
-    case pkcs5Pbes2
-
-    case cmsData
-
-    case cmsEnvelopedData
-
-    case hkdfWithSha256
-
-    case hkdfWithSha384
-
-    case hkdfWithSha512
-
-    case hmacWithSha224
-
-    case hmacWithSha256
-
-    case hmacWithSha384
-
-    case hmacWithSha512
-
-    case ecGenericKey
-
-    case ecDomainSecp256r1
-
-    case compoundKey
-
-    case hybridKey
-
-    case falcon
-
-    case randomPadding
-
-    case mlKem768
-
-    case mlDsa65
-
-    /// Create enumeration value from the correspond C enumeration value.
-    init(fromC oidId: vscf_oid_id_t) {
-        self.init(rawValue: Int(oidId.rawValue))!
-    }
+    /// Unwrap given key data using the Key Encryption Key (KEK).
+    @objc func unwrap(kek: Data, data: Data) throws -> Data
 }

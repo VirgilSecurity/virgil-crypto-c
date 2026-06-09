@@ -425,4 +425,14 @@ class FoundationImplementation
         return vscf_foundation_implementation_wrap_kem_php($$ctx);
     }
 
+    /**
+    *
+    * @param  $$ctx
+    * @return KeyWrap
+    */
+    public static function wrapKeyWrap($$ctx): KeyWrap
+    {
+        return vscf_foundation_implementation_wrap_key_wrap_php($$ctx);
+    }
+
 }

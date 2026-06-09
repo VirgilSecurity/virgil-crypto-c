@@ -83,6 +83,7 @@
     <interface name="message info footer serializer"/>
     <interface name="padding"/>
     <interface name="kem"/>
+    <interface name="key wrap"/>
 
     <class name="error" from="shared"/>
     <class name="mbedtls bignum asn1 writer"/>

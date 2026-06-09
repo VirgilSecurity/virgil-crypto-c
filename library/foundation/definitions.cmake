@@ -140,6 +140,7 @@ target_compile_definitions(foundation
             "VSCF_MESSAGE_INFO_FOOTER_SERIALIZER=$<BOOL:${VSCF_MESSAGE_INFO_FOOTER_SERIALIZER}>"
             "VSCF_PADDING=$<BOOL:${VSCF_PADDING}>"
             "VSCF_KEM=$<BOOL:${VSCF_KEM}>"
+            "VSCF_KEY_WRAP=$<BOOL:${VSCF_KEY_WRAP}>"
             "VSCF_SHA224=$<BOOL:${VSCF_SHA224}>"
             "VSCF_SHA256=$<BOOL:${VSCF_SHA256}>"
             "VSCF_SHA384=$<BOOL:${VSCF_SHA384}>"

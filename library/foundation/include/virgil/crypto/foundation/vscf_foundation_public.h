@@ -133,6 +133,7 @@
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_key_serializer.h"
 #include "vscf_key_signer.h"
+#include "vscf_key_wrap.h"
 #include "vscf_library.h"
 #include "vscf_mac.h"
 #include "vscf_memory.h"
