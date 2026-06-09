@@ -172,7 +172,7 @@ EncryptedKey ::= OCTET STRING"""
 RecipientInfo ::= CHOICE {
     ktri KeyTransRecipientInfo,
     kari [1] KeyAgreeRecipientInfo, -- not supported
-    kekri [2] KEKRecipientInfo, -- not supported
+    kekri [2] KEKRecipientInfo,
     pwri [3] PasswordRecipientInfo,
     ori [4] OtherRecipientInfo -- not supported
 }"""
@@ -355,7 +355,7 @@ EncryptedKey ::= OCTET STRING"""
 RecipientInfo ::= CHOICE {
     ktri KeyTransRecipientInfo,
     kari [1] KeyAgreeRecipientInfo, -- not supported
-    kekri [2] KEKRecipientInfo, -- not supported
+    kekri [2] KEKRecipientInfo,
     pwri [3] PasswordRecipientInfo,
     ori [4] OtherRecipientInfo -- not supported
 }"""
