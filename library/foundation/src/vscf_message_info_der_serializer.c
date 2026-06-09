@@ -69,6 +69,8 @@
 #include "vscf_signed_data_info.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_password_recipient_info.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 #include "vscf_signer_info.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -179,6 +181,24 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(const vs
 //
 static size_t
 vscf_message_info_der_serializer_serialize_password_recipient_info(vscf_message_info_der_serializer_t *self, const vscf_password_recipient_info_t *password_recipient_info);
+
+static size_t
+vscf_message_info_der_serializer_serialized_kek_recipient_info_len(const vscf_message_info_der_serializer_t *self, const vscf_kek_recipient_info_t *kek_recipient_info);
+
+//
+//  KEKRecipientInfo ::= SEQUENCE {
+//      version CMSVersion, -- always set to 4
+//      kekid KEKIdentifier,
+//      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+//      encryptedKey EncryptedKey }
+//
+//  KEKIdentifier ::= SEQUENCE {
+//      keyIdentifier OCTET STRING,
+//      date GeneralizedTime OPTIONAL,
+//      other OtherKeyAttribute OPTIONAL }
+//
+static size_t
+vscf_message_info_der_serializer_serialize_kek_recipient_info(vscf_message_info_der_serializer_t *self, const vscf_kek_recipient_info_t *kek_recipient_info);
 
 static size_t
 vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info);
@@ -372,12 +392,27 @@ static void
 vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
+//  KEKRecipientInfo ::= SEQUENCE {
+//      version CMSVersion, -- always set to 4
+//      kekid KEKIdentifier,
+//      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+//      encryptedKey EncryptedKey }
+//
+//  KEKIdentifier ::= SEQUENCE {
+//      keyIdentifier OCTET STRING,
+//      date GeneralizedTime OPTIONAL,
+//      other OtherKeyAttribute OPTIONAL }
+//
+static void
+vscf_message_info_der_serializer_deserialize_kek_recipient_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
+
+//
 //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
 //
 //  RecipientInfo ::= CHOICE {
 //      ktri KeyTransRecipientInfo,
 //      kari [1] KeyAgreeRecipientInfo, -- not supported
-//      kekri [2] KEKRecipientInfo, -- not supported
+//      kekri [2] KEKRecipientInfo,
 //      pwri [3] PasswordRecipientInfo,
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
@@ -963,6 +998,84 @@ vscf_message_info_der_serializer_serialize_password_recipient_info(
 }
 
 static size_t
+vscf_message_info_der_serializer_serialized_kek_recipient_info_len(
+        const vscf_message_info_der_serializer_t *self, const vscf_kek_recipient_info_t *kek_recipient_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kek_recipient_info);
+
+    const size_t kek_id_len = vscf_kek_recipient_info_kek_id(kek_recipient_info).len;
+    const vscf_impl_t *key_encryption_alg_info = vscf_kek_recipient_info_key_encryption_algorithm(kek_recipient_info);
+    const size_t key_enc_alg_len =
+            vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, key_encryption_alg_info);
+    const size_t encrypted_key_len = vscf_kek_recipient_info_encrypted_key(kek_recipient_info).len;
+
+    const size_t len = 1 + 2 +                        //  KEKRecipientInfo ::= SEQUENCE {
+                       1 + 1 + 1 +                    //      version CMSVersion, -- always set to 4
+                       1 + 1 + (1 + 1 + kek_id_len) + //      kekid KEKIdentifier,
+                       1 + 1 + key_enc_alg_len +      //      keyEncryptionAlgorithm,
+                       1 + 4 + encrypted_key_len;     //      encryptedKey EncryptedKey }
+
+    return len;
+}
+
+//
+//  KEKRecipientInfo ::= SEQUENCE {
+//      version CMSVersion, -- always set to 4
+//      kekid KEKIdentifier,
+//      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+//      encryptedKey EncryptedKey }
+//
+//  KEKIdentifier ::= SEQUENCE {
+//      keyIdentifier OCTET STRING,
+//      date GeneralizedTime OPTIONAL,
+//      other OtherKeyAttribute OPTIONAL }
+//
+static size_t
+vscf_message_info_der_serializer_serialize_kek_recipient_info(
+        vscf_message_info_der_serializer_t *self, const vscf_kek_recipient_info_t *kek_recipient_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kek_recipient_info);
+
+    size_t kek_recipient_info_len = 0;
+
+    //
+    //  Write: encryptedKey.
+    //
+    kek_recipient_info_len += vscf_asn1_writer_write_octet_str(
+            self->asn1_writer, vscf_kek_recipient_info_encrypted_key(kek_recipient_info));
+
+    //
+    //  Write: keyEncryptionAlgorithm.
+    //
+    const vscf_impl_t *key_encryption_alg_info = vscf_kek_recipient_info_key_encryption_algorithm(kek_recipient_info);
+    kek_recipient_info_len +=
+            vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_serializer, key_encryption_alg_info);
+
+    //
+    //  Write: kekid SEQUENCE { keyIdentifier OCTET STRING }.
+    //
+    size_t kekid_len = 0;
+    kekid_len +=
+            vscf_asn1_writer_write_octet_str(self->asn1_writer, vscf_kek_recipient_info_kek_id(kek_recipient_info));
+    kekid_len += vscf_asn1_writer_write_sequence(self->asn1_writer, kekid_len);
+    kek_recipient_info_len += kekid_len;
+
+    //
+    //  Write: version {4}
+    //
+    kek_recipient_info_len += vscf_asn1_writer_write_int(self->asn1_writer, 4);
+
+    //
+    //  Write: KEKRecipientInfo SEQUENCE.
+    //
+    kek_recipient_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, kek_recipient_info_len);
+
+    return kek_recipient_info_len;
+}
+
+static size_t
 vscf_message_info_der_serializer_serialized_recipient_infos_len(
         const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
 
@@ -980,6 +1093,17 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
 
 
         len += vscf_message_info_der_serializer_serialized_key_recipient_info_len(self, info);
+    }
+
+    // kekri [2] KEKRecipientInfo,
+    for (const vscf_kek_recipient_info_list_t *list = vscf_message_info_kek_recipient_info_list(message_info);
+            (list != NULL) && vscf_kek_recipient_info_list_has_item(list);
+            list = vscf_kek_recipient_info_list_next(list)) {
+
+        const vscf_kek_recipient_info_t *info = vscf_kek_recipient_info_list_item(list);
+
+        len += 1 + 3;
+        len += vscf_message_info_der_serializer_serialized_kek_recipient_info_len(self, info);
     }
 
     // pwri [3] PasswordRecipientInfo,
@@ -1033,6 +1157,21 @@ vscf_message_info_der_serializer_serialize_recipient_infos(
         const vscf_key_recipient_info_t *info = vscf_key_recipient_info_list_item(list);
 
         size_t info_len = vscf_message_info_der_serializer_serialize_key_recipient_info(self, info);
+
+        recipient_infos_len += info_len;
+    }
+
+    for (const vscf_kek_recipient_info_list_t *list = vscf_message_info_kek_recipient_info_list(message_info);
+            (list != NULL) && vscf_kek_recipient_info_list_has_item(list);
+            list = vscf_kek_recipient_info_list_next(list)) {
+
+        const vscf_kek_recipient_info_t *info = vscf_kek_recipient_info_list_item(list);
+
+        size_t info_len = 0;
+
+        info_len += vscf_message_info_der_serializer_serialize_kek_recipient_info(self, info);
+
+        info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 2, info_len);
 
         recipient_infos_len += info_len;
     }
@@ -1758,12 +1897,70 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 }
 
 //
+//  KEKRecipientInfo ::= SEQUENCE {
+//      version CMSVersion, -- always set to 4
+//      kekid KEKIdentifier,
+//      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+//      encryptedKey EncryptedKey }
+//
+//  KEKIdentifier ::= SEQUENCE {
+//      keyIdentifier OCTET STRING,
+//      date GeneralizedTime OPTIONAL,
+//      other OtherKeyAttribute OPTIONAL }
+//
+static void
+vscf_message_info_der_serializer_deserialize_kek_recipient_info(
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
+
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
+    if (version != 4) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return;
+    }
+
+    //  Read: kekid SEQUENCE { keyIdentifier OCTET STRING }.
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    vsc_data_t kek_id = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+
+    vscf_impl_t *key_encryption_alg_info =
+            vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
+    vsc_data_t encrypted_key = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+
+    if (key_encryption_alg_info == NULL) {
+        return;
+    }
+
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        vscf_impl_destroy(&key_encryption_alg_info);
+        return;
+    }
+
+    vscf_kek_recipient_info_t *kek_recipient_info =
+            vscf_kek_recipient_info_new_with_members(kek_id, &key_encryption_alg_info, encrypted_key);
+
+    vscf_message_info_add_kek_recipient(message_info, &kek_recipient_info);
+}
+
+//
 //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
 //
 //  RecipientInfo ::= CHOICE {
 //      ktri KeyTransRecipientInfo,
 //      kari [1] KeyAgreeRecipientInfo, -- not supported
-//      kekri [2] KEKRecipientInfo, -- not supported
+//      kekri [2] KEKRecipientInfo,
 //      pwri [3] PasswordRecipientInfo,
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
@@ -1786,7 +1983,8 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
 
     while (recipient_infos_len != 0) {
         const size_t recipient_len = vscf_asn1_reader_get_data_len(self->asn1_reader);
-        const size_t pwri_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 3);
+        const size_t kekri_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 2);
+        const size_t pwri_len = (kekri_len == 0) ? vscf_asn1_reader_read_context_tag(self->asn1_reader, 3) : 0;
 
         if (recipient_infos_len >= recipient_len) {
             recipient_infos_len -= recipient_len;
@@ -1795,7 +1993,12 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
             return;
         }
 
-        if (pwri_len > 0) {
+        if (kekri_len > 0) {
+            //
+            //  Read: KEKRecipientInfo.
+            //
+            vscf_message_info_der_serializer_deserialize_kek_recipient_info(self, message_info, error);
+        } else if (pwri_len > 0) {
             //
             //  Read: PasswordRecipientInfo.
             //
