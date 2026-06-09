@@ -1149,6 +1149,11 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_serializer_serialize_cipher_alg_info(self, alg_info);
 
+    case vscf_alg_id_AES128_KW:
+    case vscf_alg_id_AES192_KW:
+    case vscf_alg_id_AES256_KW:
+        return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
+
     case vscf_alg_id_PKCS5_PBKDF2:
         return vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(self, alg_info);
 
@@ -1214,6 +1219,11 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_AES256_GCM:
     case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(self, alg_info);
+
+    case vscf_alg_id_AES128_KW:
+    case vscf_alg_id_AES192_KW:
+    case vscf_alg_id_AES256_KW:
+        return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 
     case vscf_alg_id_PKCS5_PBKDF2:
         return vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(self, alg_info);
