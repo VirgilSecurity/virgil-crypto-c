@@ -26,7 +26,7 @@ class FoundationFileCountTests(unittest.TestCase):
 
     def test_php_file_count(self) -> None:
         php = [p for p in self.paths if p.endswith(".php")]
-        self.assertEqual(len(php), 126)
+        self.assertEqual(len(php), 128)
 
     def test_c_extension_files(self) -> None:
         c_files = [p for p in self.paths if p.endswith(".c") or p.endswith(".h")]

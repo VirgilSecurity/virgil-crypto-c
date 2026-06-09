@@ -2688,6 +2688,51 @@ PHP_FUNCTION(vscf_message_info_password_recipient_info_list_php) {
 }
 
 //
+// Wrap method: vscf_message_info_kek_recipient_info_list
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_message_info_kek_recipient_info_list_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_message_info_kek_recipient_info_list_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_message_info_t *message_info = zend_fetch_resource_ex(in_ctx, vscf_message_info_t_php_res_name(), le_vscf_message_info_t());
+
+    //
+    // Call main function
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list =(vscf_kek_recipient_info_list_t *)vscf_message_info_kek_recipient_info_list(message_info);
+
+    //
+    // Write returned result
+    //
+    kek_recipient_info_list = vscf_kek_recipient_info_list_shallow_copy(kek_recipient_info_list);
+    zend_resource *kek_recipient_info_list_res = zend_register_resource(kek_recipient_info_list, le_vscf_kek_recipient_info_list_t());
+    RETVAL_RES(kek_recipient_info_list_res);
+}
+
+//
 // Wrap method: vscf_message_info_has_custom_params
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -43494,6 +43539,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_message_info_data_encryption_alg_info_php, arginfo_vscf_message_info_data_encryption_alg_info_php)
     PHP_FE(vscf_message_info_key_recipient_info_list_php, arginfo_vscf_message_info_key_recipient_info_list_php)
     PHP_FE(vscf_message_info_password_recipient_info_list_php, arginfo_vscf_message_info_password_recipient_info_list_php)
+    PHP_FE(vscf_message_info_kek_recipient_info_list_php, arginfo_vscf_message_info_kek_recipient_info_list_php)
     PHP_FE(vscf_message_info_has_custom_params_php, arginfo_vscf_message_info_has_custom_params_php)
     PHP_FE(vscf_message_info_custom_params_php, arginfo_vscf_message_info_custom_params_php)
     PHP_FE(vscf_message_info_has_cipher_kdf_alg_info_php, arginfo_vscf_message_info_has_cipher_kdf_alg_info_php)

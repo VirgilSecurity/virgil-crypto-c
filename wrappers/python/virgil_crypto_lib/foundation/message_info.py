@@ -37,6 +37,7 @@ from ctypes import *
 from ._c_bridge import VscfMessageInfo
 from ._c_bridge import VscfImplTag
 from .footer_info import FooterInfo
+from .kek_recipient_info_list import KekRecipientInfoList
 from .key_recipient_info_list import KeyRecipientInfoList
 from .message_info_custom_params import MessageInfoCustomParams
 from .password_recipient_info_list import PasswordRecipientInfoList
@@ -70,6 +71,11 @@ that was used for encryption."""
         """Return list with a "password recipient info" elements."""
         result = self._lib_vscf_message_info.vscf_message_info_password_recipient_info_list(self.ctx)
         return PasswordRecipientInfoList.use_c_ctx(result)
+
+    def kek_recipient_info_list(self):
+        """Return list with a "kek recipient info" elements."""
+        result = self._lib_vscf_message_info.vscf_message_info_kek_recipient_info_list(self.ctx)
+        return KekRecipientInfoList.use_c_ctx(result)
 
     def has_custom_params(self):
         """Return true if message info contains at least one custom param."""

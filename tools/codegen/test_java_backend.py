@@ -25,11 +25,11 @@ class FoundationFileCountTests(unittest.TestCase):
         cls.paths = [p for p, _ in cls.files]
 
     def test_total_file_count(self) -> None:
-        self.assertEqual(len(self.files), 140)
+        self.assertEqual(len(self.files), 142)
 
     def test_java_file_count(self) -> None:
         java = [p for p in self.paths if p.endswith(".java")]
-        self.assertEqual(len(java), 138)
+        self.assertEqual(len(java), 140)
 
     def test_jni_c_file(self) -> None:
         c_files = [p for p in self.paths if p.endswith(".c")]

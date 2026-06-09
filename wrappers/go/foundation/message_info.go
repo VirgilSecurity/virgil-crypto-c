@@ -102,6 +102,17 @@ func (obj *MessageInfo) PasswordRecipientInfoList() *PasswordRecipientInfoList {
 }
 
 /*
+* Return list with a "kek recipient info" elements.
+*/
+func (obj *MessageInfo) KekRecipientInfoList() *KekRecipientInfoList {
+    proxyResult := C.vscf_message_info_kek_recipient_info_list(obj.cCtx)
+
+    runtime.KeepAlive(obj)
+
+    return newKekRecipientInfoListCopy(proxyResult)
+}
+
+/*
 * Return true if message info contains at least one custom param.
 */
 func (obj *MessageInfo) HasCustomParams() bool {

@@ -90,6 +90,8 @@ public class FoundationJNI {
 
     public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
 
+    public native KekRecipientInfoList messageInfo_kekRecipientInfoList(long cCtx);
+
     public native boolean messageInfo_hasCustomParams(long cCtx);
 
     public native MessageInfoCustomParams messageInfo_customParams(long cCtx);

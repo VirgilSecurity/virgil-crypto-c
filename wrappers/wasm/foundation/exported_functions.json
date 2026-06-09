@@ -790,6 +790,7 @@
     "_vscf_message_info_data_encryption_alg_info",
     "_vscf_message_info_key_recipient_info_list",
     "_vscf_message_info_password_recipient_info_list",
+    "_vscf_message_info_kek_recipient_info_list",
     "_vscf_message_info_has_custom_params",
     "_vscf_message_info_custom_params",
     "_vscf_message_info_has_cipher_kdf_alg_info",

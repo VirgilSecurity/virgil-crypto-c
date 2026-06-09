@@ -2038,6 +2038,24 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1kekRecipientInfoList (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_t /*9*/* message_info_ctx = *(vscf_message_info_t /*9*/**) &c_ctx;
+    
+    const vscf_kek_recipient_info_list_t */*5*/ proxyResult = vscf_message_info_kek_recipient_info_list(message_info_ctx /*a1*/);
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KekRecipientInfoList");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class KekRecipientInfoList not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KekRecipientInfoList;");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class KekRecipientInfoList has no 'getInstance' method.");
+    }
+    vscf_kek_recipient_info_list_shallow_copy((vscf_kek_recipient_info_list_t */*5*/) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    return ret;
+}
+
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCustomParams (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_message_info_t /*9*/* message_info_ctx = *(vscf_message_info_t /*9*/**) &c_ctx;
