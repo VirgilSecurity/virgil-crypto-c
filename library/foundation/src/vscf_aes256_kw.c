@@ -132,7 +132,7 @@ VSCF_PUBLIC size_t
 vscf_aes256_kw_unwrapped_len(const vscf_aes256_kw_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(data_len >= 8);
+    VSCF_ASSERT(data_len >= 24);
 
     return data_len - 8;
 }

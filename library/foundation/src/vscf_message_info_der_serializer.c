@@ -191,7 +191,7 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_messa
 //  RecipientInfo ::= CHOICE {
 //      ktri KeyTransRecipientInfo,
 //      kari [1] KeyAgreeRecipientInfo, -- not supported
-//      kekri [2] KEKRecipientInfo, -- not supported
+//      kekri [2] KEKRecipientInfo,
 //      pwri [3] PasswordRecipientInfo,
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
@@ -379,7 +379,7 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_messag
 //  RecipientInfo ::= CHOICE {
 //      ktri KeyTransRecipientInfo,
 //      kari [1] KeyAgreeRecipientInfo, -- not supported
-//      kekri [2] KEKRecipientInfo, -- not supported
+//      kekri [2] KEKRecipientInfo,
 //      pwri [3] PasswordRecipientInfo,
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
@@ -1093,7 +1093,7 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
 //  RecipientInfo ::= CHOICE {
 //      ktri KeyTransRecipientInfo,
 //      kari [1] KeyAgreeRecipientInfo, -- not supported
-//      kekri [2] KEKRecipientInfo, -- not supported
+//      kekri [2] KEKRecipientInfo,
 //      pwri [3] PasswordRecipientInfo,
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
@@ -1107,7 +1107,7 @@ vscf_message_info_der_serializer_serialize_recipient_infos(
     //  RecipientInfo ::= CHOICE {
     //      ktri KeyTransRecipientInfo,
     //      kari [1] KeyAgreeRecipientInfo, -- not supported
-    //      kekri [2] KEKRecipientInfo, -- not supported
+    //      kekri [2] KEKRecipientInfo,
     //      pwri [3] PasswordRecipientInfo,
     //      ori [4] OtherRecipientInfo -- not supported
     //  }
@@ -1289,6 +1289,10 @@ vscf_message_info_der_serializer_serialize_enveloped_data(
     int enveloped_data_version = 2;
     const vscf_password_recipient_info_list_t *pwri_list = vscf_message_info_password_recipient_info_list(message_info);
     if ((pwri_list != NULL) && vscf_password_recipient_info_list_has_item(pwri_list)) {
+        enveloped_data_version = 3;
+    }
+    const vscf_kek_recipient_info_list_t *kekri_list = vscf_message_info_kek_recipient_info_list(message_info);
+    if ((kekri_list != NULL) && vscf_kek_recipient_info_list_has_item(kekri_list)) {
         enveloped_data_version = 3;
     }
 
@@ -1898,9 +1902,14 @@ vscf_message_info_der_serializer_deserialize_kek_recipient_info(
         return;
     }
 
-    //  Read: kekid SEQUENCE { keyIdentifier OCTET STRING }.
-    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    //  Read: kekid SEQUENCE { keyIdentifier OCTET STRING, date OPTIONAL, other OPTIONAL }.
+    const size_t kekid_seq_len = vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const size_t left_before_kek_id = vscf_asn1_reader_left_len(self->asn1_reader);
     vsc_data_t kek_id = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+    const size_t kekid_consumed = left_before_kek_id - vscf_asn1_reader_left_len(self->asn1_reader);
+    if (kekid_seq_len > kekid_consumed && !vscf_asn1_reader_has_error(self->asn1_reader)) {
+        vscf_asn1_reader_read_data(self->asn1_reader, kekid_seq_len - kekid_consumed);
+    }
 
     vscf_impl_t *key_encryption_alg_info =
             vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
@@ -2074,6 +2083,10 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
     int expected_version = 2;
     const vscf_password_recipient_info_list_t *pwri_list = vscf_message_info_password_recipient_info_list(message_info);
     if ((pwri_list != NULL) && vscf_password_recipient_info_list_has_item(pwri_list)) {
+        expected_version = 3;
+    }
+    const vscf_kek_recipient_info_list_t *kekri_list2 = vscf_message_info_kek_recipient_info_list(message_info);
+    if ((kekri_list2 != NULL) && vscf_kek_recipient_info_list_has_item(kekri_list2)) {
         expected_version = 3;
     }
 

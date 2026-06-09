@@ -1560,7 +1560,7 @@ test__encrypt_decrypt__with_aes256_kw_kek_recipient__wrong_kek_id__not_found(voi
     vscf_recipient_cipher_release_encryption_cipher(recipient_cipher);
 
     vsc_data_t enc_data = vsc_buffer_data(enc_msg);
-    TEST_ASSERT_NOT_EQUAL(vscf_status_SUCCESS,
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_KEY_RECIPIENT_IS_NOT_FOUND,
             vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, wrong_kek_id, kek, kw_impl, enc_data));
 
     vsc_buffer_destroy(&enc_msg);

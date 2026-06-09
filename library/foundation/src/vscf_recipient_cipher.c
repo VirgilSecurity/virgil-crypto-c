@@ -1079,6 +1079,16 @@ vscf_recipient_cipher_start_decryption_with_kek(vscf_recipient_cipher_t *self, v
     VSCF_ASSERT(vscf_key_wrap_is_implemented(key_wrap));
     VSCF_ASSERT(vsc_data_is_valid(message_info));
 
+    vsc_buffer_destroy(&self->decryption_recipient_id);
+    vsc_buffer_destroy(&self->decryption_kek_id);
+    vsc_buffer_destroy(&self->decryption_kek);
+    vsc_buffer_destroy(&self->message_info_buffer);
+    vscf_impl_destroy(&self->decryption_recipient_key);
+    vscf_impl_destroy(&self->decryption_kek_wrap);
+    vscf_impl_destroy(&self->decryption_cipher);
+    vscf_impl_destroy(&self->decryption_padding);
+    self->decryption_state = vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO;
+
     if (NULL == self->random) {
         vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
         vscf_status_t random_status = vscf_ctr_drbg_setup_defaults(random);
@@ -1088,14 +1098,6 @@ vscf_recipient_cipher_start_decryption_with_kek(vscf_recipient_cipher_t *self, v
         }
         self->random = vscf_ctr_drbg_impl(random);
     }
-
-    vsc_buffer_destroy(&self->decryption_recipient_id);
-    vsc_buffer_destroy(&self->decryption_kek_id);
-    vsc_buffer_destroy(&self->decryption_kek);
-    vsc_buffer_destroy(&self->message_info_buffer);
-    vscf_impl_destroy(&self->decryption_recipient_key);
-    vscf_impl_destroy(&self->decryption_kek_wrap);
-    vscf_impl_destroy(&self->decryption_cipher);
 
     self->decryption_kek_id = vsc_buffer_new_with_data(kek_id);
     self->decryption_kek = vsc_buffer_new_with_data(kek);
@@ -1437,6 +1439,7 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
         const vscf_impl_t *padding_info = vscf_message_info_cipher_padding_alg_info(self->message_info);
         self->decryption_padding = vscf_alg_factory_create_padding_from_info(padding_info, self->random);
         if (NULL == self->decryption_padding) {
+            vscf_impl_destroy(&self->decryption_cipher);
             return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         }
         vscf_padding_configure(self->decryption_padding, self->padding_params);
