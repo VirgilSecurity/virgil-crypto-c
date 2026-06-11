@@ -63,6 +63,12 @@ import VSCFoundation
 
     case aes256Cbc
 
+    case aes128Kw
+
+    case aes192Kw
+
+    case aes256Kw
+
     case hmac
 
     case hkdf

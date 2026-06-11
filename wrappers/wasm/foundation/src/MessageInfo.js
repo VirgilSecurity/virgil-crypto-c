@@ -97,6 +97,16 @@ const initMessageInfo = (Module, modules) => {
             return jsResult;
         }
 
+        kekRecipientInfoList() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_kek_recipient_info_list(this.ctxPtr);
+            
+            const jsResult = modules.KekRecipientInfoList.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
         hasCustomParams() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             

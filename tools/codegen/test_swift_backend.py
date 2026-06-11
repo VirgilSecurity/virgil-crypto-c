@@ -122,8 +122,8 @@ class FoundationFileCountTests(unittest.TestCase):
         cls.files = generate_swift_files(cls.ir, repo_root=str(REPO_ROOT))
 
     def test_foundation_total_file_count(self) -> None:
-        # Foundation has 123 Swift files total (enums + protocols + classes + infrastructure)
-        self.assertEqual(len(self.files), 123)
+        # Foundation has 129 Swift files total (enums + protocols + classes + infrastructure)
+        self.assertEqual(len(self.files), 129)
 
     def test_foundation_enum_count(self) -> None:
         # 5 public non-infrastructure enum files

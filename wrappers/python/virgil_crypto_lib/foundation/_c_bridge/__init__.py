@@ -42,6 +42,7 @@ from ._vscf_oid_id import VscfOidId
 from ._vscf_group_msg_type import VscfGroupMsgType
 from ._vscf_cipher_state import VscfCipherState
 from ._vscf_key_recipient_list import vscf_key_recipient_list_t
+from ._vscf_kek_recipient_list import vscf_kek_recipient_list_t
 from ._vscf_list_key_value_node import vscf_list_key_value_node_t
 from ._vscf_simple_swu import vscf_simple_swu_t
 from ._vscf_message_padding import vscf_message_padding_t
@@ -68,6 +69,10 @@ from ._vscf_password_recipient_info import vscf_password_recipient_info_t
 from ._vscf_password_recipient_info import VscfPasswordRecipientInfo
 from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 from ._vscf_password_recipient_info_list import VscfPasswordRecipientInfoList
+from ._vscf_kek_recipient_info import vscf_kek_recipient_info_t
+from ._vscf_kek_recipient_info import VscfKekRecipientInfo
+from ._vscf_kek_recipient_info_list import vscf_kek_recipient_info_list_t
+from ._vscf_kek_recipient_info_list import VscfKekRecipientInfoList
 from ._vscf_ecies import vscf_ecies_t
 from ._vscf_ecies import VscfEcies
 from ._vscf_recipient_cipher import vscf_recipient_cipher_t
@@ -118,6 +123,10 @@ from ._vscf_aes256_gcm import vscf_aes256_gcm_t
 from ._vscf_aes256_gcm import VscfAes256Gcm
 from ._vscf_aes256_cbc import vscf_aes256_cbc_t
 from ._vscf_aes256_cbc import VscfAes256Cbc
+from ._vscf_aes128_kw import vscf_aes128_kw_t
+from ._vscf_aes128_kw import VscfAes128Kw
+from ._vscf_aes256_kw import vscf_aes256_kw_t
+from ._vscf_aes256_kw import VscfAes256Kw
 from ._vscf_asn1rd import vscf_asn1rd_t
 from ._vscf_asn1rd import VscfAsn1rd
 from ._vscf_asn1wr import vscf_asn1wr_t

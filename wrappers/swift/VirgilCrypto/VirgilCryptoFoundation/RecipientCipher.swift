@@ -103,6 +103,15 @@ import VSCFoundation
         })
     }
 
+    /// Add recipient defined with a KEK identifier and key wrap algorithm.
+    @objc public func addKekRecipient(kekId: Data, kek: Data, keyWrap: KeyWrap) {
+        kekId.withUnsafeBytes({ (kekIdPointer: UnsafeRawBufferPointer) in
+            kek.withUnsafeBytes({ (kekPointer: UnsafeRawBufferPointer) in
+                vscf_recipient_cipher_add_kek_recipient(self.c_ctx, vsc_data(kekIdPointer.bindMemory(to: byte.self).baseAddress, kekId.count), vsc_data(kekPointer.bindMemory(to: byte.self).baseAddress, kek.count), keyWrap.c_ctx)
+            })
+        })
+    }
+
     /// Remove all recipients.
     @objc public func clearRecipients() {
         vscf_recipient_cipher_clear_recipients(self.c_ctx)
@@ -235,6 +244,20 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
+    }
+
+    /// Initiate decryption process with a pre-shared symmetric key (KEK).
+    /// Message Info can be empty if it was embedded to encrypted data.
+    @objc public func startDecryptionWithKek(kekId: Data, kek: Data, keyWrap: KeyWrap, messageInfo: Data) throws {
+        let proxyResult = kekId.withUnsafeBytes({ (kekIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            return kek.withUnsafeBytes({ (kekPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                    return vscf_recipient_cipher_start_decryption_with_kek(self.c_ctx, vsc_data(kekIdPointer.bindMemory(to: byte.self).baseAddress, kekId.count), vsc_data(kekPointer.bindMemory(to: byte.self).baseAddress, kek.count), keyWrap.c_ctx, vsc_data(messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfo.count))
+                })
+            })
+        })
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Initiate decryption process with a recipient private key.

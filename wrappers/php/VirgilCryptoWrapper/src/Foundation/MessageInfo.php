@@ -96,6 +96,16 @@ class MessageInfo
 
     /**
     *
+    * @return KekRecipientInfoList
+    */
+    public function kekRecipientInfoList(): KekRecipientInfoList
+    {
+        $ctx = vscf_message_info_kek_recipient_info_list_php($this->ctx);
+        return new KekRecipientInfoList($ctx);
+    }
+
+    /**
+    *
     * @return bool
     */
     public function hasCustomParams(): bool

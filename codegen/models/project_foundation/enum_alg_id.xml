@@ -13,6 +13,9 @@
     <constant name="secp256r1"/>
     <constant name="aes256 gcm"/>
     <constant name="aes256 cbc"/>
+    <constant name="aes128 kw"/>
+    <constant name="aes192 kw"/>
+    <constant name="aes256 kw"/>
     <constant name="hmac"/>
     <constant name="hkdf"/>
     <constant name="pkcs5 pbkdf2"/>

@@ -1,4 +1,4 @@
-prefix=/Users/runner/work/virgil-crypto-c/virgil-crypto-c/build/thirdparty/mbedtls/mbedtls
+prefix=/tmp/build-test-go/thirdparty/mbedtls/mbedtls
 includedir=${prefix}/include
 libdir=${prefix}/lib
 

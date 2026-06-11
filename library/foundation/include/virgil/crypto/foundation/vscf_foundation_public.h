@@ -53,8 +53,10 @@
 #ifndef VSCF_FOUNDATION_PUBLIC_H_INCLUDED
 #define VSCF_FOUNDATION_PUBLIC_H_INCLUDED
 
+#include "vscf_aes128_kw.h"
 #include "vscf_aes256_cbc.h"
 #include "vscf_aes256_gcm.h"
+#include "vscf_aes256_kw.h"
 #include "vscf_alg.h"
 #include "vscf_alg_factory.h"
 #include "vscf_alg_id.h"
@@ -118,6 +120,8 @@
 #include "vscf_kdf.h"
 #include "vscf_kdf1.h"
 #include "vscf_kdf2.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 #include "vscf_kem.h"
 #include "vscf_key.h"
 #include "vscf_key_alg.h"
@@ -133,6 +137,7 @@
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_key_serializer.h"
 #include "vscf_key_signer.h"
+#include "vscf_key_wrap.h"
 #include "vscf_library.h"
 #include "vscf_mac.h"
 #include "vscf_memory.h"

@@ -57,6 +57,10 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
+        case vscf_impl_tag_AES128_KW:
+            return Aes128Kw(take: c_ctx)
+        case vscf_impl_tag_AES256_KW:
+            return Aes256Kw(take: c_ctx)
         case vscf_impl_tag_HMAC:
             return Hmac(take: c_ctx)
         case vscf_impl_tag_HKDF:
@@ -276,6 +280,27 @@ import VSCFoundation
     @objc public static func wrapCipherAuth(use c_ctx: OpaquePointer) -> CipherAuth {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapCipherAuth(take:shallowCopy)
+    }
+
+    @objc public static func wrapKeyWrap(take c_ctx: OpaquePointer) -> KeyWrap {
+        if (!vscf_key_wrap_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface KeyWrap.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_AES128_KW:
+            return Aes128Kw(take: c_ctx)
+        case vscf_impl_tag_AES256_KW:
+            return Aes256Kw(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    @objc public static func wrapKeyWrap(use c_ctx: OpaquePointer) -> KeyWrap {
+        let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
+        return FoundationImplementation.wrapKeyWrap(take:shallowCopy)
     }
 
     @objc public static func wrapAsn1Reader(take c_ctx: OpaquePointer) -> Asn1Reader {

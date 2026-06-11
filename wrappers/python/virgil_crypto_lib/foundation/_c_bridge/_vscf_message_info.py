@@ -37,6 +37,8 @@ from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from ._vscf_footer_info import vscf_footer_info_t
+from ._vscf_kek_recipient_info import vscf_kek_recipient_info_t
+from ._vscf_kek_recipient_info_list import vscf_kek_recipient_info_list_t
 from ._vscf_key_recipient_info import vscf_key_recipient_info_t
 from ._vscf_key_recipient_info_list import vscf_key_recipient_info_list_t
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
@@ -90,6 +92,13 @@ that was used for encryption."""
         vscf_message_info_password_recipient_info_list.argtypes = [POINTER(vscf_message_info_t)]
         vscf_message_info_password_recipient_info_list.restype = POINTER(vscf_password_recipient_info_list_t)
         return vscf_message_info_password_recipient_info_list(ctx)
+
+    def vscf_message_info_kek_recipient_info_list(self, ctx):
+        """Return list with a "kek recipient info" elements."""
+        vscf_message_info_kek_recipient_info_list = self._lib.vscf_message_info_kek_recipient_info_list
+        vscf_message_info_kek_recipient_info_list.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_kek_recipient_info_list.restype = POINTER(vscf_kek_recipient_info_list_t)
+        return vscf_message_info_kek_recipient_info_list(ctx)
 
     def vscf_message_info_has_custom_params(self, ctx):
         """Return true if message info contains at least one custom param."""

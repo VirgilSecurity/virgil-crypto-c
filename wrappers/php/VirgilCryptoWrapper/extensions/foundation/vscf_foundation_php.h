@@ -77,10 +77,16 @@ VSCF_PHP_PUBLIC const char*
 vscf_impl_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
+vscf_aes128_kw_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
 vscf_aes256_cbc_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_aes256_gcm_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
+vscf_aes256_kw_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_alg_info_der_deserializer_t_php_res_name(void);
@@ -186,6 +192,12 @@ vscf_kdf1_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_kdf2_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
+vscf_kek_recipient_info_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
+vscf_kek_recipient_info_list_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_key_asn1_deserializer_t_php_res_name(void);
@@ -317,10 +329,16 @@ VSCF_PHP_PUBLIC int
 le_vscf_impl_t(void);
 
 VSCF_PHP_PUBLIC int
+le_vscf_aes128_kw_t(void);
+
+VSCF_PHP_PUBLIC int
 le_vscf_aes256_cbc_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_aes256_gcm_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_aes256_kw_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_alg_info_der_deserializer_t(void);
@@ -426,6 +444,12 @@ le_vscf_kdf1_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_kdf2_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_kek_recipient_info_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_kek_recipient_info_list_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_key_asn1_deserializer_t(void);

@@ -1,0 +1,47 @@
+<interface name="key wrap">
+    Provide interface for symmetric key wrapping algorithms (RFC 3394).
+
+    <inherit interface="alg"/>
+
+    <method name="wrapped len" is_const="1">
+        Return buffer length required to hold a wrapped key for the given plain key length.
+
+        <argument name="data len" type="size"/>
+        <return type="size"/>
+    </method>
+
+    <method name="unwrapped len" is_const="1">
+        Return buffer length required to hold an unwrapped key for the given wrapped key length.
+
+        <argument name="data len" type="size"/>
+        <return type="size"/>
+    </method>
+
+    <method name="wrap">
+        Wrap given key data using the Key Encryption Key (KEK).
+
+        <argument name="kek" class="data"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="wrapped len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="unwrap">
+        Unwrap given key data using the Key Encryption Key (KEK).
+
+        <argument name="kek" class="data"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="unwrapped len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</interface>

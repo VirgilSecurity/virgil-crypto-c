@@ -83,6 +83,12 @@ Note, operation has O(N) time complexity."""
         d_recipient_id = Data(recipient_id)
         self._lib_vscf_recipient_cipher.vscf_recipient_cipher_add_key_recipient(self.ctx, d_recipient_id.data, public_key.c_impl)
 
+    def add_kek_recipient(self, kek_id, kek, key_wrap):
+        """Add recipient defined with a KEK identifier and key wrap algorithm."""
+        d_kek_id = Data(kek_id)
+        d_kek = Data(kek)
+        self._lib_vscf_recipient_cipher.vscf_recipient_cipher_add_kek_recipient(self.ctx, d_kek_id.data, d_kek.data, key_wrap.c_impl)
+
     def clear_recipients(self):
         """Remove all recipients."""
         self._lib_vscf_recipient_cipher.vscf_recipient_cipher_clear_recipients(self.ctx)
@@ -159,6 +165,15 @@ algorithm information, etc."""
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_finish_encryption(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
+
+    def start_decryption_with_kek(self, kek_id, kek, key_wrap, message_info):
+        """Initiate decryption process with a pre-shared symmetric key (KEK).
+Message Info can be empty if it was embedded to encrypted data."""
+        d_kek_id = Data(kek_id)
+        d_kek = Data(kek)
+        d_message_info = Data(message_info)
+        status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_start_decryption_with_kek(self.ctx, d_kek_id.data, d_kek.data, key_wrap.c_impl, d_message_info.data)
+        VscfStatus.handle_status(status)
 
     def start_decryption_with_key(self, recipient_id, private_key, message_info):
         """Initiate decryption process with a recipient private key.

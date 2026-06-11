@@ -159,6 +159,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -429,6 +439,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_wrap.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -455,6 +470,16 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_cbc.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes128_kw.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_kw.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -752,6 +777,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_defs.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info_list.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_list_defs.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kek_recipient_info_defs.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info_list.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kek_recipient_info_list_defs.h>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h>"
             "$<$<BOOL:${VSCF_KEY_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_alg_factory.h>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ecies.h>"
@@ -760,6 +789,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_recipient_cipher.h>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_list.h>"
             "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_list_key_value_node.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_custom_params.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_custom_params_defs.h>"
@@ -877,6 +907,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_padding_api.h>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kem.h>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kem_api.h>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_wrap.h>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_wrap_api.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha224_defs.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.h>"
@@ -895,6 +927,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_cbc.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_cbc_defs.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.h>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes128_kw.h>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes128_kw_defs.h>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw_internal.h>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_kw.h>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_kw_defs.h>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw_internal.h>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1rd.h>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1rd_defs.h>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd_internal.h>"
@@ -1078,6 +1116,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_defs.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list_defs.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info_defs.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info_list.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info_list_defs.c>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_factory.c>"
             "$<$<BOOL:${VSCF_KEY_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_alg_factory.c>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies.c>"
@@ -1086,6 +1128,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher.c>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_defs.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_list.c>"
             "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_list_key_value_node.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params_defs.c>"
@@ -1203,6 +1246,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_padding_api.c>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kem.c>"
             "$<$<BOOL:${VSCF_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kem_api.c>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_wrap.c>"
+            "$<$<BOOL:${VSCF_KEY_WRAP}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_wrap_api.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_defs.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.c>"
@@ -1221,6 +1266,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_defs.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.c>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw.c>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw_defs.c>"
+            "$<$<BOOL:${VSCF_AES128_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes128_kw_internal.c>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw.c>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw_defs.c>"
+            "$<$<BOOL:${VSCF_AES256_KW}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_kw_internal.c>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd.c>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd_defs.c>"
             "$<$<BOOL:${VSCF_ASN1RD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1rd_internal.c>"

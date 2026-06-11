@@ -29,7 +29,7 @@ class TestImplementorSourceParsing(unittest.TestCase):
         project = load_named_project_source("foundation", REPO_ROOT)
         mbedtls = project.implementor_named("mbedtls")
         impl_names = [impl.name for impl in mbedtls.implementations]
-        expected = ["sha224", "sha256", "sha384", "sha512", "aes256 gcm", "aes256 cbc", "asn1rd", "asn1wr"]
+        expected = ["sha224", "sha256", "sha384", "sha512", "aes256 gcm", "aes256 cbc", "aes128 kw", "aes256 kw", "asn1rd", "asn1wr"]
         self.assertEqual(impl_names, expected)
 
     def test_mbedtls_attrs(self) -> None:
@@ -89,7 +89,7 @@ class TestImplementorSourceParsing(unittest.TestCase):
     def test_total_53_implementations(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
         total = sum(len(imp.implementations) for imp in project.implementors)
-        self.assertEqual(total, 53)
+        self.assertEqual(total, 56)
 
     def test_ed25519_has_dependencies(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
@@ -106,7 +106,7 @@ class TestIRImplementationParsing(unittest.TestCase):
     def test_ir_has_53_implementations(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
         ir = project_to_ir(project)
-        self.assertEqual(len(ir.implementations), 53)
+        self.assertEqual(len(ir.implementations), 56)
 
     def test_ir_implementation_output_target(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)

@@ -82,6 +82,13 @@ import VSCFoundation
         return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
+    /// Return list with a "kek recipient info" elements.
+    @objc public func kekRecipientInfoList() -> KekRecipientInfoList {
+        let proxyResult = vscf_message_info_kek_recipient_info_list(self.c_ctx)
+
+        return KekRecipientInfoList.init(use: proxyResult!)
+    }
+
     /// Return true if message info contains at least one custom param.
     @objc public func hasCustomParams() -> Bool {
         let proxyResult = vscf_message_info_has_custom_params(self.c_ctx)
