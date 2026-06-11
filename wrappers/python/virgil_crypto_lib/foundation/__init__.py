@@ -54,6 +54,7 @@ from .alg_factory import AlgFactory
 from .key_alg_factory import KeyAlgFactory
 from .ecies import Ecies
 from .recipient_cipher import RecipientCipher
+from .chunk_cipher import ChunkCipher
 from .message_info_custom_params import MessageInfoCustomParams
 from .key_provider import KeyProvider
 from .signer import Signer

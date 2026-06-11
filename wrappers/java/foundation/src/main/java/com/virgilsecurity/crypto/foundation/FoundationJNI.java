@@ -312,6 +312,38 @@ public class FoundationJNI {
 
     public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
 
+    public native long chunkCipher_new();
+
+    public native void chunkCipher_close(long cCtx);
+
+    public native void chunkCipher_setRandom(long cCtx, Random random);
+
+    public native void chunkCipher_setKey(long cCtx, byte[] key);
+
+    public native void chunkCipher_setNonce(long cCtx, byte[] nonce);
+
+    public native void chunkCipher_setChunkSize(long cCtx, int chunkSize);
+
+    public native byte[] chunkCipher_nonce(long cCtx);
+
+    public native int chunkCipher_nonceLen(long cCtx);
+
+    public native int chunkCipher_encryptionOutLen(long cCtx, int dataLen);
+
+    public native void chunkCipher_startEncryption(long cCtx) throws FoundationException;
+
+    public native byte[] chunkCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] chunkCipher_finishEncryption(long cCtx) throws FoundationException;
+
+    public native int chunkCipher_decryptionOutLen(long cCtx, int dataLen);
+
+    public native void chunkCipher_startDecryption(long cCtx) throws FoundationException;
+
+    public native byte[] chunkCipher_processDecryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] chunkCipher_finishDecryption(long cCtx) throws FoundationException;
+
     public native long messageInfoCustomParams_new();
 
     public native void messageInfoCustomParams_close(long cCtx);

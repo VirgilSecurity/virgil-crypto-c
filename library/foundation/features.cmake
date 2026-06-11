@@ -69,6 +69,7 @@ option(VSCF_KEY_ALG_FACTORY "Enable class 'key alg factory'." ON)
 option(VSCF_ECIES "Enable class 'ecies'." ON)
 option(VSCF_ECIES_ENVELOPE "Enable class 'ecies envelope'." ON)
 option(VSCF_RECIPIENT_CIPHER "Enable class 'recipient cipher'." ON)
+option(VSCF_CHUNK_CIPHER "Enable class 'chunk cipher'." ON)
 option(VSCF_KEY_RECIPIENT_LIST "Enable class 'key recipient list'." ON)
 option(VSCF_KEK_RECIPIENT_LIST "Enable class 'kek recipient list'." ON)
 option(VSCF_LIST_KEY_VALUE_NODE "Enable class 'list key value node'." ON)
@@ -217,6 +218,7 @@ mark_as_advanced(
         VSCF_ECIES
         VSCF_ECIES_ENVELOPE
         VSCF_RECIPIENT_CIPHER
+        VSCF_CHUNK_CIPHER
         VSCF_KEY_RECIPIENT_LIST
         VSCF_KEK_RECIPIENT_LIST
         VSCF_LIST_KEY_VALUE_NODE
@@ -806,6 +808,15 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_RANDOM_PADDING)
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_RANDOM_PADDING - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CHUNK_CIPHER AND NOT VSCF_AES256_GCM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CHUNK_CIPHER depends on the feature:")
+    message("     VSCF_AES256_GCM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
