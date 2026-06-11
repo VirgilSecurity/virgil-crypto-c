@@ -103,7 +103,7 @@ test__encrypt_decrypt__partial_chunk__roundtrip(void) {
     TEST_ASSERT_EQUAL(12, nonce.len);
 
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, nonce.bytes, 12);
+    memcpy(nonce_bytes, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, ciphertext));
@@ -116,7 +116,7 @@ test__encrypt_decrypt__partial_chunk__roundtrip(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -155,7 +155,7 @@ test__encrypt_decrypt__exactly_one_chunk__roundtrip(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     vsc_data_t nonce = vscf_chunk_cipher_nonce(enc);
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, nonce.bytes, 12);
+    memcpy(nonce_bytes, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, ciphertext));
@@ -170,7 +170,7 @@ test__encrypt_decrypt__exactly_one_chunk__roundtrip(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -211,7 +211,7 @@ test__encrypt_decrypt__multi_chunk__roundtrip(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     vsc_data_t nonce = vscf_chunk_cipher_nonce(enc);
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, nonce.bytes, 12);
+    memcpy(nonce_bytes, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, ciphertext));
@@ -227,7 +227,7 @@ test__encrypt_decrypt__multi_chunk__roundtrip(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -266,7 +266,7 @@ test__process_encryption__one_byte_at_a_time__roundtrip(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
     for (size_t i = 0; i < plaintext.len; i++) {
@@ -281,7 +281,7 @@ test__process_encryption__one_byte_at_a_time__roundtrip(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -317,7 +317,7 @@ test__decrypt__tampered_ciphertext__auth_fails(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext =
             vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, sizeof(plaintext_bytes)));
@@ -334,7 +334,7 @@ test__decrypt__tampered_ciphertext__auth_fails(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -370,7 +370,7 @@ test__decrypt__wrong_frame_counter__fails(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext =
             vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, sizeof(plaintext_bytes)));
@@ -388,7 +388,7 @@ test__decrypt__wrong_frame_counter__fails(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -462,7 +462,7 @@ test__encrypt_decrypt__default_chunk_size__roundtrip(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, ciphertext));
@@ -474,7 +474,7 @@ test__encrypt_decrypt__default_chunk_size__roundtrip(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
     vsc_buffer_t *recovered =
@@ -510,7 +510,7 @@ test__decrypt__truncated_stream__fails(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext =
             vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, sizeof(plaintext_bytes)));
@@ -530,7 +530,7 @@ test__decrypt__truncated_stream__fails(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
@@ -564,7 +564,7 @@ test__decrypt__tampered_chunk_size__auth_fails(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
     byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
-    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
 
     vsc_buffer_t *ciphertext =
             vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, sizeof(plaintext_bytes)));
@@ -578,7 +578,7 @@ test__decrypt__tampered_chunk_size__auth_fails(void) {
     //
     vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
     vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
-    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
     vscf_chunk_cipher_set_chunk_size(dec, DEC_CHUNK_SIZE);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
