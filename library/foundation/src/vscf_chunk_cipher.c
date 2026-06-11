@@ -54,6 +54,7 @@
 #include "vscf_cipher_state.h"
 
 #include <string.h>
+#include <stdint.h>
 
 // clang-format on
 //  @end
@@ -326,6 +327,7 @@ vscf_chunk_cipher_set_chunk_size(vscf_chunk_cipher_t *self, size_t chunk_size) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(chunk_size > 0);
+    VSCF_ASSERT(self->state == vscf_cipher_state_INITIAL);
 
     self->chunk_size = chunk_size;
 }
@@ -502,6 +504,8 @@ vscf_chunk_cipher_process_decryption(vscf_chunk_cipher_t *self, vsc_data_t data,
 
             const vscf_status_t status = vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), out);
             if (status != vscf_status_SUCCESS) {
+                vsc_buffer_reset(self->pending);
+                self->state = vscf_cipher_state_INITIAL;
                 return status;
             }
             self->chunk_index++;
@@ -549,16 +553,17 @@ vscf_chunk_cipher_encrypt_chunk(
     VSCF_ASSERT_PTR(out);
 
     // Encode chunk_index as 8-byte little-endian counter (written to frame and used as AAD)
+    const uint64_t idx64 = (uint64_t)chunk_index;
     byte counter_bytes[8];
     for (int i = 0; i < 8; i++) {
-        counter_bytes[i] = (byte)((chunk_index >> (8 * i)) & 0xFF);
+        counter_bytes[i] = (byte)((idx64 >> (8 * i)) & 0xFF);
     }
 
     // Derive per-chunk nonce: initial_nonce XOR (0x00000000 || uint64_be(chunk_index))
     byte nonce_i[12];
     memcpy(nonce_i, vsc_buffer_bytes(self->nonce_buffer), vscf_aes256_gcm_NONCE_LEN);
     for (int i = 0; i < 8; i++) {
-        nonce_i[4 + i] ^= (byte)((chunk_index >> (8 * (7 - i))) & 0xFF);
+        nonce_i[4 + i] ^= (byte)((idx64 >> (8 * (7 - i))) & 0xFF);
     }
 
     vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_buffer_data(self->key));
@@ -588,12 +593,12 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
     byte counter_bytes[8];
     memcpy(counter_bytes, frame.bytes, 8);
 
-    size_t frame_index = 0;
+    uint64_t frame_index64 = 0;
     for (int i = 0; i < 8; i++) {
-        frame_index |= ((size_t)counter_bytes[i]) << (8 * i);
+        frame_index64 |= ((uint64_t)counter_bytes[i]) << (8 * i);
     }
 
-    if (frame_index != self->chunk_index) {
+    if (frame_index64 != (uint64_t)self->chunk_index) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
@@ -601,7 +606,7 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
     byte nonce_i[12];
     memcpy(nonce_i, vsc_buffer_bytes(self->nonce_buffer), vscf_aes256_gcm_NONCE_LEN);
     for (int i = 0; i < 8; i++) {
-        nonce_i[4 + i] ^= (byte)((frame_index >> (8 * (7 - i))) & 0xFF);
+        nonce_i[4 + i] ^= (byte)((frame_index64 >> (8 * (7 - i))) & 0xFF);
     }
 
     vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_buffer_data(self->key));
