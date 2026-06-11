@@ -86,13 +86,14 @@ vscf_chunk_cipher_cleanup_ctx(vscf_chunk_cipher_t *self);
 //  Encrypt one plaintext chunk and write frame: counter_le64[8] | ciphertext | tag[16].
 //
 static vscf_status_t
-vscf_chunk_cipher_encrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t plaintext, size_t chunk_index, vsc_buffer_t *out);
+vscf_chunk_cipher_encrypt_chunk(
+        vscf_chunk_cipher_t *self, vsc_data_t plaintext, size_t chunk_index, bool is_last, vsc_buffer_t *out);
 
 //
 //  Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
 //
 static vscf_status_t
-vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc_buffer_t *out);
+vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, bool is_last, vsc_buffer_t *out);
 
 //
 //  Return size of 'vscf_chunk_cipher_t'.
@@ -431,8 +432,8 @@ vscf_chunk_cipher_process_encryption(vscf_chunk_cipher_t *self, vsc_data_t data,
             src += fill;
             src_len -= fill;
 
-            const vscf_status_t status =
-                    vscf_chunk_cipher_encrypt_chunk(self, vsc_buffer_data(self->pending), self->chunk_index, out);
+            const vscf_status_t status = vscf_chunk_cipher_encrypt_chunk(
+                    self, vsc_buffer_data(self->pending), self->chunk_index, false, out);
             if (status != vscf_status_SUCCESS) {
                 return status;
             }
@@ -452,13 +453,11 @@ vscf_chunk_cipher_finish_encryption(vscf_chunk_cipher_t *self, vsc_buffer_t *out
     VSCF_ASSERT(self->state == vscf_cipher_state_ENCRYPTION);
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_chunk_cipher_encryption_out_len(self, 0));
 
-    vscf_status_t status = vscf_status_SUCCESS;
-
-    if (vsc_buffer_len(self->pending) > 0) {
-        status = vscf_chunk_cipher_encrypt_chunk(self, vsc_buffer_data(self->pending), self->chunk_index, out);
-        self->chunk_index++;
-        vsc_buffer_reset(self->pending);
-    }
+    // Always emit a FIN frame; carries remaining plaintext (if any) or is empty for exact-multiple inputs.
+    const vsc_data_t fin_plaintext =
+            vsc_buffer_len(self->pending) > 0 ? vsc_buffer_data(self->pending) : vsc_data_empty();
+    const vscf_status_t status = vscf_chunk_cipher_encrypt_chunk(self, fin_plaintext, self->chunk_index, true, out);
+    vsc_buffer_reset(self->pending);
 
     self->state = vscf_cipher_state_INITIAL;
     return status;
@@ -510,7 +509,8 @@ vscf_chunk_cipher_process_decryption(vscf_chunk_cipher_t *self, vsc_data_t data,
             src += fill;
             src_len -= fill;
 
-            const vscf_status_t status = vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), out);
+            const vscf_status_t status =
+                    vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), false, out);
             if (status != vscf_status_SUCCESS) {
                 vsc_buffer_reset(self->pending);
                 self->state = vscf_cipher_state_INITIAL;
@@ -531,19 +531,17 @@ vscf_chunk_cipher_finish_decryption(vscf_chunk_cipher_t *self, vsc_buffer_t *out
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(self->state == vscf_cipher_state_DECRYPTION);
 
-    vscf_status_t status = vscf_status_SUCCESS;
     const size_t pending_len = vsc_buffer_len(self->pending);
 
-    if (pending_len > 0) {
-        // Minimum valid frame: 8 (counter) + 1 (ciphertext) + 16 (tag) = 25 bytes
-        if (pending_len < 8 + 1 + vscf_aes256_gcm_AUTH_TAG_LEN) {
-            status = vscf_status_ERROR_BAD_ENCRYPTED_DATA;
-        } else {
-            status = vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), out);
-            self->chunk_index++;
-            vsc_buffer_reset(self->pending);
-        }
+    // The FIN frame must always be present: minimum is 8 (counter) + 16 (tag) = 24 bytes.
+    // A missing or too-short FIN indicates a truncated or corrupted stream.
+    if (pending_len < 8 + vscf_aes256_gcm_AUTH_TAG_LEN) {
+        self->state = vscf_cipher_state_INITIAL;
+        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
+
+    const vscf_status_t status = vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), true, out);
+    vsc_buffer_reset(self->pending);
 
     self->state = vscf_cipher_state_INITIAL;
     return status;
@@ -551,7 +549,7 @@ vscf_chunk_cipher_finish_decryption(vscf_chunk_cipher_t *self, vsc_buffer_t *out
 
 static vscf_status_t
 vscf_chunk_cipher_encrypt_chunk(
-        vscf_chunk_cipher_t *self, vsc_data_t plaintext, size_t chunk_index, vsc_buffer_t *out) {
+        vscf_chunk_cipher_t *self, vsc_data_t plaintext, size_t chunk_index, bool is_last, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->aes256_gcm);
@@ -560,11 +558,27 @@ vscf_chunk_cipher_encrypt_chunk(
     VSCF_ASSERT(vsc_data_is_valid(plaintext));
     VSCF_ASSERT_PTR(out);
 
-    // Encode chunk_index as 8-byte little-endian counter (written to frame and used as AAD)
+    // Encode chunk_index as 8-byte little-endian counter (written to frame and used as AAD base)
     const uint64_t idx64 = (uint64_t)chunk_index;
     byte counter_bytes[8];
     for (int i = 0; i < 8; i++) {
         counter_bytes[i] = (byte)((idx64 >> (8 * i)) & 0xFF);
+    }
+
+    // Build variable-length AAD: counter[8] [|| chunk_size[8] if frame 0] [|| FIN_MARKER[8] if last]
+    byte aad[24];
+    size_t aad_len = 8;
+    memcpy(aad, counter_bytes, 8);
+    if (idx64 == 0) {
+        const uint64_t cs64 = (uint64_t)self->chunk_size;
+        for (int i = 0; i < 8; i++) {
+            aad[aad_len + i] = (byte)((cs64 >> (8 * i)) & 0xFF);
+        }
+        aad_len += 8;
+    }
+    if (is_last) {
+        memset(aad + aad_len, 0xFF, 8);
+        aad_len += 8;
     }
 
     // Derive per-chunk nonce: initial_nonce XOR (0x00000000 || uint64_be(chunk_index))
@@ -580,11 +594,11 @@ vscf_chunk_cipher_encrypt_chunk(
 
     // Frame: counter_le64[8] | ciphertext[N] | tag[16]
     vsc_buffer_write_data(out, vsc_data(counter_bytes, 8));
-    return vscf_aes256_gcm_auth_encrypt(self->aes256_gcm, plaintext, vsc_data(counter_bytes, 8), out, NULL);
+    return vscf_aes256_gcm_auth_encrypt(self->aes256_gcm, plaintext, vsc_data(aad, aad_len), out, NULL);
 }
 
 static vscf_status_t
-vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc_buffer_t *out) {
+vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, bool is_last, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->aes256_gcm);
@@ -593,8 +607,8 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
     VSCF_ASSERT(vsc_data_is_valid(frame));
     VSCF_ASSERT_PTR(out);
 
-    // Minimum frame: 8 (counter) + 1 (ciphertext) + 16 (tag) = 25 bytes
-    if (frame.len < 8 + 1 + vscf_aes256_gcm_AUTH_TAG_LEN) {
+    // Minimum frame: 8 (counter) + 16 (tag); FIN frame may have 0 ciphertext bytes
+    if (frame.len < 8 + vscf_aes256_gcm_AUTH_TAG_LEN) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
@@ -609,6 +623,22 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
 
     if (frame_index64 != (uint64_t)self->chunk_index) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+    }
+
+    // Build variable-length AAD matching what encrypt_chunk produced
+    byte aad[24];
+    size_t aad_len = 8;
+    memcpy(aad, counter_bytes, 8);
+    if (frame_index64 == 0) {
+        const uint64_t cs64 = (uint64_t)self->chunk_size;
+        for (int i = 0; i < 8; i++) {
+            aad[aad_len + i] = (byte)((cs64 >> (8 * i)) & 0xFF);
+        }
+        aad_len += 8;
+    }
+    if (is_last) {
+        memset(aad + aad_len, 0xFF, 8);
+        aad_len += 8;
     }
 
     // Derive per-chunk nonce
@@ -627,5 +657,5 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
     vsc_data_t ciphertext = vsc_data(frame.bytes + 8, ciphertext_len);
     vsc_data_t tag = vsc_data(frame.bytes + 8 + ciphertext_len, vscf_aes256_gcm_AUTH_TAG_LEN);
 
-    return vscf_aes256_gcm_auth_decrypt(self->aes256_gcm, ciphertext, vsc_data(counter_bytes, 8), tag, out);
+    return vscf_aes256_gcm_auth_decrypt(self->aes256_gcm, ciphertext, vsc_data(aad, aad_len), tag, out);
 }

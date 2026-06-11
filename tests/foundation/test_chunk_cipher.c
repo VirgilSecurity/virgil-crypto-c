@@ -162,8 +162,8 @@ test__encrypt_decrypt__exactly_one_chunk__roundtrip(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_encryption(enc, ciphertext));
     vscf_chunk_cipher_destroy(&enc);
 
-    // One chunk (16 bytes) produces one frame: 8 (counter) + 16 (ct) + 16 (tag) = 40 bytes
-    TEST_ASSERT_EQUAL(8 + CHUNK_SIZE + 16, vsc_buffer_len(ciphertext));
+    // One 16-byte data frame (40 bytes) + one empty FIN frame (8+0+16 = 24 bytes) = 64 bytes
+    TEST_ASSERT_EQUAL((8 + CHUNK_SIZE + 16) + (8 + 16), vsc_buffer_len(ciphertext));
 
     //
     //  Decrypt
@@ -218,8 +218,7 @@ test__encrypt_decrypt__multi_chunk__roundtrip(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_encryption(enc, ciphertext));
     vscf_chunk_cipher_destroy(&enc);
 
-    // 3 frames: 2 full (16-byte plaintext) + 1 partial (7-byte plaintext)
-    // frame_overhead = 8 + 16 = 24
+    // 2 full data frames + 1 FIN frame carrying the 7-byte tail
     // 2 * (16 + 24) + (7 + 24) = 80 + 31 = 111 bytes
     TEST_ASSERT_EQUAL(2 * (CHUNK_SIZE + 24) + (7 + 24), vsc_buffer_len(ciphertext));
 
@@ -492,6 +491,110 @@ test__encrypt_decrypt__default_chunk_size__roundtrip(void) {
 }
 
 
+// --------------------------------------------------------------------------
+// Test: truncated stream (FIN frame stripped) is rejected
+// --------------------------------------------------------------------------
+void
+test__decrypt__truncated_stream__fails(void) {
+
+    const size_t CHUNK_SIZE = 16;
+    // 2 full chunks — data_len is an exact multiple so finish emits an empty FIN frame
+    byte plaintext_bytes[32];
+    memset(plaintext_bytes, 0x33, sizeof(plaintext_bytes));
+
+    //
+    //  Encrypt
+    //
+    vscf_chunk_cipher_t *enc = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(enc, CHUNK_SIZE);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
+    byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+
+    vsc_buffer_t *ciphertext =
+            vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, sizeof(plaintext_bytes)));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_chunk_cipher_process_encryption(enc, vsc_data(plaintext_bytes, sizeof(plaintext_bytes)), ciphertext));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_encryption(enc, ciphertext));
+    vscf_chunk_cipher_destroy(&enc);
+
+    // Ciphertext: 2 data frames (40 each) + 1 empty FIN frame (24) = 104 bytes
+    TEST_ASSERT_EQUAL(2 * (CHUNK_SIZE + 24) + 24, vsc_buffer_len(ciphertext));
+
+    // Strip the 24-byte FIN frame to simulate a truncated stream
+    const size_t truncated_len = vsc_buffer_len(ciphertext) - 24;
+
+    //
+    //  Decrypt the truncated stream — must fail because FIN frame is absent
+    //
+    vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
+    vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
+    vsc_buffer_t *recovered = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, truncated_len));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_decryption(dec,
+                                                   vsc_data(vsc_buffer_bytes(ciphertext), truncated_len), recovered));
+    TEST_ASSERT_NOT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_decryption(dec, recovered));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&ciphertext);
+    vsc_buffer_destroy(&recovered);
+}
+
+
+// --------------------------------------------------------------------------
+// Test: mismatched chunk_size is detected via frame-0 AAD
+// --------------------------------------------------------------------------
+void
+test__decrypt__tampered_chunk_size__auth_fails(void) {
+
+    const size_t ENC_CHUNK_SIZE = 16;
+    const size_t DEC_CHUNK_SIZE = 32;
+    byte plaintext_bytes[10];
+    memset(plaintext_bytes, 0x44, sizeof(plaintext_bytes));
+
+    //
+    //  Encrypt with chunk_size=16
+    //
+    vscf_chunk_cipher_t *enc = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(enc, ENC_CHUNK_SIZE);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
+    byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, 12);
+
+    vsc_buffer_t *ciphertext =
+            vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, sizeof(plaintext_bytes)));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_chunk_cipher_process_encryption(enc, vsc_data(plaintext_bytes, sizeof(plaintext_bytes)), ciphertext));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_encryption(enc, ciphertext));
+    vscf_chunk_cipher_destroy(&enc);
+
+    //
+    //  Decrypt with tampered chunk_size=32 — must fail: frame 0 AAD includes chunk_size
+    //
+    vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
+    vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, 12));
+    vscf_chunk_cipher_set_chunk_size(dec, DEC_CHUNK_SIZE);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
+    vsc_buffer_t *recovered =
+            vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, vsc_buffer_len(ciphertext)));
+    // FIN frame (34 bytes) < full_frame_size with chunk_size=32 (56), so stays in pending
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_chunk_cipher_process_decryption(dec, vsc_buffer_data(ciphertext), recovered));
+    TEST_ASSERT_NOT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_decryption(dec, recovered));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&ciphertext);
+    vsc_buffer_destroy(&recovered);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -513,6 +616,8 @@ main(void) {
     RUN_TEST(test__encrypt_decrypt__default_chunk_size__roundtrip);
     RUN_TEST(test__decrypt__tampered_ciphertext__auth_fails);
     RUN_TEST(test__decrypt__wrong_frame_counter__fails);
+    RUN_TEST(test__decrypt__truncated_stream__fails);
+    RUN_TEST(test__decrypt__tampered_chunk_size__auth_fails);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -114,8 +114,8 @@ public class ChunkCipherTest {
 			ciphertext = ArrayUtils.addAll(enc.processEncryption(plaintext), enc.finishEncryption());
 		}
 
-		// One 16-byte chunk produces one frame: 8 (counter) + 16 (ciphertext) + 16 (tag) = 40 bytes
-		assertEquals(40, ciphertext.length);
+		// One 16-byte data frame (40 bytes) + one empty FIN frame (8+0+16=24 bytes) = 64 bytes
+		assertEquals(64, ciphertext.length);
 
 		try (ChunkCipher dec = new ChunkCipher()) {
 			dec.setKey(KEY);
@@ -193,6 +193,73 @@ public class ChunkCipherTest {
 
 			byte[] recovered = ArrayUtils.addAll(dec.processDecryption(ciphertext), dec.finishDecryption());
 			assertArrayEquals(plaintext, recovered);
+		}
+	}
+
+	@Test(expected = FoundationException.class)
+	public void decrypt_truncatedStream_authFails() throws FoundationException {
+		// 2 full chunks (32 bytes with chunk_size=16) produce 2 data frames + 1 empty FIN frame.
+		// Stripping the FIN frame must cause decryption to fail.
+		byte[] plaintext = new byte[32];
+		Arrays.fill(plaintext, (byte) 0x33);
+		byte[] nonce;
+		byte[] ciphertext;
+
+		try (FakeRandom fakeRandom = new FakeRandom();
+			 ChunkCipher enc = new ChunkCipher()) {
+			fakeRandom.setupSourceByte((byte) 0xAB);
+			enc.setRandom(fakeRandom);
+			enc.setKey(KEY);
+			enc.setChunkSize(16);
+			enc.startEncryption();
+
+			nonce = enc.nonce();
+			ciphertext = ArrayUtils.addAll(enc.processEncryption(plaintext), enc.finishEncryption());
+		}
+
+		// Strip the 24-byte FIN frame
+		byte[] truncated = Arrays.copyOf(ciphertext, ciphertext.length - 24);
+
+		try (ChunkCipher dec = new ChunkCipher()) {
+			dec.setKey(KEY);
+			dec.setNonce(nonce);
+			dec.setChunkSize(16);
+			dec.startDecryption();
+
+			dec.processDecryption(truncated);
+			dec.finishDecryption(); // must throw
+		}
+	}
+
+	@Test(expected = FoundationException.class)
+	public void decrypt_tamperedChunkSize_authFails() throws FoundationException {
+		// Encrypt with chunk_size=16; attempt to decrypt with chunk_size=32.
+		// Frame 0 AAD includes chunk_size, so the mismatch must fail GCM authentication.
+		byte[] plaintext = new byte[10];
+		Arrays.fill(plaintext, (byte) 0x44);
+		byte[] nonce;
+		byte[] ciphertext;
+
+		try (FakeRandom fakeRandom = new FakeRandom();
+			 ChunkCipher enc = new ChunkCipher()) {
+			fakeRandom.setupSourceByte((byte) 0xAB);
+			enc.setRandom(fakeRandom);
+			enc.setKey(KEY);
+			enc.setChunkSize(16);
+			enc.startEncryption();
+
+			nonce = enc.nonce();
+			ciphertext = ArrayUtils.addAll(enc.processEncryption(plaintext), enc.finishEncryption());
+		}
+
+		try (ChunkCipher dec = new ChunkCipher()) {
+			dec.setKey(KEY);
+			dec.setNonce(nonce);
+			dec.setChunkSize(32); // tampered: different from encryption chunk_size
+			dec.startDecryption();
+
+			dec.processDecryption(ciphertext);
+			dec.finishDecryption(); // must throw
 		}
 	}
 
