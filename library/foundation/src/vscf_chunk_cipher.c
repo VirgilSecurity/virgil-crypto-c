@@ -320,6 +320,7 @@ vscf_chunk_cipher_set_nonce(vscf_chunk_cipher_t *self, vsc_data_t nonce) {
 
     vsc_buffer_destroy(&self->nonce_buffer);
     self->nonce_buffer = vsc_buffer_new_with_data(nonce);
+    vsc_buffer_make_secure(self->nonce_buffer);
 }
 
 VSCF_PUBLIC void
@@ -355,9 +356,12 @@ vscf_chunk_cipher_encryption_out_len(const vscf_chunk_cipher_t *self, size_t dat
     VSCF_ASSERT_PTR(self);
 
     const size_t chunk_size = self->chunk_size > 0 ? self->chunk_size : VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
-    const size_t frame_overhead = 8 + vscf_aes256_gcm_AUTH_TAG_LEN;
-    const size_t num_frames = (data_len / chunk_size) + 2;
-    return num_frames * (chunk_size + frame_overhead);
+    // frame_alloc_size includes the BLOCK_LEN headroom required by vscf_aes256_gcm_encrypted_len's ASSERT
+    const size_t frame_alloc_size = chunk_size + 8 + vscf_aes256_gcm_BLOCK_LEN + vscf_aes256_gcm_AUTH_TAG_LEN;
+    // +1 covers the trailing partial chunk emitted by finish_encryption
+    const size_t num_frames = (data_len / chunk_size) + 1;
+    VSCF_ASSERT(num_frames <= SIZE_MAX / frame_alloc_size);
+    return num_frames * frame_alloc_size;
 }
 
 VSCF_PUBLIC size_t
@@ -367,8 +371,11 @@ vscf_chunk_cipher_decryption_out_len(const vscf_chunk_cipher_t *self, size_t dat
 
     const size_t chunk_size = self->chunk_size > 0 ? self->chunk_size : VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
     const size_t full_frame_size = chunk_size + 8 + vscf_aes256_gcm_AUTH_TAG_LEN;
-    const size_t num_frames = (data_len / full_frame_size) + 2;
-    return num_frames * (chunk_size + vscf_aes256_gcm_BLOCK_LEN);
+    // +1 for any pending partial frame carried across calls
+    const size_t num_frames = (data_len / full_frame_size) + 1;
+    const size_t plaintext_per_frame = chunk_size + vscf_aes256_gcm_BLOCK_LEN;
+    VSCF_ASSERT(num_frames <= SIZE_MAX / plaintext_per_frame);
+    return num_frames * plaintext_per_frame;
 }
 
 VSCF_PUBLIC vscf_status_t
@@ -384,6 +391,7 @@ vscf_chunk_cipher_start_encryption(vscf_chunk_cipher_t *self) {
 
     vsc_buffer_destroy(&self->nonce_buffer);
     self->nonce_buffer = vsc_buffer_new_with_capacity(vscf_aes256_gcm_NONCE_LEN);
+    vsc_buffer_make_secure(self->nonce_buffer);
 
     vscf_status_t status = vscf_random(self->random, vscf_aes256_gcm_NONCE_LEN, self->nonce_buffer);
     if (status != vscf_status_SUCCESS) {
@@ -568,6 +576,7 @@ vscf_chunk_cipher_encrypt_chunk(
 
     vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_buffer_data(self->key));
     vscf_aes256_gcm_set_nonce(self->aes256_gcm, vsc_data(nonce_i, vscf_aes256_gcm_NONCE_LEN));
+    vscf_erase(nonce_i, sizeof(nonce_i));
 
     // Frame: counter_le64[8] | ciphertext[N] | tag[16]
     vsc_buffer_write_data(out, vsc_data(counter_bytes, 8));
@@ -611,6 +620,7 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
 
     vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_buffer_data(self->key));
     vscf_aes256_gcm_set_nonce(self->aes256_gcm, vsc_data(nonce_i, vscf_aes256_gcm_NONCE_LEN));
+    vscf_erase(nonce_i, sizeof(nonce_i));
 
     // Frame: counter[8] | ciphertext[N] | tag[16]
     const size_t ciphertext_len = frame.len - 8 - vscf_aes256_gcm_AUTH_TAG_LEN;
