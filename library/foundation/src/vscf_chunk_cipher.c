@@ -568,7 +568,7 @@ vscf_chunk_cipher_encrypt_chunk(
     }
 
     // Derive per-chunk nonce: initial_nonce XOR (0x00000000 || uint64_be(chunk_index))
-    byte nonce_i[12];
+    byte nonce_i[vscf_aes256_gcm_NONCE_LEN];
     memcpy(nonce_i, vsc_buffer_bytes(self->nonce_buffer), vscf_aes256_gcm_NONCE_LEN);
     for (int i = 0; i < 8; i++) {
         nonce_i[4 + i] ^= (byte)((idx64 >> (8 * (7 - i))) & 0xFF);
@@ -612,7 +612,7 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, vsc
     }
 
     // Derive per-chunk nonce
-    byte nonce_i[12];
+    byte nonce_i[vscf_aes256_gcm_NONCE_LEN];
     memcpy(nonce_i, vsc_buffer_bytes(self->nonce_buffer), vscf_aes256_gcm_NONCE_LEN);
     for (int i = 0; i < 8; i++) {
         nonce_i[4 + i] ^= (byte)((frame_index64 >> (8 * (7 - i))) & 0xFF);
