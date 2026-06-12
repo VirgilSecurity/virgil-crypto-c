@@ -268,6 +268,10 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce.");
             }
 
+            if (statusCode == -311) {
+                throw new FoundationError("Content encryption key can not be decrypted with a given key encryption key (KEK).");
+            }
+
             if (statusCode == -401) {
                 throw new FoundationError("Brainkey password length is out of range.");
             }

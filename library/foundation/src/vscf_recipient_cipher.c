@@ -1532,7 +1532,9 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher
 
         if (status != vscf_status_SUCCESS) {
             vsc_buffer_destroy(&decryption_key);
-            return vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG;
+            //  No private key is involved in a KEK recipient; the pre-shared KEK is wrong
+            //  (or the wrapped key failed its integrity check).
+            return vscf_status_ERROR_KEY_RECIPIENT_KEK_IS_WRONG;
         }
 
         status = vscf_recipient_cipher_configure_decryption_cipher(self, vsc_buffer_data(decryption_key));

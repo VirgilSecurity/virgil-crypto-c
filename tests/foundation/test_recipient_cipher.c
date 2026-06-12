@@ -1666,7 +1666,7 @@ test__decrypt__with_aes256_kw_kek_recipient__wrong_kek__auth_fails(void) {
     vscf_impl_t *kw_impl = vscf_aes256_kw_impl(kw);
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
 
-    TEST_ASSERT_EQUAL(vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG,
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_KEY_RECIPIENT_KEK_IS_WRONG,
             vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, kek_id,
                     vsc_data(wrong_kek_bytes, sizeof(wrong_kek_bytes)), kw_impl, vsc_buffer_data(enc_msg)));
 

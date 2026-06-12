@@ -304,6 +304,9 @@ vscf_handle_throw_exception(vscf_status_t status) {
     case vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED:
         zend_throw_exception_ex(vscf_exception_ce, -310, "Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce.");
         break;
+    case vscf_status_ERROR_KEY_RECIPIENT_KEK_IS_WRONG:
+        zend_throw_exception_ex(vscf_exception_ce, -311, "Content encryption key can not be decrypted with a given key encryption key (KEK).");
+        break;
     case vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
         zend_throw_exception_ex(vscf_exception_ce, -401, "Brainkey password length is out of range.");
         break;

@@ -209,6 +209,10 @@ import VSCFoundation
     /// so no more chunks can be processed under the same key and nonce.
     case errorChunkCounterLimitReached = -310
 
+    /// Content encryption key can not be decrypted with a given
+    /// key encryption key (KEK).
+    case errorKeyRecipientKekIsWrong = -311
+
     /// Brainkey password length is out of range.
     case errorInvalidBrainkeyPasswordLen = -401
 

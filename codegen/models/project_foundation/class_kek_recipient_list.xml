@@ -67,6 +67,6 @@
     <method name="prev" is_const="1">
         Return previous list node if exists, or NULL otherwise.
 
-        <return class="self" saccess="readonly"/>
+        <return class="self" access="readonly"/>
     </method>
 </class>
