@@ -161,6 +161,9 @@ class Status(object):
     # Chunk cipher frame counter limit is reached,
     # so no more chunks can be processed under the same key and nonce.
     ERROR_CHUNK_COUNTER_LIMIT_REACHED = -310
+    # Content encryption key can not be decrypted with a given
+    # key encryption key (KEK).
+    ERROR_KEY_RECIPIENT_KEK_IS_WRONG = -311
     # Brainkey password length is out of range.
     ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401
     # Brainkey number length should be 32 byte.
@@ -259,6 +262,7 @@ class Status(object):
         -308: "Signature format is corrupted.",
         -309: "Message Info footer is corrupted.",
         -310: "Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce.",
+        -311: "Content encryption key can not be decrypted with a given key encryption key (KEK).",
         -401: "Brainkey password length is out of range.",
         -402: "Brainkey number length should be 32 byte.",
         -403: "Brainkey point length should be 65 bytes.",

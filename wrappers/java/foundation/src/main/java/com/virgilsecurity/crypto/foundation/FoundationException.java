@@ -150,6 +150,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_CHUNK_COUNTER_LIMIT_REACHED = -310;
 
+    public static final int ERROR_KEY_RECIPIENT_KEK_IS_WRONG = -311;
+
     public static final int ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401;
 
     public static final int ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402;
@@ -315,6 +317,8 @@ public class FoundationException extends RuntimeException {
             return "Message Info footer is corrupted.";
         case ERROR_CHUNK_COUNTER_LIMIT_REACHED:
             return "Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce.";
+        case ERROR_KEY_RECIPIENT_KEK_IS_WRONG:
+            return "Content encryption key can not be decrypted with a given key encryption key (KEK).";
         case ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
             return "Brainkey password length is out of range.";
         case ERROR_INVALID_BRAINKEY_FACTOR_LEN:

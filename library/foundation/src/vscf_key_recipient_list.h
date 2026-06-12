@@ -183,7 +183,7 @@ vscf_key_recipient_list_has_prev(const vscf_key_recipient_list_t *self);
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_key_recipient_list_t *
+VSCF_PUBLIC const vscf_key_recipient_list_t *
 vscf_key_recipient_list_prev(const vscf_key_recipient_list_t *self);
 
 // --------------------------------------------------------------------------

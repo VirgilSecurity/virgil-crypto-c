@@ -1504,7 +1504,26 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher
             continue;
         }
 
+        //  The message names the key encryption algorithm; the caller supplies the key wrap
+        //  implementation. Reject a mismatch so an attacker can not route a wrapped key into a
+        //  different algorithm, and so an honest caller gets a clear error instead of a doomed
+        //  unwrap (or an aborted key-length assert) on an algorithm the wrap object can not handle.
+        const vscf_alg_id_t message_alg_id =
+                vscf_alg_info_alg_id(vscf_kek_recipient_info_key_encryption_algorithm(info));
+        if (message_alg_id != vscf_alg_alg_id(self->decryption_kek_wrap)) {
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
         vsc_data_t encrypted_key = vscf_kek_recipient_info_encrypted_key(info);
+
+        //  encrypted_key comes from untrusted message info. AES Key Wrap (RFC 3394) requires the
+        //  wrapped key to be at least 24 bytes and a multiple of 8. Reject malformed lengths here
+        //  so the key wrap primitive's length preconditions (programmatic asserts) are never
+        //  reached with attacker-controlled input.
+        if (encrypted_key.len < 24 || (encrypted_key.len % 8) != 0) {
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
         const size_t unwrapped_len = vscf_key_wrap_unwrapped_len(self->decryption_kek_wrap, encrypted_key.len);
         vsc_buffer_t *decryption_key = vsc_buffer_new_with_capacity(unwrapped_len);
         vsc_buffer_make_secure(decryption_key);
@@ -1513,7 +1532,9 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher
 
         if (status != vscf_status_SUCCESS) {
             vsc_buffer_destroy(&decryption_key);
-            return vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG;
+            //  No private key is involved in a KEK recipient; the pre-shared KEK is wrong
+            //  (or the wrapped key failed its integrity check).
+            return vscf_status_ERROR_KEY_RECIPIENT_KEK_IS_WRONG;
         }
 
         status = vscf_recipient_cipher_configure_decryption_cipher(self, vsc_buffer_data(decryption_key));

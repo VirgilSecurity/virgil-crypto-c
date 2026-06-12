@@ -14,6 +14,7 @@
     <constant name="aes256 gcm"/>
     <constant name="aes256 cbc"/>
     <constant name="aes128 kw"/>
+    <!-- Reserved: OID/alg-id recognized on parse, but no AES-192-KW implementation class ships yet. -->
     <constant name="aes192 kw"/>
     <constant name="aes256 kw"/>
     <constant name="hmac"/>

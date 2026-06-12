@@ -977,10 +977,12 @@ vscf_message_info_der_serializer_serialized_kek_recipient_info_len(
             vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, key_encryption_alg_info);
     const size_t encrypted_key_len = vscf_kek_recipient_info_encrypted_key(kek_recipient_info).len;
 
-    const size_t len = 1 + 2 +                        //  KEKRecipientInfo ::= SEQUENCE {
+    //  Budget 4 length octets for every variable-length field so the estimate stays >= the
+    //  actual size even when kek_id (and thus the kekid SEQUENCE) needs long-form DER lengths.
+    const size_t len = 1 + 4 +                        //  KEKRecipientInfo ::= SEQUENCE {
                        1 + 1 + 1 +                    //      version CMSVersion, -- always set to 4
-                       1 + 1 + (1 + 1 + kek_id_len) + //      kekid KEKIdentifier,
-                       1 + 1 + key_enc_alg_len +      //      keyEncryptionAlgorithm,
+                       1 + 4 + (1 + 4 + kek_id_len) + //      kekid KEKIdentifier { keyIdentifier },
+                       1 + 4 + key_enc_alg_len +      //      keyEncryptionAlgorithm,
                        1 + 4 + encrypted_key_len;     //      encryptedKey EncryptedKey }
 
     return len;
@@ -1284,15 +1286,12 @@ vscf_message_info_der_serializer_serialize_enveloped_data(
     VSCF_ASSERT_PTR(message_info);
 
     //
-    //  Define version.
+    //  Define version (RFC 5652 6.1): version is 3 only when a pwri (or ori) is present.
+    //  A kekri keeps the EnvelopedData version at 2 (its own RecipientInfo version is 4).
     //
     int enveloped_data_version = 2;
     const vscf_password_recipient_info_list_t *pwri_list = vscf_message_info_password_recipient_info_list(message_info);
     if ((pwri_list != NULL) && vscf_password_recipient_info_list_has_item(pwri_list)) {
-        enveloped_data_version = 3;
-    }
-    const vscf_kek_recipient_info_list_t *kekri_list = vscf_message_info_kek_recipient_info_list(message_info);
-    if ((kekri_list != NULL) && vscf_kek_recipient_info_list_has_item(kekri_list)) {
         enveloped_data_version = 3;
     }
 
@@ -1924,6 +1923,15 @@ vscf_message_info_der_serializer_deserialize_kek_recipient_info(
         return;
     }
 
+    //  keyIdentifier and encryptedKey come from untrusted message info. An empty OCTET STRING is
+    //  valid ASN.1 but violates the kek_recipient_info constructor's precondition (a programmatic
+    //  assert). Reject it here as malformed message data instead of letting it reach the assert.
+    if (kek_id.len == 0 || encrypted_key.len == 0) {
+        vscf_impl_destroy(&key_encryption_alg_info);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return;
+    }
+
     vscf_kek_recipient_info_t *kek_recipient_info =
             vscf_kek_recipient_info_new_with_members(kek_id, &key_encryption_alg_info, encrypted_key);
 
@@ -2078,19 +2086,15 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
     }
 
     //
-    //  Precise version check.
+    //  Precise version check (RFC 5652 6.1). A pwri (or ori) mandates version 3.
+    //  Otherwise version 2 is expected; version 3 is also tolerated for kekri messages
+    //  produced by earlier encoders that incorrectly bumped the version.
     //
-    int expected_version = 2;
     const vscf_password_recipient_info_list_t *pwri_list = vscf_message_info_password_recipient_info_list(message_info);
-    if ((pwri_list != NULL) && vscf_password_recipient_info_list_has_item(pwri_list)) {
-        expected_version = 3;
-    }
-    const vscf_kek_recipient_info_list_t *kekri_list2 = vscf_message_info_kek_recipient_info_list(message_info);
-    if ((kekri_list2 != NULL) && vscf_kek_recipient_info_list_has_item(kekri_list2)) {
-        expected_version = 3;
-    }
+    const bool pwri_present = (pwri_list != NULL) && vscf_password_recipient_info_list_has_item(pwri_list);
 
-    if (version != expected_version) {
+    const bool version_ok = pwri_present ? (version == 3) : (version == 2 || version == 3);
+    if (!version_ok) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
