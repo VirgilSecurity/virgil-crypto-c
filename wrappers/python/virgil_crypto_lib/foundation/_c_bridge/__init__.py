@@ -77,6 +77,8 @@ from ._vscf_ecies import vscf_ecies_t
 from ._vscf_ecies import VscfEcies
 from ._vscf_recipient_cipher import vscf_recipient_cipher_t
 from ._vscf_recipient_cipher import VscfRecipientCipher
+from ._vscf_chunk_cipher import vscf_chunk_cipher_t
+from ._vscf_chunk_cipher import VscfChunkCipher
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from ._vscf_message_info_custom_params import VscfMessageInfoCustomParams
 from ._vscf_key_provider import vscf_key_provider_t

@@ -106,6 +106,7 @@
     <class name="ecies"/>
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>
+    <class name="chunk cipher"/>
     <class name="key recipient list"/>
     <class name="kek recipient list"/>
     <class name="list key value node"/>
