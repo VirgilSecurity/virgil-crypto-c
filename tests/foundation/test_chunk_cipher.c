@@ -45,8 +45,12 @@
 #include "vscf_memory.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_chunk_cipher.h"
+#include "vscf_chunk_cipher_defs.h"
 #include "vscf_fake_random.h"
 #include "vscf_status.h"
+
+// Must match VSCF_CHUNK_CIPHER_MAX_CHUNK_INDEX in vscf_chunk_cipher.c
+static const uint64_t k_max_chunk_index = UINT64_C(1) << 48;
 
 // 32-byte test key for all tests
 static const byte k_key[32] = {0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77,
@@ -595,6 +599,89 @@ test__decrypt__tampered_chunk_size__auth_fails(void) {
 }
 
 
+// --------------------------------------------------------------------------
+// Regression: chunk_index must be a fixed 64-bit counter on every platform.
+// A size_t counter wraps after 2^32 frames on 32-bit targets (wasm32, ARM32),
+// reusing frame 0's AES-GCM nonce under the same key.
+// --------------------------------------------------------------------------
+void
+test__chunk_index__type__is_64_bit(void) {
+
+    vscf_chunk_cipher_t *cipher = vscf_chunk_cipher_new();
+    TEST_ASSERT_EQUAL(8, sizeof(cipher->chunk_index));
+    vscf_chunk_cipher_destroy(&cipher);
+}
+
+
+// --------------------------------------------------------------------------
+// Regression: the frame counter is capped so a per-frame nonce can never
+// repeat — encryption fails closed once the cap is reached.
+// --------------------------------------------------------------------------
+void
+test__encrypt__chunk_counter_at_limit__fails_with_limit_error(void) {
+
+    const size_t CHUNK_SIZE = 16;
+    byte plaintext_bytes[16];
+    memset(plaintext_bytes, 0x55, sizeof(plaintext_bytes));
+    vsc_data_t plaintext = vsc_data(plaintext_bytes, sizeof(plaintext_bytes));
+
+    vscf_chunk_cipher_t *enc = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(enc, CHUNK_SIZE);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
+
+    // Simulate a stream that already produced all-but-one allowed frames.
+    enc->chunk_index = k_max_chunk_index - 1;
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(3 * vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
+
+    // The last allowed frame index still encrypts.
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, out));
+
+    // Counter reached the cap: the next frame is refused...
+    TEST_ASSERT_EQUAL(
+            vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED, vscf_chunk_cipher_process_encryption(enc, plaintext, out));
+
+    // ...and so is the FIN frame.
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED, vscf_chunk_cipher_finish_encryption(enc, out));
+
+    vscf_chunk_cipher_destroy(&enc);
+    vsc_buffer_destroy(&out);
+}
+
+
+// --------------------------------------------------------------------------
+// Regression: decryption refuses a frame whose counter is at the cap,
+// even when it matches the expected sequence.
+// --------------------------------------------------------------------------
+void
+test__decrypt__frame_counter_at_limit__fails_with_limit_error(void) {
+
+    const size_t CHUNK_SIZE = 16;
+    byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
+    memset(nonce_bytes, 0xAB, sizeof(nonce_bytes));
+
+    vscf_chunk_cipher_t *dec = vscf_chunk_cipher_new();
+    vscf_chunk_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
+    vscf_chunk_cipher_set_nonce(dec, vsc_data(nonce_bytes, vscf_aes256_gcm_NONCE_LEN));
+    vscf_chunk_cipher_set_chunk_size(dec, CHUNK_SIZE);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_decryption(dec));
+
+    dec->chunk_index = k_max_chunk_index;
+
+    // Full frame: counter_le64 == k_max_chunk_index, ciphertext and tag are irrelevant —
+    // the counter cap must be enforced before tag verification is even attempted.
+    byte frame[16 + 8 + 16] = {0};
+    frame[6] = 0x01; // little-endian encoding of 2^48
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, sizeof(frame)));
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED,
+            vscf_chunk_cipher_process_decryption(dec, vsc_data(frame, sizeof(frame)), out));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&out);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -618,6 +705,9 @@ main(void) {
     RUN_TEST(test__decrypt__wrong_frame_counter__fails);
     RUN_TEST(test__decrypt__truncated_stream__fails);
     RUN_TEST(test__decrypt__tampered_chunk_size__auth_fails);
+    RUN_TEST(test__chunk_index__type__is_64_bit);
+    RUN_TEST(test__encrypt__chunk_counter_at_limit__fails_with_limit_error);
+    RUN_TEST(test__decrypt__frame_counter_at_limit__fails_with_limit_error);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

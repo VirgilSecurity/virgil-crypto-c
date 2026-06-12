@@ -205,6 +205,10 @@ import VSCFoundation
     /// Message Info footer is corrupted.
     case errorBadMessageInfoFooter = -309
 
+    /// Chunk cipher frame counter limit is reached,
+    /// so no more chunks can be processed under the same key and nonce.
+    case errorChunkCounterLimitReached = -310
+
     /// Brainkey password length is out of range.
     case errorInvalidBrainkeyPasswordLen = -401
 

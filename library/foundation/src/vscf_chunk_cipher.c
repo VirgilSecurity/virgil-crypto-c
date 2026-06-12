@@ -86,8 +86,7 @@ vscf_chunk_cipher_cleanup_ctx(vscf_chunk_cipher_t *self);
 //  Encrypt one plaintext chunk and write frame: counter_le64[8] | ciphertext | tag[16].
 //
 static vscf_status_t
-vscf_chunk_cipher_encrypt_chunk(
-        vscf_chunk_cipher_t *self, vsc_data_t plaintext, size_t chunk_index, bool is_last, vsc_buffer_t *out);
+vscf_chunk_cipher_encrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t plaintext, uint64_t chunk_index, bool is_last, vsc_buffer_t *out);
 
 //
 //  Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
@@ -279,6 +278,13 @@ vscf_chunk_cipher_release_random(vscf_chunk_cipher_t *self) {
 //  @end
 
 #define VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE 65536
+
+//
+//  Hard cap on the frame counter: nonce_i is derived from the counter, so the
+//  counter must never repeat under the same key and initial nonce.
+//  2^48 frames matches STREAM-style constructions (Tink, libsodium secretstream).
+//
+#define VSCF_CHUNK_CIPHER_MAX_CHUNK_INDEX (UINT64_C(1) << 48)
 
 static void
 vscf_chunk_cipher_init_ctx(vscf_chunk_cipher_t *self) {
@@ -549,7 +555,7 @@ vscf_chunk_cipher_finish_decryption(vscf_chunk_cipher_t *self, vsc_buffer_t *out
 
 static vscf_status_t
 vscf_chunk_cipher_encrypt_chunk(
-        vscf_chunk_cipher_t *self, vsc_data_t plaintext, size_t chunk_index, bool is_last, vsc_buffer_t *out) {
+        vscf_chunk_cipher_t *self, vsc_data_t plaintext, uint64_t chunk_index, bool is_last, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->aes256_gcm);
@@ -558,8 +564,13 @@ vscf_chunk_cipher_encrypt_chunk(
     VSCF_ASSERT(vsc_data_is_valid(plaintext));
     VSCF_ASSERT_PTR(out);
 
+    // A repeated counter would reuse an AES-GCM nonce under the same key.
+    if (chunk_index >= VSCF_CHUNK_CIPHER_MAX_CHUNK_INDEX) {
+        return vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED;
+    }
+
     // Encode chunk_index as 8-byte little-endian counter (written to frame and used as AAD base)
-    const uint64_t idx64 = (uint64_t)chunk_index;
+    const uint64_t idx64 = chunk_index;
     byte counter_bytes[8];
     for (int i = 0; i < 8; i++) {
         counter_bytes[i] = (byte)((idx64 >> (8 * i)) & 0xFF);
@@ -621,8 +632,13 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, boo
         frame_index64 |= ((uint64_t)counter_bytes[i]) << (8 * i);
     }
 
-    if (frame_index64 != (uint64_t)self->chunk_index) {
+    if (frame_index64 != self->chunk_index) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+    }
+
+    // A conforming encryptor never produces a frame at or above the counter cap.
+    if (frame_index64 >= VSCF_CHUNK_CIPHER_MAX_CHUNK_INDEX) {
+        return vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED;
     }
 
     // Build variable-length AAD matching what encrypt_chunk produced

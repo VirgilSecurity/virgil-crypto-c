@@ -226,6 +226,11 @@
         Message Info footer is corrupted.
     </constant>
 
+    <constant name="error chunk counter limit reached" value="-310">
+        Chunk cipher frame counter limit is reached,
+        so no more chunks can be processed under the same key and nonce.
+    </constant>
+
     <constant name="error invalid brainkey password len" value="-401">
         Brainkey password length is out of range.
     </constant>

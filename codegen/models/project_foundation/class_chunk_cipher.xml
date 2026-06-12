@@ -19,7 +19,7 @@
     <property name="key" class="buffer"/>
     <property name="nonce buffer" class="buffer"/>
     <property name="chunk size" type="size"/>
-    <property name="chunk index" type="size"/>
+    <property name="chunk index" type="unsigned" size="8"/>
     <property name="pending" class="buffer"/>
     <property name="state" enum="cipher state"/>
 
@@ -137,7 +137,8 @@
         Encrypt one plaintext chunk and write frame: counter_le64[8] | ciphertext | tag[16].
 
         <argument name="plaintext" class="data"/>
-        <argument name="chunk index" type="size"/>
+        <argument name="chunk index" type="unsigned" size="8"/>
+        <argument name="is last" type="boolean"/>
         <argument name="out" class="buffer" access="readwrite"/>
 
         <return enum="status"/>
@@ -147,6 +148,7 @@
         Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
 
         <argument name="frame" class="data"/>
+        <argument name="is last" type="boolean"/>
         <argument name="out" class="buffer" access="readwrite"/>
 
         <return enum="status"/>

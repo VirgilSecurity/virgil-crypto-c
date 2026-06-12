@@ -158,6 +158,9 @@ class VscfStatus(object):
     ERROR_BAD_SIGNATURE = -308
     # Message Info footer is corrupted.
     ERROR_BAD_MESSAGE_INFO_FOOTER = -309
+    # Chunk cipher frame counter limit is reached,
+    # so no more chunks can be processed under the same key and nonce.
+    ERROR_CHUNK_COUNTER_LIMIT_REACHED = -310
     # Brainkey password length is out of range.
     ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401
     # Brainkey number length should be 32 byte.
@@ -255,6 +258,7 @@ class VscfStatus(object):
         -307: "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.",
         -308: "Signature format is corrupted.",
         -309: "Message Info footer is corrupted.",
+        -310: "Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce.",
         -401: "Brainkey password length is out of range.",
         -402: "Brainkey number length should be 32 byte.",
         -403: "Brainkey point length should be 65 bytes.",

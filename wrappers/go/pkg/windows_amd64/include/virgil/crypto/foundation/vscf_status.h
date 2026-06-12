@@ -309,6 +309,11 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER = -309,
     //
+    //  Chunk cipher frame counter limit is reached,
+    //  so no more chunks can be processed under the same key and nonce.
+    //
+    vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED = -310,
+    //
     //  Brainkey password length is out of range.
     //
     vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401,

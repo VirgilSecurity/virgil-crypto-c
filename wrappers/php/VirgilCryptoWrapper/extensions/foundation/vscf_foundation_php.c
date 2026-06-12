@@ -301,6 +301,9 @@ vscf_handle_throw_exception(vscf_status_t status) {
     case vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER:
         zend_throw_exception_ex(vscf_exception_ce, -309, "Message Info footer is corrupted.");
         break;
+    case vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED:
+        zend_throw_exception_ex(vscf_exception_ce, -310, "Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce.");
+        break;
     case vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
         zend_throw_exception_ex(vscf_exception_ce, -401, "Brainkey password length is out of range.");
         break;
