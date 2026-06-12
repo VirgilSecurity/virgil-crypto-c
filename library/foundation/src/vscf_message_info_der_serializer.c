@@ -1924,6 +1924,15 @@ vscf_message_info_der_serializer_deserialize_kek_recipient_info(
         return;
     }
 
+    //  keyIdentifier and encryptedKey come from untrusted message info. An empty OCTET STRING is
+    //  valid ASN.1 but violates the kek_recipient_info constructor's precondition (a programmatic
+    //  assert). Reject it here as malformed message data instead of letting it reach the assert.
+    if (kek_id.len == 0 || encrypted_key.len == 0) {
+        vscf_impl_destroy(&key_encryption_alg_info);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return;
+    }
+
     vscf_kek_recipient_info_t *kek_recipient_info =
             vscf_kek_recipient_info_new_with_members(kek_id, &key_encryption_alg_info, encrypted_key);
 

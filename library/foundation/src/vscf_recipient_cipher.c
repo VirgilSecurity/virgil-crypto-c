@@ -1505,6 +1505,15 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher
         }
 
         vsc_data_t encrypted_key = vscf_kek_recipient_info_encrypted_key(info);
+
+        //  encrypted_key comes from untrusted message info. AES Key Wrap (RFC 3394) requires the
+        //  wrapped key to be at least 24 bytes and a multiple of 8. Reject malformed lengths here
+        //  so the key wrap primitive's length preconditions (programmatic asserts) are never
+        //  reached with attacker-controlled input.
+        if (encrypted_key.len < 24 || (encrypted_key.len % 8) != 0) {
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
         const size_t unwrapped_len = vscf_key_wrap_unwrapped_len(self->decryption_kek_wrap, encrypted_key.len);
         vsc_buffer_t *decryption_key = vsc_buffer_new_with_capacity(unwrapped_len);
         vsc_buffer_make_secure(decryption_key);

@@ -48,6 +48,13 @@
 #include "vscf_aes256_gcm.h"
 #include "vscf_random_padding.h"
 #include "vscf_aes256_kw.h"
+#include "vscf_message_info.h"
+#include "vscf_message_info_der_serializer.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_cipher_alg_info.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_memory.h"
+#include "vscf_error.h"
 
 #include "vscf_private_key.h"
 
@@ -1569,6 +1576,232 @@ test__encrypt_decrypt__with_aes256_kw_kek_recipient__wrong_kek_id__not_found(voi
 }
 
 // --------------------------------------------------------------------------
+//  Malformed-message-info regression tests (assert-on-untrusted-input fixes)
+//
+//  These exercise the trust boundary: an attacker-supplied CMS message info
+//  with a malformed KEKRecipientInfo must produce a graceful error, never an
+//  abort() from a programmatic assert in the deserializer or the AES Key Wrap
+//  primitive.
+// --------------------------------------------------------------------------
+
+//  Decode a DER length field at `off`. Returns the length value and writes the
+//  number of length octets to `*octets`.
+static size_t
+der_decode_len(vsc_data_t der, size_t off, size_t *octets) {
+    const byte b = der.bytes[off];
+    if (b < 0x80) {
+        *octets = 1;
+        return b;
+    }
+    const size_t n = (size_t)(b & 0x7f);
+    size_t value = 0;
+    for (size_t i = 0; i < n; ++i) {
+        value = (value << 8) | der.bytes[off + 1 + i];
+    }
+    *octets = 1 + n;
+    return value;
+}
+
+//  Total size (tag + length + value) of the TLV starting at `off`.
+static size_t
+der_tlv_total(vsc_data_t der, size_t off) {
+    size_t octets = 0;
+    const size_t len = der_decode_len(der, off + 1, &octets);
+    return 1 + octets + len;
+}
+
+//  Decrement a DER length field in place by `delta`, preserving its octet count.
+static void
+der_dec_len_field(byte *buf, size_t lenfield_off, size_t octets, size_t delta) {
+    if (octets == 1) {
+        buf[lenfield_off] = (byte)(buf[lenfield_off] - delta);
+        return;
+    }
+    const size_t n = octets - 1;
+    size_t value = 0;
+    for (size_t i = 0; i < n; ++i) {
+        value = (value << 8) | buf[lenfield_off + 1 + i];
+    }
+    value -= delta;
+    for (size_t i = 0; i < n; ++i) {
+        buf[lenfield_off + 1 + (n - 1 - i)] = (byte)(value & 0xff);
+        value >>= 8;
+    }
+}
+
+//  Build a CMS message info with a single KEKRecipientInfo (AES-256-KW) and an
+//  AES-256-GCM content encryption alg. `encrypted_key` and `kek_id` use caller
+//  patterns so they can be located in the serialized bytes for patching.
+static vsc_buffer_t *
+build_kek_message_info(vsc_data_t kek_id, vsc_data_t encrypted_key, vsc_data_t nonce) {
+    vscf_impl_t *kek_alg = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_AES256_KW));
+    vscf_kek_recipient_info_t *kekri = vscf_kek_recipient_info_new_with_members(kek_id, &kek_alg, encrypted_key);
+    vscf_impl_t *data_alg =
+            vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(vscf_alg_id_AES256_GCM, nonce));
+
+    vscf_message_info_t *message_info = vscf_message_info_new();
+    vscf_message_info_add_kek_recipient(message_info, &kekri);
+    vscf_message_info_set_data_encryption_alg_info(message_info, &data_alg);
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
+    vscf_message_info_der_serializer_serialize(serializer, message_info, out);
+
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vscf_message_info_destroy(&message_info);
+    return out;
+}
+
+//  Locate the encryptedKey OCTET STRING (a 1-octet-length string holding `pattern`)
+//  in `der` and shrink its value to `new_len` bytes, fixing every enclosing TLV
+//  length field. Returns the patched message info bytes.
+static vsc_buffer_t *
+shrink_encrypted_key(vsc_data_t der, vsc_data_t pattern, size_t new_len) {
+    //  Find the value; the OCTET STRING tag/len sit two bytes before it (value <= 127).
+    size_t val_off = SIZE_MAX;
+    for (size_t i = 0; i + pattern.len <= der.len; ++i) {
+        if (memcmp(der.bytes + i, pattern.bytes, pattern.len) == 0) {
+            val_off = i;
+            break;
+        }
+    }
+    TEST_ASSERT_NOT_EQUAL(SIZE_MAX, val_off);
+    const size_t tgt = val_off - 2; // OCTET STRING tag offset
+    TEST_ASSERT_EQUAL_HEX8(0x04, der.bytes[tgt]);
+    TEST_ASSERT_EQUAL(pattern.len, der.bytes[tgt + 1]);
+
+    const size_t delta = pattern.len - new_len;
+
+    byte *buf = (byte *)vscf_alloc(der.len);
+    memcpy(buf, der.bytes, der.len);
+
+    //  Walk root -> target, decrementing each enclosing container's length field.
+    size_t pos = 0;
+    while (pos != tgt) {
+        size_t octets = 0;
+        const size_t len = der_decode_len(der, pos + 1, &octets);
+        const size_t content = pos + 1 + octets;
+        const size_t content_end = content + len;
+        TEST_ASSERT_TRUE(content <= tgt && tgt < content_end);
+        der_dec_len_field(buf, pos + 1, octets, delta);
+
+        size_t child = content;
+        while (!(child <= tgt && tgt < child + der_tlv_total(der, child))) {
+            child += der_tlv_total(der, child);
+            TEST_ASSERT_TRUE(child < content_end);
+        }
+        pos = child;
+    }
+    //  Set the encryptedKey's own length (1 octet, new_len <= 127).
+    buf[tgt + 1] = (byte)new_len;
+
+    //  Emit bytes with the (delta) tail bytes of the value removed.
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(der.len - delta);
+    vsc_buffer_write_data(out, vsc_data(buf, val_off + new_len));
+    vsc_buffer_write_data(out, vsc_data(buf + val_off + pattern.len, der.len - (val_off + pattern.len)));
+    vscf_dealloc(buf);
+    return out;
+}
+
+//  Attempt KEK decryption of crafted message info; returns the status without aborting.
+static vscf_status_t
+try_decrypt_with_kek(vsc_data_t message_info, vsc_data_t kek_id, vsc_data_t kek) {
+    vscf_aes256_kw_t *kw = vscf_aes256_kw_new();
+    vscf_impl_t *kw_impl = vscf_aes256_kw_impl(kw);
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    const vscf_status_t status =
+            vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, kek_id, kek, kw_impl, message_info);
+
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&kw_impl);
+    return status;
+}
+
+static const byte k_regr_kek_id[] = {0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5};
+static const byte k_regr_kek[32] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+        0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f};
+//  A valid wrapped-key length is >= 24 and a multiple of 8; 40 bytes is the real size for a 32-byte CEK.
+static const byte k_regr_enc_key[40] = {0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC,
+        0xED, 0xEE, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE,
+        0xFF, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7};
+static const byte k_regr_nonce[12] = {0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB};
+
+//  Sanity: the crafted (well-formed) message info round-trips through the deserializer.
+static void
+test__kek__crafted_message_info__deserializes(void) {
+    vsc_data_t kek_id = vsc_data(k_regr_kek_id, sizeof(k_regr_kek_id));
+    vsc_buffer_t *mi = build_kek_message_info(
+            kek_id, vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), vsc_data(k_regr_nonce, sizeof(k_regr_nonce)));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+    vscf_message_info_t *parsed = vscf_message_info_der_serializer_deserialize(serializer, vsc_buffer_data(mi), &error);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(parsed);
+    const vscf_kek_recipient_info_list_t *list = vscf_message_info_kek_recipient_info_list(parsed);
+    TEST_ASSERT_TRUE(vscf_kek_recipient_info_list_has_item(list));
+
+    vscf_message_info_destroy(&parsed);
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vsc_buffer_destroy(&mi);
+}
+
+//  Empty encryptedKey OCTET STRING must be rejected gracefully, not abort the deserializer.
+static void
+test__kek__empty_encrypted_key__fails_without_abort(void) {
+    vsc_data_t kek_id = vsc_data(k_regr_kek_id, sizeof(k_regr_kek_id));
+    vsc_buffer_t *mi = build_kek_message_info(
+            kek_id, vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), vsc_data(k_regr_nonce, sizeof(k_regr_nonce)));
+    vsc_buffer_t *bad = shrink_encrypted_key(vsc_buffer_data(mi), vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), 0);
+
+    const vscf_status_t status =
+            try_decrypt_with_kek(vsc_buffer_data(bad), kek_id, vsc_data(k_regr_kek, sizeof(k_regr_kek)));
+    TEST_ASSERT_NOT_EQUAL(vscf_status_SUCCESS, status);
+
+    vsc_buffer_destroy(&bad);
+    vsc_buffer_destroy(&mi);
+}
+
+//  A short (< 24) wrapped key must be rejected before reaching the AES-KW length assert.
+static void
+test__kek__short_encrypted_key__fails_without_abort(void) {
+    vsc_data_t kek_id = vsc_data(k_regr_kek_id, sizeof(k_regr_kek_id));
+    vsc_buffer_t *mi = build_kek_message_info(
+            kek_id, vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), vsc_data(k_regr_nonce, sizeof(k_regr_nonce)));
+    vsc_buffer_t *bad = shrink_encrypted_key(vsc_buffer_data(mi), vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), 8);
+
+    const vscf_status_t status =
+            try_decrypt_with_kek(vsc_buffer_data(bad), kek_id, vsc_data(k_regr_kek, sizeof(k_regr_kek)));
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ENCRYPTED_DATA, status);
+
+    vsc_buffer_destroy(&bad);
+    vsc_buffer_destroy(&mi);
+}
+
+//  A non-multiple-of-8 wrapped key (>= 24) must be rejected before the AES-KW block assert.
+static void
+test__kek__misaligned_encrypted_key__fails_without_abort(void) {
+    vsc_data_t kek_id = vsc_data(k_regr_kek_id, sizeof(k_regr_kek_id));
+    vsc_buffer_t *mi = build_kek_message_info(
+            kek_id, vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), vsc_data(k_regr_nonce, sizeof(k_regr_nonce)));
+    vsc_buffer_t *bad = shrink_encrypted_key(vsc_buffer_data(mi), vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), 30);
+
+    const vscf_status_t status =
+            try_decrypt_with_kek(vsc_buffer_data(bad), kek_id, vsc_data(k_regr_kek, sizeof(k_regr_kek)));
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ENCRYPTED_DATA, status);
+
+    vsc_buffer_destroy(&bad);
+    vsc_buffer_destroy(&mi);
+}
+
+// --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
 int
@@ -1615,6 +1848,11 @@ main(void) {
 
     RUN_TEST(test__encrypt_decrypt__with_aes256_kw_kek_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_aes256_kw_kek_recipient__wrong_kek_id__not_found);
+
+    RUN_TEST(test__kek__crafted_message_info__deserializes);
+    RUN_TEST(test__kek__empty_encrypted_key__fails_without_abort);
+    RUN_TEST(test__kek__short_encrypted_key__fails_without_abort);
+    RUN_TEST(test__kek__misaligned_encrypted_key__fails_without_abort);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
