@@ -1504,6 +1504,16 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher
             continue;
         }
 
+        //  The message names the key encryption algorithm; the caller supplies the key wrap
+        //  implementation. Reject a mismatch so an attacker can not route a wrapped key into a
+        //  different algorithm, and so an honest caller gets a clear error instead of a doomed
+        //  unwrap (or an aborted key-length assert) on an algorithm the wrap object can not handle.
+        const vscf_alg_id_t message_alg_id =
+                vscf_alg_info_alg_id(vscf_kek_recipient_info_key_encryption_algorithm(info));
+        if (message_alg_id != vscf_alg_alg_id(self->decryption_kek_wrap)) {
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
         vsc_data_t encrypted_key = vscf_kek_recipient_info_encrypted_key(info);
 
         //  encrypted_key comes from untrusted message info. AES Key Wrap (RFC 3394) requires the

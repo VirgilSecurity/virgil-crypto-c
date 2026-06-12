@@ -48,6 +48,7 @@
 #include "vscf_aes256_gcm.h"
 #include "vscf_random_padding.h"
 #include "vscf_aes256_kw.h"
+#include "vscf_aes128_kw.h"
 #include "vscf_message_info.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_kek_recipient_info.h"
@@ -1575,6 +1576,132 @@ test__encrypt_decrypt__with_aes256_kw_kek_recipient__wrong_kek_id__not_found(voi
     vscf_impl_destroy(&kw_impl);
 }
 
+static void
+test__encrypt_decrypt__with_aes128_kw_kek_recipient__success(void) {
+    static const byte kek_id_bytes[] = {0x6b, 0x65, 0x6b, 0x2d, 0x31, 0x32, 0x38};
+    static const byte kek_bytes[16] = {
+            0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+    vsc_data_t kek_id = vsc_data(kek_id_bytes, sizeof(kek_id_bytes));
+    vsc_data_t kek = vsc_data(kek_bytes, sizeof(kek_bytes));
+
+    vscf_aes128_kw_t *kw = vscf_aes128_kw_new();
+    vscf_impl_t *kw_impl = vscf_aes128_kw_impl(kw);
+
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_kek_recipient(recipient_cipher, kek_id, kek, kw_impl);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher));
+
+    size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
+    size_t enc_msg_len =
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, test_data_recipient_cipher_MESSAGE.len) +
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
+
+    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(message_info_len + enc_msg_len);
+    vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_process_encryption(recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
+
+    vscf_recipient_cipher_release_random(recipient_cipher);
+    vscf_recipient_cipher_release_encryption_cipher(recipient_cipher);
+
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
+            vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
+            vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, kek_id, kek, kw_impl, vsc_data_empty()));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg), dec_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_MESSAGE, dec_msg);
+
+    vsc_buffer_destroy(&dec_msg);
+    vsc_buffer_destroy(&enc_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&kw_impl);
+}
+
+//  Build a real encrypted message with one aes256-kw KEK recipient; return the full ciphertext.
+static vsc_buffer_t *
+encrypt_with_aes256_kw_kek(vsc_data_t kek_id, vsc_data_t kek) {
+    vscf_aes256_kw_t *kw = vscf_aes256_kw_new();
+    vscf_impl_t *kw_impl = vscf_aes256_kw_impl(kw);
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_kek_recipient(recipient_cipher, kek_id, kek, kw_impl);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(recipient_cipher));
+    size_t enc_msg_len =
+            vscf_recipient_cipher_message_info_len(recipient_cipher) +
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, test_data_recipient_cipher_MESSAGE.len) +
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
+    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(enc_msg_len);
+    vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_process_encryption(recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg));
+
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&kw_impl);
+    return enc_msg;
+}
+
+//  Correct kek_id but wrong KEK bytes: the wrapped key fails its integrity check.
+static void
+test__decrypt__with_aes256_kw_kek_recipient__wrong_kek__auth_fails(void) {
+    static const byte kek_id_bytes[] = {0x6b, 0x65, 0x6b, 0x2d, 0x69, 0x64};
+    static const byte kek_bytes[32] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+            0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e,
+            0x1f};
+    static const byte wrong_kek_bytes[32] = {0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8, 0xf7, 0xf6, 0xf5, 0xf4,
+            0xf3, 0xf2, 0xf1, 0xf0, 0xef, 0xee, 0xed, 0xec, 0xeb, 0xea, 0xe9, 0xe8, 0xe7, 0xe6, 0xe5, 0xe4, 0xe3, 0xe2,
+            0xe1, 0xe0};
+    vsc_data_t kek_id = vsc_data(kek_id_bytes, sizeof(kek_id_bytes));
+
+    vsc_buffer_t *enc_msg = encrypt_with_aes256_kw_kek(kek_id, vsc_data(kek_bytes, sizeof(kek_bytes)));
+
+    vscf_aes256_kw_t *kw = vscf_aes256_kw_new();
+    vscf_impl_t *kw_impl = vscf_aes256_kw_impl(kw);
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG,
+            vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, kek_id,
+                    vsc_data(wrong_kek_bytes, sizeof(wrong_kek_bytes)), kw_impl, vsc_buffer_data(enc_msg)));
+
+    vsc_buffer_destroy(&enc_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&kw_impl);
+}
+
+//  Message wrapped with aes256-kw, decryption attempted with an aes128-kw wrap object:
+//  the algorithm mismatch must be rejected, not routed into the wrong primitive.
+static void
+test__decrypt__kek_algorithm_mismatch__fails(void) {
+    static const byte kek_id_bytes[] = {0x6b, 0x65, 0x6b, 0x2d, 0x69, 0x64};
+    static const byte kek256_bytes[32] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+            0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e,
+            0x1f};
+    static const byte kek128_bytes[16] = {
+            0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+    vsc_data_t kek_id = vsc_data(kek_id_bytes, sizeof(kek_id_bytes));
+
+    vsc_buffer_t *enc_msg = encrypt_with_aes256_kw_kek(kek_id, vsc_data(kek256_bytes, sizeof(kek256_bytes)));
+
+    vscf_aes128_kw_t *kw = vscf_aes128_kw_new();
+    vscf_impl_t *kw_impl = vscf_aes128_kw_impl(kw);
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ENCRYPTED_DATA,
+            vscf_recipient_cipher_start_decryption_with_kek(recipient_cipher, kek_id,
+                    vsc_data(kek128_bytes, sizeof(kek128_bytes)), kw_impl, vsc_buffer_data(enc_msg)));
+
+    vsc_buffer_destroy(&enc_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&kw_impl);
+}
+
 // --------------------------------------------------------------------------
 //  Malformed-message-info regression tests (assert-on-untrusted-input fixes)
 //
@@ -1848,6 +1975,9 @@ main(void) {
 
     RUN_TEST(test__encrypt_decrypt__with_aes256_kw_kek_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_aes256_kw_kek_recipient__wrong_kek_id__not_found);
+    RUN_TEST(test__encrypt_decrypt__with_aes128_kw_kek_recipient__success);
+    RUN_TEST(test__decrypt__with_aes256_kw_kek_recipient__wrong_kek__auth_fails);
+    RUN_TEST(test__decrypt__kek_algorithm_mismatch__fails);
 
     RUN_TEST(test__kek__crafted_message_info__deserializes);
     RUN_TEST(test__kek__empty_encrypted_key__fails_without_abort);
