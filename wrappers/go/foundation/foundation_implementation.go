@@ -27,6 +27,10 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
+    case C.vscf_impl_tag_AES128_KW:
+        return newAes128KwWithCtx((*C.vscf_aes128_kw_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_KW:
+        return newAes256KwWithCtx((*C.vscf_aes256_kw_t)(ctx)), nil
     case C.vscf_impl_tag_HMAC:
         return newHmacWithCtx((*C.vscf_hmac_t)(ctx)), nil
     case C.vscf_impl_tag_HKDF:
@@ -265,6 +269,29 @@ func FoundationImplementationWrapCipherAuth(ctx *C.vscf_impl_t) (CipherAuth, err
 func FoundationImplementationWrapCipherAuthCopy(ctx *C.vscf_impl_t) (CipherAuth, error) {
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapCipherAuth(shallowCopy)
+}
+
+/* Wrap C implementation object to the Go object that implements interface KeyWrap. */
+func FoundationImplementationWrapKeyWrap(ctx *C.vscf_impl_t) (KeyWrap, error) {
+    if (!C.vscf_key_wrap_is_implemented(ctx)) {
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyWrap."}
+    }
+
+    implTag := C.vscf_impl_tag(ctx)
+    switch (implTag) {
+    case C.vscf_impl_tag_AES128_KW:
+        return newAes128KwWithCtx((*C.vscf_aes128_kw_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_KW:
+        return newAes256KwWithCtx((*C.vscf_aes256_kw_t)(ctx)), nil
+    default:
+        return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
+    }
+}
+
+/* Wrap C implementation object to the Go object that implements interface KeyWrap. */
+func FoundationImplementationWrapKeyWrapCopy(ctx *C.vscf_impl_t) (KeyWrap, error) {
+    shallowCopy := C.vscf_impl_shallow_copy(ctx)
+    return FoundationImplementationWrapKeyWrap(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Asn1Reader. */

@@ -137,6 +137,18 @@ class RecipientCipher
 
     /**
     *
+    * @param string $$kekId
+    * @param string $$kek
+    * @param KeyWrap $$keyWrap
+    * @return void
+    */
+    public function addKekRecipient(string $$kekId, string $$kek, KeyWrap $$keyWrap): void
+    {
+        vscf_recipient_cipher_add_kek_recipient_php($this->ctx, $$kekId, $$kek, $$keyWrap->getCtx());
+    }
+
+    /**
+    *
     * @return void
     */
     public function clearRecipients(): void
@@ -243,6 +255,20 @@ class RecipientCipher
     public function finishEncryption(): string
     {
         return vscf_recipient_cipher_finish_encryption_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param string $$kekId
+    * @param string $$kek
+    * @param KeyWrap $$keyWrap
+    * @param string $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function startDecryptionWithKek(string $$kekId, string $$kek, KeyWrap $$keyWrap, string $$messageInfo): void
+    {
+        vscf_recipient_cipher_start_decryption_with_kek_php($this->ctx, $$kekId, $$kek, $$keyWrap->getCtx(), $$messageInfo);
     }
 
     /**

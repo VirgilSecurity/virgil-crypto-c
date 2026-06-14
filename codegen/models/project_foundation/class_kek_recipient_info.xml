@@ -1,0 +1,34 @@
+<class name="kek recipient info">
+    Handle information about recipient that uses a pre-shared symmetric Key Encryption Key (KEK).
+    Follows RFC 5652 KEKRecipientInfo structure.
+
+    <property name="kek id" class="buffer"/>
+    <property name="key encryption algorithm" interface="alg info"/>
+    <property name="encrypted key" class="buffer"/>
+
+    <constructor name="with members">
+        Create object and define all properties.
+
+        <argument name="kek id" class="data"/>
+        <argument name="key encryption algorithm" interface="alg info" access="disown"/>
+        <argument name="encrypted key" class="data"/>
+    </constructor>
+
+    <method name="kek id" is_const="1">
+        Return KEK identifier.
+
+        <return class="data"/>
+    </method>
+
+    <method name="key encryption algorithm" is_const="1">
+        Return algorithm information that was used for encrypting the data encryption key.
+
+        <return interface="alg info"/>
+    </method>
+
+    <method name="encrypted key" is_const="1">
+        Return an encrypted data encryption key.
+
+        <return class="data"/>
+    </method>
+</class>

@@ -72,6 +72,10 @@
 #include "vscf_public_key.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_key_recipient_list.h"
+#include "vscf_kek_recipient_list.h"
+#include "vscf_key_wrap.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_alg_factory.h"
@@ -115,6 +119,12 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self);
 //
 static vscf_status_t
 vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self, vsc_data_t decryption_key);
+
+//
+//  Decrypt data encryption key with a pre-shared KEK.
+//
+static vscf_status_t
+vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher_t *self);
 
 //
 //  Decrypt data encryption key with a password.
@@ -616,12 +626,16 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vsc_buffer_destroy(&self->derived_keys);
     vsc_buffer_destroy(&self->decryption_password);
     vsc_buffer_destroy(&self->decryption_recipient_id);
+    vsc_buffer_destroy(&self->decryption_kek_id);
+    vsc_buffer_destroy(&self->decryption_kek);
     vsc_buffer_destroy(&self->message_info_footer_enc);
     vscf_impl_destroy(&self->verifier_hash);
     vscf_impl_destroy(&self->decryption_cipher);
     vscf_impl_destroy(&self->decryption_padding);
     vscf_impl_destroy(&self->decryption_recipient_key);
+    vscf_impl_destroy(&self->decryption_kek_wrap);
     vscf_key_recipient_list_destroy(&self->key_recipients);
+    vscf_kek_recipient_list_destroy(&self->kek_recipients);
     vscf_signer_list_destroy(&self->signers);
     vscf_message_info_der_serializer_destroy(&self->message_info_der_serializer);
     vscf_message_info_destroy(&self->message_info);
@@ -681,6 +695,27 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_key_recipient_list_destroy(&self->key_recipients);
+    vscf_kek_recipient_list_destroy(&self->kek_recipients);
+}
+
+//
+//  Add recipient defined with a KEK identifier and key wrap algorithm.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_add_kek_recipient(
+        vscf_recipient_cipher_t *self, vsc_data_t kek_id, vsc_data_t kek, vscf_impl_t *key_wrap) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(kek_id));
+    VSCF_ASSERT(vsc_data_is_valid(kek));
+    VSCF_ASSERT_PTR(key_wrap);
+    VSCF_ASSERT(vscf_key_wrap_is_implemented(key_wrap));
+
+    if (NULL == self->kek_recipients) {
+        self->kek_recipients = vscf_kek_recipient_list_new();
+    }
+
+    vscf_kek_recipient_list_add(self->kek_recipients, kek_id, kek, key_wrap);
 }
 
 //
@@ -1030,6 +1065,64 @@ vscf_recipient_cipher_start_decryption_with_key(
 }
 
 //
+//  Initiate decryption process with a pre-shared symmetric key (KEK).
+//  Message Info can be empty if it was embedded to encrypted data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_recipient_cipher_start_decryption_with_kek(vscf_recipient_cipher_t *self, vsc_data_t kek_id, vsc_data_t kek,
+        vscf_impl_t *key_wrap, vsc_data_t message_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(kek_id));
+    VSCF_ASSERT(vsc_data_is_valid(kek));
+    VSCF_ASSERT_PTR(key_wrap);
+    VSCF_ASSERT(vscf_key_wrap_is_implemented(key_wrap));
+    VSCF_ASSERT(vsc_data_is_valid(message_info));
+
+    vsc_buffer_destroy(&self->decryption_recipient_id);
+    vsc_buffer_destroy(&self->decryption_kek_id);
+    vsc_buffer_destroy(&self->decryption_kek);
+    vsc_buffer_destroy(&self->message_info_buffer);
+    vscf_impl_destroy(&self->decryption_recipient_key);
+    vscf_impl_destroy(&self->decryption_kek_wrap);
+    vscf_impl_destroy(&self->decryption_cipher);
+    vscf_impl_destroy(&self->decryption_padding);
+    self->decryption_state = vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO;
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t random_status = vscf_ctr_drbg_setup_defaults(random);
+        if (random_status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return random_status;
+        }
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    self->decryption_kek_id = vsc_buffer_new_with_data(kek_id);
+    self->decryption_kek = vsc_buffer_new_with_data(kek);
+    vsc_buffer_make_secure(self->decryption_kek);
+    self->decryption_kek_wrap = vscf_impl_shallow_copy(key_wrap);
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    if (!vsc_data_is_empty(message_info)) {
+        status = vscf_recipient_cipher_unpack_message_info(self, message_info);
+        if (status == vscf_status_SUCCESS) {
+            status = vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(self);
+        } else {
+            self->decryption_state = vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_BROKEN;
+        }
+    } else {
+        self->decryption_state = vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO;
+        self->message_info_buffer = vsc_buffer_new_with_capacity(16);
+        self->message_info_expected_len = 0;
+    }
+
+    return status;
+}
+
+//
 //  Initiate decryption process with a recipient private key.
 //  Message Info can be empty if it was embedded to encrypted data.
 //  Message Info footer can be empty if it was embedded to encrypted data.
@@ -1346,6 +1439,7 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
         const vscf_impl_t *padding_info = vscf_message_info_cipher_padding_alg_info(self->message_info);
         self->decryption_padding = vscf_alg_factory_create_padding_from_info(padding_info, self->random);
         if (NULL == self->decryption_padding) {
+            vscf_impl_destroy(&self->decryption_cipher);
             return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         }
         vscf_padding_configure(self->decryption_padding, self->padding_params);
@@ -1384,6 +1478,71 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
     self->decryption_state = vscf_recipient_cipher_decryption_state_PROCESSING_DATA;
 
     return vscf_status_SUCCESS;
+}
+
+//
+//  Decrypt data encryption key with a pre-shared KEK.
+//
+static vscf_status_t
+vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+    VSCF_ASSERT_PTR(self->decryption_kek_id);
+    VSCF_ASSERT_PTR(self->decryption_kek);
+    VSCF_ASSERT_PTR(self->decryption_kek_wrap);
+
+    vsc_data_t kek_id = vsc_buffer_data(self->decryption_kek_id);
+    vsc_data_t kek = vsc_buffer_data(self->decryption_kek);
+
+    for (const vscf_kek_recipient_info_list_t *curr = vscf_message_info_kek_recipient_info_list(self->message_info);
+            curr != NULL && vscf_kek_recipient_info_list_has_item(curr);
+            curr = vscf_kek_recipient_info_list_next(curr)) {
+
+        const vscf_kek_recipient_info_t *info = vscf_kek_recipient_info_list_item(curr);
+        if (!vsc_data_equal(vscf_kek_recipient_info_kek_id(info), kek_id)) {
+            continue;
+        }
+
+        //  The message names the key encryption algorithm; the caller supplies the key wrap
+        //  implementation. Reject a mismatch so an attacker can not route a wrapped key into a
+        //  different algorithm, and so an honest caller gets a clear error instead of a doomed
+        //  unwrap (or an aborted key-length assert) on an algorithm the wrap object can not handle.
+        const vscf_alg_id_t message_alg_id =
+                vscf_alg_info_alg_id(vscf_kek_recipient_info_key_encryption_algorithm(info));
+        if (message_alg_id != vscf_alg_alg_id(self->decryption_kek_wrap)) {
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
+        vsc_data_t encrypted_key = vscf_kek_recipient_info_encrypted_key(info);
+
+        //  encrypted_key comes from untrusted message info. AES Key Wrap (RFC 3394) requires the
+        //  wrapped key to be at least 24 bytes and a multiple of 8. Reject malformed lengths here
+        //  so the key wrap primitive's length preconditions (programmatic asserts) are never
+        //  reached with attacker-controlled input.
+        if (encrypted_key.len < 24 || (encrypted_key.len % 8) != 0) {
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
+        const size_t unwrapped_len = vscf_key_wrap_unwrapped_len(self->decryption_kek_wrap, encrypted_key.len);
+        vsc_buffer_t *decryption_key = vsc_buffer_new_with_capacity(unwrapped_len);
+        vsc_buffer_make_secure(decryption_key);
+
+        vscf_status_t status = vscf_key_wrap_unwrap(self->decryption_kek_wrap, kek, encrypted_key, decryption_key);
+
+        if (status != vscf_status_SUCCESS) {
+            vsc_buffer_destroy(&decryption_key);
+            //  No private key is involved in a KEK recipient; the pre-shared KEK is wrong
+            //  (or the wrapped key failed its integrity check).
+            return vscf_status_ERROR_KEY_RECIPIENT_KEK_IS_WRONG;
+        }
+
+        status = vscf_recipient_cipher_configure_decryption_cipher(self, vsc_buffer_data(decryption_key));
+        vsc_buffer_destroy(&decryption_key);
+        return status;
+    }
+
+    return vscf_status_ERROR_KEY_RECIPIENT_IS_NOT_FOUND;
 }
 
 //
@@ -1489,6 +1648,8 @@ vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self)
 
     if (self->decryption_recipient_id != NULL) {
         return vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(self);
+    } else if (self->decryption_kek_id != NULL) {
+        return vscf_recipient_cipher_decrypt_data_encryption_key_with_kek(self);
     } else {
         return vscf_recipient_cipher_decrypt_data_encryption_key_with_password(self);
     }
@@ -2128,6 +2289,41 @@ vscf_recipient_cipher_encrypt_cipher_key_for_recipients(vscf_recipient_cipher_t 
                 recipient_id, vscf_key_alg_info(recipient_public_key), &encrypted_key);
 
         vscf_message_info_add_key_recipient(self->message_info, &recipient_info);
+    }
+
+    //
+    //  Process KEK recipients.
+    //
+    for (const vscf_kek_recipient_list_t *curr = self->kek_recipients; curr != NULL;
+            curr = vscf_kek_recipient_list_next(curr)) {
+
+        if (!vscf_kek_recipient_list_has_kek_recipient(curr)) {
+            break;
+        }
+
+        vsc_data_t kek_id = vscf_kek_recipient_list_kek_id(curr);
+        vsc_data_t kek = vscf_kek_recipient_list_kek(curr);
+        vscf_impl_t *key_wrap = vscf_kek_recipient_list_key_wrap(curr);
+
+        vsc_data_t cipher_key = vsc_buffer_data(self->master_key);
+
+        const size_t wrapped_len = vscf_key_wrap_wrapped_len(key_wrap, cipher_key.len);
+        vsc_buffer_t *encrypted_key = vsc_buffer_new_with_capacity(wrapped_len);
+
+        vscf_status_t kek_status = vscf_key_wrap_wrap(key_wrap, kek, cipher_key, encrypted_key);
+
+        if (kek_status != vscf_status_SUCCESS) {
+            vsc_buffer_destroy(&encrypted_key);
+            return kek_status;
+        }
+
+        vscf_impl_t *alg_info = vscf_alg_produce_alg_info(key_wrap);
+
+        vscf_kek_recipient_info_t *kek_info =
+                vscf_kek_recipient_info_new_with_members(kek_id, &alg_info, vsc_buffer_data(encrypted_key));
+
+        vsc_buffer_destroy(&encrypted_key);
+        vscf_message_info_add_kek_recipient(self->message_info, &kek_info);
     }
 
     //

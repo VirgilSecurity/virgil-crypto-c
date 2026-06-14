@@ -48,10 +48,13 @@ from .key_recipient_info import KeyRecipientInfo
 from .key_recipient_info_list import KeyRecipientInfoList
 from .password_recipient_info import PasswordRecipientInfo
 from .password_recipient_info_list import PasswordRecipientInfoList
+from .kek_recipient_info import KekRecipientInfo
+from .kek_recipient_info_list import KekRecipientInfoList
 from .alg_factory import AlgFactory
 from .key_alg_factory import KeyAlgFactory
 from .ecies import Ecies
 from .recipient_cipher import RecipientCipher
+from .chunk_cipher import ChunkCipher
 from .message_info_custom_params import MessageInfoCustomParams
 from .key_provider import KeyProvider
 from .signer import Signer
@@ -75,6 +78,8 @@ from .sha384 import Sha384
 from .sha512 import Sha512
 from .aes256_gcm import Aes256Gcm
 from .aes256_cbc import Aes256Cbc
+from .aes128_kw import Aes128Kw
+from .aes256_kw import Aes256Kw
 from .asn1rd import Asn1rd
 from .asn1wr import Asn1wr
 from .rsa_public_key import RsaPublicKey
@@ -156,3 +161,4 @@ from .message_info_serializer import MessageInfoSerializer
 from .message_info_footer_serializer import MessageInfoFooterSerializer
 from .padding import Padding
 from .kem import Kem
+from .key_wrap import KeyWrap

@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFFoundationError) public enum FoundationError: Int, Error {
+@objc public enum FoundationError: Int, Error {
 
     /// This error should not be returned if assertions is enabled.
     case errorBadArguments = -1
@@ -204,6 +204,14 @@ import VSCFoundation
 
     /// Message Info footer is corrupted.
     case errorBadMessageInfoFooter = -309
+
+    /// Chunk cipher frame counter limit is reached,
+    /// so no more chunks can be processed under the same key and nonce.
+    case errorChunkCounterLimitReached = -310
+
+    /// Content encryption key can not be decrypted with a given
+    /// key encryption key (KEK).
+    case errorKeyRecipientKekIsWrong = -311
 
     /// Brainkey password length is out of range.
     case errorInvalidBrainkeyPasswordLen = -401

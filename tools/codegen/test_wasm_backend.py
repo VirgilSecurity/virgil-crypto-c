@@ -25,12 +25,12 @@ class FoundationFileCountTests(unittest.TestCase):
         cls.paths = [p for p, _ in cls.files]
 
     def test_total_file_count(self) -> None:
-        # 93 JS files + 1 CMakeLists.txt = 94
-        self.assertEqual(len(self.files), 94)
+        # 99 JS files + 1 CMakeLists.txt + 1 other = 101
+        self.assertEqual(len(self.files), 101)
 
     def test_js_file_count(self) -> None:
         js = [p for p in self.paths if p.endswith(".js")]
-        self.assertEqual(len(js), 93)
+        self.assertEqual(len(js), 99)
 
     def test_cmake_file_generated(self) -> None:
         cmake = [p for p in self.paths if p.endswith("CMakeLists.txt")]
@@ -64,8 +64,8 @@ class PheFileCountTests(unittest.TestCase):
         cls.files = generate_wasm_files(cls.ir, repo_root=str(REPO_ROOT))
 
     def test_total_file_count(self) -> None:
-        # 10 JS + 1 CMake = 11
-        self.assertEqual(len(self.files), 11)
+        # 11 JS + 1 CMake = 12
+        self.assertEqual(len(self.files), 12)
 
 
 class RatchetFileCountTests(unittest.TestCase):
@@ -75,8 +75,8 @@ class RatchetFileCountTests(unittest.TestCase):
         cls.files = generate_wasm_files(cls.ir, repo_root=str(REPO_ROOT))
 
     def test_total_file_count(self) -> None:
-        # 8 JS + 1 CMake = 9
-        self.assertEqual(len(self.files), 9)
+        # 9 JS + 1 CMake = 10
+        self.assertEqual(len(self.files), 10)
 
 
 class StructuralTests(unittest.TestCase):

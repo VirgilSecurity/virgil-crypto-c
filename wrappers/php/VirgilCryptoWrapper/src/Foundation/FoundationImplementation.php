@@ -40,60 +40,62 @@ namespace Virgil\CryptoWrapper\Foundation;
 class FoundationImplementation
 {
 
-    const AES256_CBC = 1;
-    const AES256_GCM = 2;
-    const ALG_INFO_DER_DESERIALIZER = 3;
-    const ALG_INFO_DER_SERIALIZER = 4;
-    const ASN1RD = 5;
-    const ASN1WR = 6;
-    const CIPHER_ALG_INFO = 7;
-    const COMPOUND_KEY_ALG = 8;
-    const COMPOUND_KEY_ALG_INFO = 9;
-    const COMPOUND_PRIVATE_KEY = 10;
-    const COMPOUND_PUBLIC_KEY = 11;
-    const CTR_DRBG = 12;
-    const CURVE25519 = 13;
-    const ECC = 14;
-    const ECC_ALG_INFO = 15;
-    const ECC_PRIVATE_KEY = 16;
-    const ECC_PUBLIC_KEY = 17;
-    const ED25519 = 18;
-    const ENTROPY_ACCUMULATOR = 19;
-    const FAKE_RANDOM = 20;
-    const FALCON = 21;
-    const HASH_BASED_ALG_INFO = 22;
-    const HKDF = 23;
-    const HMAC = 24;
-    const HYBRID_KEY_ALG = 25;
-    const HYBRID_KEY_ALG_INFO = 26;
-    const HYBRID_PRIVATE_KEY = 27;
-    const HYBRID_PUBLIC_KEY = 28;
-    const KDF1 = 29;
-    const KDF2 = 30;
-    const KEY_ASN1_DESERIALIZER = 31;
-    const KEY_ASN1_SERIALIZER = 32;
-    const KEY_MATERIAL_RNG = 33;
-    const MESSAGE_INFO_DER_SERIALIZER = 34;
-    const ML_DSA = 35;
-    const ML_KEM = 36;
-    const PBE_ALG_INFO = 37;
-    const PKCS5_PBES2 = 38;
-    const PKCS5_PBKDF2 = 39;
-    const PKCS8_SERIALIZER = 40;
-    const RANDOM_PADDING = 41;
-    const RAW_PRIVATE_KEY = 42;
-    const RAW_PUBLIC_KEY = 43;
-    const RSA = 44;
-    const RSA_PRIVATE_KEY = 45;
-    const RSA_PUBLIC_KEY = 46;
-    const SALTED_KDF_ALG_INFO = 47;
-    const SEC1_SERIALIZER = 48;
-    const SEED_ENTROPY_SOURCE = 49;
-    const SHA224 = 50;
-    const SHA256 = 51;
-    const SHA384 = 52;
-    const SHA512 = 53;
-    const SIMPLE_ALG_INFO = 54;
+    const AES128_KW = 1;
+    const AES256_CBC = 2;
+    const AES256_GCM = 3;
+    const AES256_KW = 4;
+    const ALG_INFO_DER_DESERIALIZER = 5;
+    const ALG_INFO_DER_SERIALIZER = 6;
+    const ASN1RD = 7;
+    const ASN1WR = 8;
+    const CIPHER_ALG_INFO = 9;
+    const COMPOUND_KEY_ALG = 10;
+    const COMPOUND_KEY_ALG_INFO = 11;
+    const COMPOUND_PRIVATE_KEY = 12;
+    const COMPOUND_PUBLIC_KEY = 13;
+    const CTR_DRBG = 14;
+    const CURVE25519 = 15;
+    const ECC = 16;
+    const ECC_ALG_INFO = 17;
+    const ECC_PRIVATE_KEY = 18;
+    const ECC_PUBLIC_KEY = 19;
+    const ED25519 = 20;
+    const ENTROPY_ACCUMULATOR = 21;
+    const FAKE_RANDOM = 22;
+    const FALCON = 23;
+    const HASH_BASED_ALG_INFO = 24;
+    const HKDF = 25;
+    const HMAC = 26;
+    const HYBRID_KEY_ALG = 27;
+    const HYBRID_KEY_ALG_INFO = 28;
+    const HYBRID_PRIVATE_KEY = 29;
+    const HYBRID_PUBLIC_KEY = 30;
+    const KDF1 = 31;
+    const KDF2 = 32;
+    const KEY_ASN1_DESERIALIZER = 33;
+    const KEY_ASN1_SERIALIZER = 34;
+    const KEY_MATERIAL_RNG = 35;
+    const MESSAGE_INFO_DER_SERIALIZER = 36;
+    const ML_DSA = 37;
+    const ML_KEM = 38;
+    const PBE_ALG_INFO = 39;
+    const PKCS5_PBES2 = 40;
+    const PKCS5_PBKDF2 = 41;
+    const PKCS8_SERIALIZER = 42;
+    const RANDOM_PADDING = 43;
+    const RAW_PRIVATE_KEY = 44;
+    const RAW_PUBLIC_KEY = 45;
+    const RSA = 46;
+    const RSA_PRIVATE_KEY = 47;
+    const RSA_PUBLIC_KEY = 48;
+    const SALTED_KDF_ALG_INFO = 49;
+    const SEC1_SERIALIZER = 50;
+    const SEED_ENTROPY_SOURCE = 51;
+    const SHA224 = 52;
+    const SHA256 = 53;
+    const SHA384 = 54;
+    const SHA512 = 55;
+    const SIMPLE_ALG_INFO = 56;
 
     /**
     *
@@ -423,6 +425,16 @@ class FoundationImplementation
     public static function wrapKem($$ctx): Kem
     {
         return vscf_foundation_implementation_wrap_kem_php($$ctx);
+    }
+
+    /**
+    *
+    * @param  $$ctx
+    * @return KeyWrap
+    */
+    public static function wrapKeyWrap($$ctx): KeyWrap
+    {
+        return vscf_foundation_implementation_wrap_key_wrap_php($$ctx);
     }
 
 }

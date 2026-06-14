@@ -36,7 +36,7 @@ import Foundation
 import VSCFoundation
 
 /// ASN.1 constants.
-@objc(VSCFAsn1Tag) public enum Asn1Tag: Int {
+@objc public enum Asn1Tag: Int {
     case boolean = 0x01
 
     case integer = 0x02

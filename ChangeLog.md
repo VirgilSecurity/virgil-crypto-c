@@ -1,14 +1,62 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
-## Unreleased
+## Version 0.20.0 released 2026-06-14
+
+### New
+
+- **AES Key Wrap and KEKRecipientInfo support (RFC 3394 / RFC 5652 §6.2.3)**: Added AES-128 and AES-256 key wrap primitives, a `kek_recipient_info` data class, and KEK-based encryption/decryption in the recipient cipher with CMS DER serialization. A pre-shared symmetric key-encryption-key can now be used as a message recipient alongside public-key and password recipients. Malformed message info is rejected with precise error statuses rather than aborting. Available in all language wrappers.
+- **Chunk cipher (`vscf_chunk_cipher`)**: New AES-256-GCM streaming cipher that encrypts data in fixed-size chunks, each carrying its own authentication tag. Uses a TLS 1.3-style per-chunk nonce and a mandatory FIN sentinel frame, so truncation, reordering, and tampering are detected; the frame counter is a bounded 64-bit value to prevent nonce reuse. Available in all language wrappers.
+
+### Bugfix
+
+- **Java: migrate `commons-lang` 2.6 to `commons-lang3` 3.18.0 (CVE-2025-48924)** — removes a vulnerable transitive dependency from the Java/Android wrappers.
+
+## Version 0.19.2 released 2026-06-02
+
+### Bugfix
+
+- **Swift: fix enum cases invisible in Xcode 26 / Swift 6** — Removed the explicit ObjC name from `@objc(VSCFAlgId)` annotations on Swift enum types (`AlgId`, `OidId`, `CipherState`, `Asn1Tag`, `GroupMsgType`, `FoundationError`, and Ratchet equivalents). Swift 6 requires the named ObjC form to be backed by `NS_ENUM`; the plain C enums triggered a lookup failure that made all enum cases (including `mlKem768`) invisible to consumers.
+
+## Version 0.19.1 released 2026-06-02
 
 ### Breaking changes
 
-- Pythia library and Relic thirdparty removed entirely. The `VIRGIL_LIB_PYTHIA` CMake option no longer exists. Pythia modules have been removed from all wrappers (C, Swift, Java, Android, Python, PHP) and the `@virgilsecurity/crypto` npm package. Pre-built xcframework, Go static libs, and Java JNI binaries for Pythia are also removed.
+- **Pythia and Relic removed**: The `VIRGIL_LIB_PYTHIA` CMake option no longer exists. Pythia modules have been removed from all language wrappers (C, Swift, Java, Android, Python, PHP, WASM) and the `@virgilsecurity/crypto` npm package. Pre-built xcframeworks, Go static libs, and Java JNI binaries for Pythia are also removed. `thirdparty/relic` is no longer fetched at build time.
+- **Ratchet PQC: `enable_post_quantum` removed from public session API**: PQC capability is now determined automatically at runtime based on the key material provided.
+- **Ratchet: `ERROR_FALCON` renamed to `ERROR_SIGN_FAILED`** in the ratchet status enum across all wrappers.
+- **Foundation group session array typedefs replaced with strong struct types**: Code that relied on raw array typedefs for group session data will need to update to the new struct-based types.
+
+### New
+
+- **Post-quantum cryptography enabled by default**: ML-KEM-768 and ML-DSA-65 are now compiled in by default. round5 and liboqs have been removed and replaced by the standalone `mlkem-native` and `mldsa-native` v1.0.0 libraries. PQC can be disabled with `VIRGIL_POST_QUANTUM=OFF`.
+- **Go ratchet wrapper**: A Go wrapper for the ratchet library is now available under `wrappers/go/`, with pre-built static libs for all supported platforms.
+- **Go module renamed**: The module path is now `github.com/VirgilSecurity/virgil-crypto-c/wrappers/go`. Update your `go.mod` accordingly.
+- **WASM package renamed**: The npm package is now `@virgilsecurity/virgil-crypto-core` (was `@virgilsecurity/crypto`).
+- **`VIRGIL_DISABLE_MULTI_THREADING` build option**: New CMake option for single-threaded and embedded targets.
 
 ### Changes
 
-- `thirdparty/relic` removed. Relic (BLS12-381 pairing) was exclusively consumed by Pythia; with Pythia removed, Relic is no longer needed or fetched at build time.
+- **mbedTLS upgraded to 3.6.5 LTS**: RSA operations now require a real RNG; tests no longer accept fake/seeded random for RSA sign/decrypt.
+- **ECIES default cipher changed from AES-256-CBC to AES-256-GCM**: Data encrypted with default parameters in previous versions must be decrypted with AES-256-CBC explicitly.
+- **Recipient cipher: staged decryption buffer**: Plaintext is no longer exposed to callers until authentication succeeds.
+- **Python wheels**: Packaged with `cibuildwheel`, published to PyPI for Linux (manylinux), macOS (arm64 + x86_64), and Windows.
+- **Java: `aarch64` normalized to `arm64`** in the JNI native resource directory, fixing library loading on Linux aarch64.
+
+### Bugfix
+
+- **PHP: bump bundled Composer to 2.9.8** — fixes PHP builds failing after GitHub migrated App installation tokens to a JWT format containing hyphens, which Composer 2.9.5 incorrectly rejected.
+- **Ratchet: optional PQC fields handled when identity key has no ML-KEM component**: Sessions with non-PQC identity keys no longer fail to serialize/deserialize.
+- **Ratchet: PQC sign/verify skipped when no KEM encapsulation occurred**: Avoids spurious signature failures in non-PQC sessions.
+- **Foundation: memory leak in `key_asn1_deserializer`** — dependencies were not released before context cleanup.
+- **Java JNI: constant getters restored** for nine foundation classes missing accessor methods in the generated bridge.
+- **Go: canonical import paths and disown-buffer returns fixed** in `phe` and `ratchet` packages — affected code could leak memory or return stale buffers.
+- **Swift: Bool return correctly propagated** through closure chains with buffer outputs.
+- **Swift: reserved keywords backtick-escaped** in result struct field names.
+
+
+## Version 0.19.0 released 2026-06-02
+
+> Not fully released — Java and PHP packages failed to publish. Superseded by 0.19.1.
 
 
 ## Version 0.17.2 released 2026-02-10

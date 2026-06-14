@@ -14,7 +14,9 @@
     <require interface="private key"/>
     <require interface="public key"/>
     <require class="message info der serializer"/>
+    <require interface="key wrap"/>
     <require class="key recipient list"/>
+    <require class="kek recipient list"/>
     <require class="aes256 gcm"/>
     <require class="ctr drbg"/>
     <require class="alg factory"/>
@@ -31,6 +33,7 @@
     <dependency name="signer hash" interface="hash"/>
 
     <property name="key recipients" class="key recipient list"/>
+    <property name="kek recipients" class="kek recipient list"/>
     <property name="signers" class="signer list"/>
     <property name="master key" class="buffer"/>
     <property name="derived keys" class="buffer"/>
@@ -38,6 +41,9 @@
     <property name="decryption recipient id" class="buffer"/>
     <property name="decryption recipient key" interface="private key"/>
     <property name="decryption password" class="buffer"/>
+    <property name="decryption kek id" class="buffer"/>
+    <property name="decryption kek" class="buffer"/>
+    <property name="decryption kek wrap" interface="key wrap"/>
     <property name="decryption cipher" interface="cipher"/>
     <property name="decryption padding" interface="padding"/>
     <property name="padding cipher" impl="padding cipher"/>
@@ -67,6 +73,14 @@
 
         <argument name="recipient id" class="data"/>
         <argument name="public key" interface="public key" access="retain"/>
+    </method>
+
+    <method name="add kek recipient">
+        Add recipient defined with a KEK identifier and key wrap algorithm.
+
+        <argument name="kek id" class="data"/>
+        <argument name="kek" class="data"/>
+        <argument name="key wrap" interface="key wrap" access="retain"/>
     </method>
 
     <method name="clear recipients">
@@ -170,6 +184,18 @@
         <return enum="status"/>
     </method>
 
+    <method name="start decryption with kek">
+        Initiate decryption process with a pre-shared symmetric key (KEK).
+        Message Info can be empty if it was embedded to encrypted data.
+
+        <argument name="kek id" class="data"/>
+        <argument name="kek" class="data"/>
+        <argument name="key wrap" interface="key wrap" access="retain"/>
+        <argument name="message info" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
     <method name="start decryption with key">
         Initiate decryption process with a recipient private key.
         Message Info can be empty if it was embedded to encrypted data.
@@ -263,6 +289,12 @@
         Note, this method change decryption state.
 
         <argument name="decryption key" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decrypt data encryption key with kek" declaration="private">
+        Decrypt data encryption key with a pre-shared KEK.
 
         <return enum="status"/>
     </method>

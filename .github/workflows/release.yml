@@ -16,6 +16,7 @@ on:
 permissions:
   contents: write
   id-token: write
+  pull-requests: write
 
 jobs:
   validate:
@@ -202,3 +203,59 @@ jobs:
     uses: ./.github/workflows/release-swift.yml
     with:
       version: ${{ inputs.version }}
+
+  create-gh-release:
+    name: Create GitHub Release
+    needs: [publish-php, verify-swift]
+    if: ${{ !contains(inputs.version, '-') && success() }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: refs/tags/v${{ inputs.version }}
+
+      - name: Extract changelog entry
+        run: |
+          awk '/^## Version ${{ inputs.version }} released /{found=1; next} found && /^## /{exit} found{print}' ChangeLog.md > release_notes.txt
+          [ -s release_notes.txt ] || { echo "ERROR: no ChangeLog entry found for v${{ inputs.version }}"; exit 1; }
+
+      - name: Create or update GitHub Release
+        run: |
+          gh release create "v${{ inputs.version }}" \
+            --title "v${{ inputs.version }}" \
+            --notes-file release_notes.txt \
+            --verify-tag \
+            2>/dev/null \
+          || gh release edit "v${{ inputs.version }}" \
+            --title "v${{ inputs.version }}" \
+            --notes-file release_notes.txt
+
+  merge-to-main:
+    name: Merge to main
+    needs: [publish-php, publish-java, publish-wasm, verify-swift]
+    if: ${{ !contains(inputs.version, '-') && success() }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: ${{ inputs.branch }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - name: Create PR
+        run: |
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore(release): merge v${VERSION} to main" \
+            --body "Automated merge of release v${VERSION} from \`${BRANCH}\` to \`main\`." \
+            || true
+
+      - name: Merge PR
+        run: |
+          PR=$(gh pr list --base main --head "$BRANCH" --json number | jq -r '.[0].number // empty')
+          if [ -n "$PR" ]; then
+            gh pr merge "$PR" --merge
+          else
+            echo "Nothing to merge"
+          fi

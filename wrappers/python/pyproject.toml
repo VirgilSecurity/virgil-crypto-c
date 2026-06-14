@@ -12,7 +12,7 @@ authors = [
     { name = "Virgil Security", email = "support@virgilsecurity.com" },
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Natural Language :: English",
     "Intended Audience :: Developers",
     "Programming Language :: C",

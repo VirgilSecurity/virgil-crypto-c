@@ -82,6 +82,10 @@ public class MessageInfo implements AutoCloseable {
         return FoundationJNI.INSTANCE.messageInfo_passwordRecipientInfoList(this.cCtx);
     }
 
+    public KekRecipientInfoList kekRecipientInfoList() {
+        return FoundationJNI.INSTANCE.messageInfo_kekRecipientInfoList(this.cCtx);
+    }
+
     public boolean hasCustomParams() {
         return FoundationJNI.INSTANCE.messageInfo_hasCustomParams(this.cCtx);
     }

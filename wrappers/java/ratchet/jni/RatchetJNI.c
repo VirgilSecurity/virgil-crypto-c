@@ -209,6 +209,22 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     vscr_ratchet_session_delete(*(vscr_ratchet_session_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1setRng (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrng) {
+    jclass rng_cls = (*jenv)->GetObjectClass(jenv, jrng);
+    if (NULL == rng_cls) {
+        VSCR_ASSERT("Class Rng not found.");
+    }
+    jfieldID rng_fidCtx = (*jenv)->GetFieldID(jenv, rng_cls, "cCtx", "J");
+    if (NULL == rng_fidCtx) {
+        VSCR_ASSERT("Class 'Rng' has no field 'cCtx'.");
+    }
+    jlong rng_c_ctx = (*jenv)->GetLongField(jenv, jrng, rng_fidCtx);
+    vscf_impl_t */*6*/ rng = *(vscf_impl_t */*6*/*)&rng_c_ctx;
+
+    vscr_ratchet_session_release_rng((vscr_ratchet_session_t /*2*/ *) c_ctx);
+    vscr_ratchet_session_use_rng((vscr_ratchet_session_t /*2*/ *) c_ctx, rng);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_session_t /*9*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*9*/**) &c_ctx;
@@ -623,16 +639,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
     // Cast class context
     vscr_ratchet_session_t /*9*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*9*/**) &c_ctx;
     
-    const vsc_buffer_t */*5*/ proxyResult = vscr_ratchet_session_serialize(ratchet_session_ctx /*a1*/);
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/ratchet/Buffer");
-    if (NULL == result_cls) {
-        VSCR_ASSERT("Class Buffer not found.");
-    }
-    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/ratchet/Buffer;");
-    if (NULL == result_methodID) {
-        VSCR_ASSERT("Class Buffer has no 'getInstance' method.");
-    }
-    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    vsc_buffer_t *proxyResult = vscr_ratchet_session_serialize(ratchet_session_ctx /*a1*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
+    vsc_buffer_delete(proxyResult);
     return ret;
 }
 

@@ -41,11 +41,17 @@ const initFoundationInterface = (Module, modules) => {
             const implTag = Module._vscf_impl_tag(ctxPtr);
             switch(implTag) {
 
+                case modules.FoundationImplTag.AES128_KW:
+                    return modules.Aes128Kw.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.AES256_CBC:
                     return modules.Aes256Cbc.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.AES256_GCM:
                     return modules.Aes256Gcm.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.AES256_KW:
+                    return modules.Aes256Kw.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.ALG_INFO_DER_DESERIALIZER:
                     return modules.AlgInfoDerDeserializer.newAndTakeCContext(ctxPtr);

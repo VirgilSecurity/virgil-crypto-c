@@ -154,6 +154,46 @@ const initRecipientCipher = (Module, modules) => {
             }
         }
 
+        addKekRecipient(kekId, kek, keyWrap) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('kekId', kekId);
+            precondition.ensureByteArray('kek', kek);
+            precondition.ensureImplementInterface('keyWrap', keyWrap, 'Foundation.KeyWrap', modules.FoundationInterfaceTag.KEY_WRAP, modules.FoundationInterface);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const kekIdSize = kekId.length * kekId.BYTES_PER_ELEMENT;
+            const kekIdPtr = Module._malloc(kekIdSize);
+            Module.HEAP8.set(kekId, kekIdPtr);
+            
+            // Create C structure vsc_data_t.
+            const kekIdCtxSize = Module._vsc_data_ctx_size();
+            const kekIdCtxPtr = Module._malloc(kekIdCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(kekIdCtxPtr, kekIdPtr, kekIdSize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const kekSize = kek.length * kek.BYTES_PER_ELEMENT;
+            const kekPtr = Module._malloc(kekSize);
+            Module.HEAP8.set(kek, kekPtr);
+            
+            // Create C structure vsc_data_t.
+            const kekCtxSize = Module._vsc_data_ctx_size();
+            const kekCtxPtr = Module._malloc(kekCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(kekCtxPtr, kekPtr, kekSize);
+            
+            try {
+                Module._vscf_recipient_cipher_add_kek_recipient(this.ctxPtr, kekIdCtxPtr, kekCtxPtr, keyWrap.ctxPtr);
+            } finally {
+                Module._free(kekIdPtr);
+                Module._free(kekIdCtxPtr);
+                Module._free(kekPtr);
+                Module._free(kekCtxPtr);
+            }
+        }
+
         clearRecipients() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_recipient_cipher_clear_recipients(this.ctxPtr);
@@ -298,6 +338,62 @@ const initRecipientCipher = (Module, modules) => {
                 return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        startDecryptionWithKek(kekId, kek, keyWrap, messageInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('kekId', kekId);
+            precondition.ensureByteArray('kek', kek);
+            precondition.ensureImplementInterface('keyWrap', keyWrap, 'Foundation.KeyWrap', modules.FoundationInterfaceTag.KEY_WRAP, modules.FoundationInterface);
+            precondition.ensureByteArray('messageInfo', messageInfo);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const kekIdSize = kekId.length * kekId.BYTES_PER_ELEMENT;
+            const kekIdPtr = Module._malloc(kekIdSize);
+            Module.HEAP8.set(kekId, kekIdPtr);
+            
+            // Create C structure vsc_data_t.
+            const kekIdCtxSize = Module._vsc_data_ctx_size();
+            const kekIdCtxPtr = Module._malloc(kekIdCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(kekIdCtxPtr, kekIdPtr, kekIdSize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const kekSize = kek.length * kek.BYTES_PER_ELEMENT;
+            const kekPtr = Module._malloc(kekSize);
+            Module.HEAP8.set(kek, kekPtr);
+            
+            // Create C structure vsc_data_t.
+            const kekCtxSize = Module._vsc_data_ctx_size();
+            const kekCtxPtr = Module._malloc(kekCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(kekCtxPtr, kekPtr, kekSize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const messageInfoSize = messageInfo.length * messageInfo.BYTES_PER_ELEMENT;
+            const messageInfoPtr = Module._malloc(messageInfoSize);
+            Module.HEAP8.set(messageInfo, messageInfoPtr);
+            
+            // Create C structure vsc_data_t.
+            const messageInfoCtxSize = Module._vsc_data_ctx_size();
+            const messageInfoCtxPtr = Module._malloc(messageInfoCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(messageInfoCtxPtr, messageInfoPtr, messageInfoSize);
+            
+            try {
+                const proxyResult = Module._vscf_recipient_cipher_start_decryption_with_kek(this.ctxPtr, kekIdCtxPtr, kekCtxPtr, keyWrap.ctxPtr, messageInfoCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(kekIdPtr);
+                Module._free(kekIdCtxPtr);
+                Module._free(kekPtr);
+                Module._free(kekCtxPtr);
+                Module._free(messageInfoPtr);
+                Module._free(messageInfoCtxPtr);
             }
         }
 

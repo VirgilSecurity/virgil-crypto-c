@@ -91,6 +91,15 @@ static const vsc_data_t oid_aes256_gcm = {oid_aes256_gcm_bytes, sizeof(oid_aes25
 static const byte oid_aes256_cbc_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A};
 static const vsc_data_t oid_aes256_cbc = {oid_aes256_cbc_bytes, sizeof(oid_aes256_cbc_bytes)};
 
+static const byte oid_aes128_kw_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x05};
+static const vsc_data_t oid_aes128_kw = {oid_aes128_kw_bytes, sizeof(oid_aes128_kw_bytes)};
+
+static const byte oid_aes192_kw_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x19};
+static const vsc_data_t oid_aes192_kw = {oid_aes192_kw_bytes, sizeof(oid_aes192_kw_bytes)};
+
+static const byte oid_aes256_kw_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2D};
+static const vsc_data_t oid_aes256_kw = {oid_aes256_kw_bytes, sizeof(oid_aes256_kw_bytes)};
+
 static const byte oid_cms_data_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x01};
 static const vsc_data_t oid_cms_data = {oid_cms_data_bytes, sizeof(oid_cms_data_bytes)};
 
@@ -238,6 +247,15 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
     case vscf_alg_id_AES256_CBC:
         return oid_aes256_cbc;
 
+    case vscf_alg_id_AES128_KW:
+        return oid_aes128_kw;
+
+    case vscf_alg_id_AES192_KW:
+        return oid_aes192_kw;
+
+    case vscf_alg_id_AES256_KW:
+        return oid_aes256_kw;
+
     case vscf_alg_id_PKCS5_PBKDF2:
         return oid_pkcs5_pbkdf2;
 
@@ -318,6 +336,18 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_aes256_cbc)) {
         return vscf_alg_id_AES256_CBC;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes128_kw)) {
+        return vscf_alg_id_AES128_KW;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes192_kw)) {
+        return vscf_alg_id_AES192_KW;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes256_kw)) {
+        return vscf_alg_id_AES256_KW;
     }
 
     if (vscf_oid_equal(oid, oid_pkcs5_pbkdf2)) {
@@ -423,6 +453,15 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_AES256_CBC:
         return oid_aes256_cbc;
+
+    case vscf_oid_id_AES128_KW:
+        return oid_aes128_kw;
+
+    case vscf_oid_id_AES192_KW:
+        return oid_aes192_kw;
+
+    case vscf_oid_id_AES256_KW:
+        return oid_aes256_kw;
 
     case vscf_oid_id_PKCS5_PBKDF2:
         return oid_pkcs5_pbkdf2;
@@ -537,6 +576,18 @@ vscf_oid_to_id(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_aes256_cbc)) {
         return vscf_oid_id_AES256_CBC;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes128_kw)) {
+        return vscf_oid_id_AES128_KW;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes192_kw)) {
+        return vscf_oid_id_AES192_KW;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes256_kw)) {
+        return vscf_oid_id_AES256_KW;
     }
 
     if (vscf_oid_equal(oid, oid_pkcs5_pbkdf2)) {
@@ -659,6 +710,15 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_AES256_CBC:
         return vscf_alg_id_AES256_CBC;
+
+    case vscf_oid_id_AES128_KW:
+        return vscf_alg_id_AES128_KW;
+
+    case vscf_oid_id_AES192_KW:
+        return vscf_alg_id_AES192_KW;
+
+    case vscf_oid_id_AES256_KW:
+        return vscf_alg_id_AES256_KW;
 
     case vscf_oid_id_PKCS5_PBKDF2:
         return vscf_alg_id_PKCS5_PBKDF2;

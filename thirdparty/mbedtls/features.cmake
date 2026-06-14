@@ -54,6 +54,7 @@ option(MBEDTLS_SHA384_C "Enable feature 'SHA384 C'." ON)
 option(MBEDTLS_SHA512_C "Enable feature 'SHA512 C'." ON)
 option(MBEDTLS_CIPHER_C "Enable feature 'CIPHER C'." ON)
 option(MBEDTLS_AES_C "Enable feature 'AES C'." ON)
+option(MBEDTLS_NIST_KW_C "Enable feature 'NIST KW C'." ON)
 option(MBEDTLS_GCM_C "Enable feature 'GCM C'." ON)
 option(MBEDTLS_MD_C "Enable feature 'MD C'." ON)
 option(MBEDTLS_BIGNUM_C "Enable feature 'BIGNUM C'." ON)
@@ -90,6 +91,7 @@ mark_as_advanced(
         MBEDTLS_SHA512_C
         MBEDTLS_CIPHER_C
         MBEDTLS_AES_C
+        MBEDTLS_NIST_KW_C
         MBEDTLS_GCM_C
         MBEDTLS_MD_C
         MBEDTLS_BIGNUM_C
@@ -117,6 +119,15 @@ mark_as_advanced(
         MBEDTLS_AES_ALT
         MBEDTLS_GCM_ALT
         )
+
+if(MBEDTLS_NIST_KW_C AND NOT MBEDTLS_AES_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_NIST_KW_C depends on the feature:")
+    message("     MBEDTLS_AES_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(MBEDTLS_ECP_C AND NOT MBEDTLS_BIGNUM_C)
     message("-- error --")

@@ -235,6 +235,16 @@ const (
     */
     FoundationErrorErrorBadMessageInfoFooter int = -309
     /*
+    * Chunk cipher frame counter limit is reached,
+    * so no more chunks can be processed under the same key and nonce.
+    */
+    FoundationErrorErrorChunkCounterLimitReached int = -310
+    /*
+    * Content encryption key can not be decrypted with a given
+    * key encryption key (KEK).
+    */
+    FoundationErrorErrorKeyRecipientKekIsWrong int = -311
+    /*
     * Brainkey password length is out of range.
     */
     FoundationErrorErrorInvalidBrainkeyPasswordLen int = -401
@@ -432,6 +442,10 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Signature format is corrupted."}
         case C.vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER:
             return &FoundationError {int(status), "Message Info footer is corrupted."}
+        case C.vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED:
+            return &FoundationError {int(status), "Chunk cipher frame counter limit is reached, so no more chunks can be processed under the same key and nonce."}
+        case C.vscf_status_ERROR_KEY_RECIPIENT_KEK_IS_WRONG:
+            return &FoundationError {int(status), "Content encryption key can not be decrypted with a given key encryption key (KEK)."}
         case C.vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
             return &FoundationError {int(status), "Brainkey password length is out of range."}
         case C.vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN:

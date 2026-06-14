@@ -1,0 +1,72 @@
+<class name="kek recipient list" scope="internal">
+    Handles a list of KEK recipients for pending encryption.
+
+    <require interface="key wrap"/>
+
+    <property name="kek id" class="buffer"/>
+    <property name="kek" class="buffer"/>
+    <property name="key wrap" interface="key wrap"/>
+    <property name="next" class="kek recipient list"/>
+    <property name="prev" class="kek recipient list"/>
+
+    <method name="add">
+        Add new item to the list.
+
+        <argument name="kek id" class="data"/>
+        <argument name="kek" class="data"/>
+        <argument name="key wrap" interface="key wrap" access="retain"/>
+    </method>
+
+
+    <method name="has kek recipient" is_const="1">
+        Return true if given list has kek recipient.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="kek id" is_const="1">
+        Return KEK identifier.
+
+        <return class="data"/>
+    </method>
+
+    <method name="kek" is_const="1">
+        Return KEK bytes.
+
+        <return class="data"/>
+    </method>
+
+    <method name="key wrap" is_const="1">
+        Return key wrap implementation.
+
+        <return interface="key wrap" access="readwrite"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readonly"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self" access="readonly"/>
+    </method>
+</class>

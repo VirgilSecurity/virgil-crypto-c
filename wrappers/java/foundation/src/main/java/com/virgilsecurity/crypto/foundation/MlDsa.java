@@ -90,6 +90,22 @@ public class MlDsa implements AutoCloseable, Alg, KeyAlg, KeySigner {
         return true;
     }
 
+    public int getSeedLen() {
+        return 32;
+    }
+
+    public int getPublicKeyLen() {
+        return 1952;
+    }
+
+    public int getSecretKeyLen() {
+        return 4032;
+    }
+
+    public int getSignatureLen() {
+        return 3309;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.mlDsa_algId(this.cCtx);
     }

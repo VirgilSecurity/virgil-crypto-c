@@ -62,12 +62,16 @@ option(VSCF_KEY_RECIPIENT_INFO "Enable class 'key recipient info'." ON)
 option(VSCF_KEY_RECIPIENT_INFO_LIST "Enable class 'key recipient info list'." ON)
 option(VSCF_PASSWORD_RECIPIENT_INFO "Enable class 'password recipient info'." ON)
 option(VSCF_PASSWORD_RECIPIENT_INFO_LIST "Enable class 'password recipient info list'." ON)
+option(VSCF_KEK_RECIPIENT_INFO "Enable class 'kek recipient info'." ON)
+option(VSCF_KEK_RECIPIENT_INFO_LIST "Enable class 'kek recipient info list'." ON)
 option(VSCF_ALG_FACTORY "Enable class 'alg factory'." ON)
 option(VSCF_KEY_ALG_FACTORY "Enable class 'key alg factory'." ON)
 option(VSCF_ECIES "Enable class 'ecies'." ON)
 option(VSCF_ECIES_ENVELOPE "Enable class 'ecies envelope'." ON)
 option(VSCF_RECIPIENT_CIPHER "Enable class 'recipient cipher'." ON)
+option(VSCF_CHUNK_CIPHER "Enable class 'chunk cipher'." ON)
 option(VSCF_KEY_RECIPIENT_LIST "Enable class 'key recipient list'." ON)
+option(VSCF_KEK_RECIPIENT_LIST "Enable class 'kek recipient list'." ON)
 option(VSCF_LIST_KEY_VALUE_NODE "Enable class 'list key value node'." ON)
 option(VSCF_MESSAGE_INFO_CUSTOM_PARAMS "Enable class 'message info custom params'." ON)
 option(VSCF_KEY_PROVIDER "Enable class 'key provider'." ON)
@@ -132,12 +136,15 @@ option(VSCF_MESSAGE_INFO_SERIALIZER "Enable interface 'message info serializer'.
 option(VSCF_MESSAGE_INFO_FOOTER_SERIALIZER "Enable interface 'message info footer serializer'." ON)
 option(VSCF_PADDING "Enable interface 'padding'." ON)
 option(VSCF_KEM "Enable interface 'kem'." ON)
+option(VSCF_KEY_WRAP "Enable interface 'key wrap'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
 option(VSCF_SHA512 "Enable implementation 'sha512'." ON)
 option(VSCF_AES256_GCM "Enable implementation 'aes256 gcm'." ON)
 option(VSCF_AES256_CBC "Enable implementation 'aes256 cbc'." ON)
+option(VSCF_AES128_KW "Enable implementation 'aes128 kw'." ON)
+option(VSCF_AES256_KW "Enable implementation 'aes256 kw'." ON)
 option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
 option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
@@ -204,12 +211,16 @@ mark_as_advanced(
         VSCF_KEY_RECIPIENT_INFO_LIST
         VSCF_PASSWORD_RECIPIENT_INFO
         VSCF_PASSWORD_RECIPIENT_INFO_LIST
+        VSCF_KEK_RECIPIENT_INFO
+        VSCF_KEK_RECIPIENT_INFO_LIST
         VSCF_ALG_FACTORY
         VSCF_KEY_ALG_FACTORY
         VSCF_ECIES
         VSCF_ECIES_ENVELOPE
         VSCF_RECIPIENT_CIPHER
+        VSCF_CHUNK_CIPHER
         VSCF_KEY_RECIPIENT_LIST
+        VSCF_KEK_RECIPIENT_LIST
         VSCF_LIST_KEY_VALUE_NODE
         VSCF_MESSAGE_INFO_CUSTOM_PARAMS
         VSCF_KEY_PROVIDER
@@ -274,12 +285,15 @@ mark_as_advanced(
         VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
         VSCF_PADDING
         VSCF_KEM
+        VSCF_KEY_WRAP
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384
         VSCF_SHA512
         VSCF_AES256_GCM
         VSCF_AES256_CBC
+        VSCF_AES128_KW
+        VSCF_AES256_KW
         VSCF_ASN1RD
         VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
@@ -708,11 +722,29 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_MESSAGE_INFO_DER_SERIALIZER)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_WRAP)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_KEY_WRAP - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_RECIPIENT_LIST)
     message("-- error --")
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_KEY_RECIPIENT_LIST - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEK_RECIPIENT_LIST)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_KEK_RECIPIENT_LIST - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -780,11 +812,29 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_RANDOM_PADDING)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_CHUNK_CIPHER AND NOT VSCF_AES256_GCM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CHUNK_CIPHER depends on the feature:")
+    message("     VSCF_AES256_GCM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_KEY_RECIPIENT_LIST AND NOT VSCF_PUBLIC_KEY)
     message("-- error --")
     message("--")
     message("Feature VSCF_KEY_RECIPIENT_LIST depends on the feature:")
     message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEK_RECIPIENT_LIST AND NOT VSCF_KEY_WRAP)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEK_RECIPIENT_LIST depends on the feature:")
+    message("     VSCF_KEY_WRAP - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -1424,6 +1474,42 @@ if(VSCF_AES256_CBC AND NOT VSCF_CIPHER_ALG_INFO)
     message("--")
     message("Feature VSCF_AES256_CBC depends on the feature:")
     message("     VSCF_CIPHER_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES128_KW AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES128_KW depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES128_KW AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES128_KW depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_KW AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_KW depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_KW AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_KW depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

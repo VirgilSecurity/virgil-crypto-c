@@ -70,6 +70,10 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         clearResources();
     }
 
+    public int getGatherLenMax() {
+        return 48;
+    }
+
     public boolean isStrong() {
         return FoundationJNI.INSTANCE.seedEntropySource_isStrong(this.cCtx);
     }

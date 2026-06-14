@@ -36,7 +36,7 @@ import Foundation
 import VSCFoundation
 
 /// Represents group message type
-@objc(VSCFGroupMsgType) public enum GroupMsgType: Int {
+@objc public enum GroupMsgType: Int {
     /// Group info type with encryption key.
     /// This type of message should be encrypted before transferring.
     case groupInfo = 1

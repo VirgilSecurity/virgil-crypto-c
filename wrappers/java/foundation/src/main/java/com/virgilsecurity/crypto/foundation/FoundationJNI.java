@@ -90,6 +90,8 @@ public class FoundationJNI {
 
     public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
 
+    public native KekRecipientInfoList messageInfo_kekRecipientInfoList(long cCtx);
+
     public native boolean messageInfo_hasCustomParams(long cCtx);
 
     public native MessageInfoCustomParams messageInfo_customParams(long cCtx);
@@ -166,6 +168,36 @@ public class FoundationJNI {
 
     public native void passwordRecipientInfoList_clear(long cCtx);
 
+    public native long kekRecipientInfo_new();
+
+    public native void kekRecipientInfo_close(long cCtx);
+
+    public native long kekRecipientInfo_new(byte[] kekId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey);
+
+    public native byte[] kekRecipientInfo_kekId(long cCtx);
+
+    public native AlgInfo kekRecipientInfo_keyEncryptionAlgorithm(long cCtx);
+
+    public native byte[] kekRecipientInfo_encryptedKey(long cCtx);
+
+    public native long kekRecipientInfoList_new();
+
+    public native void kekRecipientInfoList_close(long cCtx);
+
+    public native boolean kekRecipientInfoList_hasItem(long cCtx);
+
+    public native KekRecipientInfo kekRecipientInfoList_item(long cCtx);
+
+    public native boolean kekRecipientInfoList_hasNext(long cCtx);
+
+    public native KekRecipientInfoList kekRecipientInfoList_next(long cCtx);
+
+    public native boolean kekRecipientInfoList_hasPrev(long cCtx);
+
+    public native KekRecipientInfoList kekRecipientInfoList_prev(long cCtx);
+
+    public native void kekRecipientInfoList_clear(long cCtx);
+
     public native Hash algFactory_createHashFromInfo(AlgInfo algInfo);
 
     public native Mac algFactory_createMacFromInfo(AlgInfo algInfo);
@@ -234,6 +266,8 @@ public class FoundationJNI {
 
     public native void recipientCipher_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey);
 
+    public native void recipientCipher_addKekRecipient(long cCtx, byte[] kekId, byte[] kek, KeyWrap keyWrap);
+
     public native void recipientCipher_clearRecipients(long cCtx);
 
     public native void recipientCipher_addSigner(long cCtx, byte[] signerId, PrivateKey privateKey) throws FoundationException;
@@ -256,6 +290,8 @@ public class FoundationJNI {
 
     public native byte[] recipientCipher_finishEncryption(long cCtx) throws FoundationException;
 
+    public native void recipientCipher_startDecryptionWithKek(long cCtx, byte[] kekId, byte[] kek, KeyWrap keyWrap, byte[] messageInfo) throws FoundationException;
+
     public native void recipientCipher_startDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException;
 
     public native void recipientCipher_startVerifiedDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo, byte[] messageInfoFooter) throws FoundationException;
@@ -275,6 +311,38 @@ public class FoundationJNI {
     public native int recipientCipher_messageInfoFooterLen(long cCtx);
 
     public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
+
+    public native long chunkCipher_new();
+
+    public native void chunkCipher_close(long cCtx);
+
+    public native void chunkCipher_setRandom(long cCtx, Random random);
+
+    public native void chunkCipher_setKey(long cCtx, byte[] key);
+
+    public native void chunkCipher_setNonce(long cCtx, byte[] nonce);
+
+    public native void chunkCipher_setChunkSize(long cCtx, int chunkSize);
+
+    public native byte[] chunkCipher_nonce(long cCtx);
+
+    public native int chunkCipher_nonceLen(long cCtx);
+
+    public native int chunkCipher_encryptionOutLen(long cCtx, int dataLen);
+
+    public native void chunkCipher_startEncryption(long cCtx) throws FoundationException;
+
+    public native byte[] chunkCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] chunkCipher_finishEncryption(long cCtx) throws FoundationException;
+
+    public native int chunkCipher_decryptionOutLen(long cCtx, int dataLen);
+
+    public native void chunkCipher_startDecryption(long cCtx) throws FoundationException;
+
+    public native byte[] chunkCipher_processDecryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] chunkCipher_finishDecryption(long cCtx) throws FoundationException;
 
     public native long messageInfoCustomParams_new();
 
@@ -729,6 +797,42 @@ public class FoundationJNI {
     public native int aes256Cbc_decryptedOutLen(long cCtx, int dataLen);
 
     public native byte[] aes256Cbc_finish(long cCtx) throws FoundationException;
+
+    public native long aes128Kw_new();
+
+    public native void aes128Kw_close(long cCtx);
+
+    public native AlgId aes128Kw_algId(long cCtx);
+
+    public native AlgInfo aes128Kw_produceAlgInfo(long cCtx);
+
+    public native void aes128Kw_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native int aes128Kw_wrappedLen(long cCtx, int dataLen);
+
+    public native int aes128Kw_unwrappedLen(long cCtx, int dataLen);
+
+    public native byte[] aes128Kw_wrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
+    public native byte[] aes128Kw_unwrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
+    public native long aes256Kw_new();
+
+    public native void aes256Kw_close(long cCtx);
+
+    public native AlgId aes256Kw_algId(long cCtx);
+
+    public native AlgInfo aes256Kw_produceAlgInfo(long cCtx);
+
+    public native void aes256Kw_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native int aes256Kw_wrappedLen(long cCtx, int dataLen);
+
+    public native int aes256Kw_unwrappedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Kw_wrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
+
+    public native byte[] aes256Kw_unwrap(long cCtx, byte[] kek, byte[] data) throws FoundationException;
 
     public native long asn1rd_new();
 

@@ -62,6 +62,8 @@ generate_identity_private_key(vscf_key_provider_t *key_provider, bool enable_pqc
 vscf_impl_t *
 generate_identity_private_key_ml_dsa(vscf_key_provider_t *key_provider);
 vscf_impl_t *
+generate_identity_private_key_curve25519_ed25519(vscf_key_provider_t *key_provider);
+vscf_impl_t *
 generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pqc);
 void
 generate_falcon_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);

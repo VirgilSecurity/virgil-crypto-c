@@ -2,8 +2,13 @@
 
 # Virgil Security Crypto Library for C
 
-[![Build Linux](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-linux.yml/badge.svg)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-linux.yml)
-[![Build macOS](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-macos.yml/badge.svg)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-macos.yml)
+[![Build Linux](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-linux.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-linux.yml?query=branch%3Adevelop)
+[![Build macOS](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-macos.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-macos.yml?query=branch%3Adevelop)
+[![Build Go](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-go.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-go.yml?query=branch%3Adevelop)
+[![Build Java](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-java.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-java.yml?query=branch%3Adevelop)
+[![Build PHP](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-php.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-php.yml?query=branch%3Adevelop)
+[![Build Python](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-python.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-python.yml?query=branch%3Adevelop)
+[![Build WASM](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-wasm.yml/badge.svg?branch=develop)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-wasm.yml?query=branch%3Adevelop)
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat)](https://www.swift.org/package-manager/)
 
 

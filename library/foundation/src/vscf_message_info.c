@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_message_info_defs.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 
 // clang-format on
 //  @end
@@ -233,6 +235,7 @@ vscf_message_info_init_ctx(vscf_message_info_t *self) {
 
     self->key_recipients = vscf_key_recipient_info_list_new();
     self->password_recipients = vscf_password_recipient_info_list_new();
+    self->kek_recipients = vscf_kek_recipient_info_list_new();
 }
 
 //
@@ -247,6 +250,7 @@ vscf_message_info_cleanup_ctx(vscf_message_info_t *self) {
 
     vscf_key_recipient_info_list_destroy(&self->key_recipients);
     vscf_password_recipient_info_list_destroy(&self->password_recipients);
+    vscf_kek_recipient_info_list_destroy(&self->kek_recipients);
     vscf_message_info_custom_params_destroy(&self->custom_params);
     vscf_impl_destroy(&self->data_encryption_alg_info);
     vscf_impl_destroy(&self->cipher_kdf_alg_info);
@@ -282,6 +286,44 @@ vscf_message_info_add_password_recipient(
     VSCF_ASSERT_PTR(self->password_recipients);
 
     vscf_password_recipient_info_list_add(self->password_recipients, password_recipient_ref);
+}
+
+//
+//  Add recipient that is defined by a pre-shared KEK.
+//
+VSCF_PRIVATE void
+vscf_message_info_add_kek_recipient(vscf_message_info_t *self, vscf_kek_recipient_info_t **kek_recipient_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kek_recipient_ref);
+    VSCF_ASSERT_PTR(*kek_recipient_ref);
+    VSCF_ASSERT_PTR(self->kek_recipients);
+
+    vscf_kek_recipient_info_list_add(self->kek_recipients, kek_recipient_ref);
+}
+
+//
+//  Return list with a "kek recipient info" elements.
+//
+VSCF_PUBLIC const vscf_kek_recipient_info_list_t *
+vscf_message_info_kek_recipient_info_list(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->kek_recipients);
+
+    return self->kek_recipients;
+}
+
+//
+//  Return list with a "kek recipient info" elements.
+//
+VSCF_PRIVATE vscf_kek_recipient_info_list_t *
+vscf_message_info_kek_recipient_info_list_modifiable(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->kek_recipients);
+
+    return self->kek_recipients;
 }
 
 //
@@ -361,9 +403,11 @@ vscf_message_info_clear_recipients(vscf_message_info_t *self) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->key_recipients);
     VSCF_ASSERT_PTR(self->password_recipients);
+    VSCF_ASSERT_PTR(self->kek_recipients);
 
     vscf_key_recipient_info_list_clear(self->key_recipients);
     vscf_password_recipient_info_list_clear(self->password_recipients);
+    vscf_kek_recipient_info_list_clear(self->kek_recipients);
 }
 
 //

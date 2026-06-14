@@ -66,6 +66,7 @@ vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_SHA512_C
 #cmakedefine MBEDTLS_CIPHER_C
 #cmakedefine MBEDTLS_AES_C
+#cmakedefine MBEDTLS_NIST_KW_C
 #cmakedefine MBEDTLS_GCM_C
 #cmakedefine MBEDTLS_MD_C
 #cmakedefine MBEDTLS_BIGNUM_C
