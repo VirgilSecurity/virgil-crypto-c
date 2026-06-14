@@ -1,5 +1,16 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.20.0 released 2026-06-14
+
+### New
+
+- **AES Key Wrap and KEKRecipientInfo support (RFC 3394 / RFC 5652 §6.2.3)**: Added AES-128 and AES-256 key wrap primitives, a `kek_recipient_info` data class, and KEK-based encryption/decryption in the recipient cipher with CMS DER serialization. A pre-shared symmetric key-encryption-key can now be used as a message recipient alongside public-key and password recipients. Malformed message info is rejected with precise error statuses rather than aborting. Available in all language wrappers.
+- **Chunk cipher (`vscf_chunk_cipher`)**: New AES-256-GCM streaming cipher that encrypts data in fixed-size chunks, each carrying its own authentication tag. Uses a TLS 1.3-style per-chunk nonce and a mandatory FIN sentinel frame, so truncation, reordering, and tampering are detected; the frame counter is a bounded 64-bit value to prevent nonce reuse. Available in all language wrappers.
+
+### Bugfix
+
+- **Java: migrate `commons-lang` 2.6 to `commons-lang3` 3.18.0 (CVE-2025-48924)** — removes a vulnerable transitive dependency from the Java/Android wrappers.
+
 ## Version 0.19.2 released 2026-06-02
 
 ### Bugfix
