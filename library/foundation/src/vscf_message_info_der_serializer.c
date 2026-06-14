@@ -2474,7 +2474,17 @@ vscf_message_info_der_serializer_deserialize(
     //  Read: VirgilMessageInfo
     //
     vscf_asn1_reader_reset(self->asn1_reader, data);
-    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const size_t message_info_len = vscf_asn1_reader_read_sequence(self->asn1_reader);
+
+    //  The optional fields below live inside the VirgilMessageInfo SEQUENCE. Reads must stop at the
+    //  end of that SEQUENCE, not at the end of `data` — a caller may pass a buffer that has trailing
+    //  bytes after the message info (e.g. the whole ciphertext stream). `left_len()` counts to the
+    //  end of `data`, so capture the floor value it reaches once the SEQUENCE content is consumed and
+    //  gate every optional read on it. Without this, a trailing byte of 0xA0..0xA3 is misread as an
+    //  optional [0]..[3] field and parsing the following bytes fails intermittently.
+    const size_t left_after_header = vscf_asn1_reader_left_len(self->asn1_reader);
+    const size_t message_info_end_left =
+            (left_after_header > message_info_len) ? (left_after_header - message_info_len) : 0;
 
     //
     //  Read: version
@@ -2496,7 +2506,7 @@ vscf_message_info_der_serializer_deserialize(
     //
     //  Read: customParams [0] OPTIONAL
     //
-    if (vscf_asn1_reader_left_len(self->asn1_reader)) {
+    if (vscf_asn1_reader_left_len(self->asn1_reader) > message_info_end_left) {
         const size_t custom_params_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
         if (custom_params_tag_len != 0) {
             vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params(message_info);
@@ -2507,7 +2517,7 @@ vscf_message_info_der_serializer_deserialize(
     //
     //  Read: cipherKdf [1] OPTIONAL
     //
-    if (vscf_asn1_reader_left_len(self->asn1_reader)) {
+    if (vscf_asn1_reader_left_len(self->asn1_reader) > message_info_end_left) {
         const size_t cipher_kdf_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 1);
         if (cipher_kdf_tag_len != 0) {
             vscf_message_info_der_serializer_deserialize_cipher_kdf(self, message_info, &error_ctx);
@@ -2517,7 +2527,7 @@ vscf_message_info_der_serializer_deserialize(
     //
     //  Read: footerInfo [2] OPTIONAL
     //
-    if (vscf_asn1_reader_left_len(self->asn1_reader)) {
+    if (vscf_asn1_reader_left_len(self->asn1_reader) > message_info_end_left) {
         const size_t footer_info_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 2);
         if (footer_info_tag_len != 0) {
             vscf_message_info_der_serializer_deserialize_footer_info(self, message_info, &error_ctx);
@@ -2527,7 +2537,7 @@ vscf_message_info_der_serializer_deserialize(
     //
     //  Read: cipherPadding [3] OPTIONAL
     //
-    if (vscf_asn1_reader_left_len(self->asn1_reader)) {
+    if (vscf_asn1_reader_left_len(self->asn1_reader) > message_info_end_left) {
         const size_t cipher_padding_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 3);
         if (cipher_padding_tag_len != 0) {
             vscf_message_info_der_serializer_deserialize_cipher_padding(self, message_info, &error_ctx);
