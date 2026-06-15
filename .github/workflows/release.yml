@@ -242,20 +242,32 @@ jobs:
       BRANCH: ${{ inputs.branch }}
       VERSION: ${{ inputs.version }}
     steps:
-      - name: Create PR
-        run: |
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "chore(release): merge v${VERSION} to main" \
-            --body "Automated merge of release v${VERSION} from \`${BRANCH}\` to \`main\`." \
-            || true
+      # Checkout is required: gh derives the repository from the git remote, and
+      # without it `gh pr create`/`gh pr list` fail with "not a git repository".
+      - uses: actions/checkout@v6
 
-      - name: Merge PR
+      - name: Merge release branch to main
         run: |
-          PR=$(gh pr list --base main --head "$BRANCH" --json number | jq -r '.[0].number // empty')
-          if [ -n "$PR" ]; then
-            gh pr merge "$PR" --merge
-          else
-            echo "Nothing to merge"
+          set -euo pipefail
+
+          PR=$(gh pr list --base main --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -z "$PR" ]; then
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "chore(release): merge v${VERSION} to main" \
+              --body "Automated merge of release v${VERSION} from \`${BRANCH}\` to \`main\`."
+            PR=$(gh pr list --base main --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
           fi
+
+          if [ -z "$PR" ]; then
+            echo "::error::Could not create or locate a ${BRANCH}->main PR for v${VERSION}"
+            exit 1
+          fi
+
+          echo "Merging PR #${PR} into main"
+          # --admin bypasses required reviews on the protected main branch. This needs the
+          # Actions token to be a branch-protection bypass actor; if it is not, this step
+          # fails loudly (instead of the previous silent success) and a maintainer merges
+          # PR #${PR} manually.
+          gh pr merge "$PR" --merge --admin
