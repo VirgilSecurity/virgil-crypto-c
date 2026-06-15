@@ -1880,6 +1880,40 @@ test__kek__crafted_message_info__deserializes(void) {
     vsc_buffer_destroy(&mi);
 }
 
+//  A message info followed by trailing bytes (e.g. the ciphertext stream) must deserialize using
+//  only the VirgilMessageInfo SEQUENCE; a trailing 0xA2 must NOT be misread as the optional
+//  footerInfo [2] field. Regression for the intermittent BAD_MESSAGE_INFO when decrypting a
+//  freshly encrypted KEK message whose ciphertext happened to start with 0xA0..0xA3.
+static void
+test__deserialize__message_info_with_trailing_bytes__ignores_trailing(void) {
+    vsc_data_t kek_id = vsc_data(k_regr_kek_id, sizeof(k_regr_kek_id));
+    vsc_buffer_t *mi = build_kek_message_info(
+            kek_id, vsc_data(k_regr_enc_key, sizeof(k_regr_enc_key)), vsc_data(k_regr_nonce, sizeof(k_regr_nonce)));
+
+    //  Append trailing bytes starting with every optional context tag the parser checks for.
+    const byte trailing[] = {0xA2, 0x10, 0x38, 0x1b, 0xA0, 0xA1, 0xA3, 0x00, 0xFF};
+    vsc_buffer_t *with_tail = vsc_buffer_new_with_capacity(vsc_buffer_len(mi) + sizeof(trailing));
+    vsc_buffer_write_data(with_tail, vsc_buffer_data(mi));
+    vsc_buffer_write_data(with_tail, vsc_data(trailing, sizeof(trailing)));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+    vscf_message_info_t *parsed =
+            vscf_message_info_der_serializer_deserialize(serializer, vsc_buffer_data(with_tail), &error);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(parsed);
+    const vscf_kek_recipient_info_list_t *list = vscf_message_info_kek_recipient_info_list(parsed);
+    TEST_ASSERT_TRUE(vscf_kek_recipient_info_list_has_item(list));
+
+    vscf_message_info_destroy(&parsed);
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vsc_buffer_destroy(&with_tail);
+    vsc_buffer_destroy(&mi);
+}
+
 //  Empty encryptedKey OCTET STRING must be rejected gracefully, not abort the deserializer.
 static void
 test__kek__empty_encrypted_key__fails_without_abort(void) {
@@ -1980,6 +2014,7 @@ main(void) {
     RUN_TEST(test__decrypt__kek_algorithm_mismatch__fails);
 
     RUN_TEST(test__kek__crafted_message_info__deserializes);
+    RUN_TEST(test__deserialize__message_info_with_trailing_bytes__ignores_trailing);
     RUN_TEST(test__kek__empty_encrypted_key__fails_without_abort);
     RUN_TEST(test__kek__short_encrypted_key__fails_without_abort);
     RUN_TEST(test__kek__misaligned_encrypted_key__fails_without_abort);
