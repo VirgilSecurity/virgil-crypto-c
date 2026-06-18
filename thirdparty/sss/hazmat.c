@@ -33,6 +33,12 @@
 #include <string.h>
 
 
+/* virgil-crypto-c modification: maximum number of key-shares (x in 1..255, so
+ * n and k are bounded by 255). Used to size fixed-length arrays in place of the
+ * upstream C99 VLAs, which MSVC does not support. */
+#define VSCF_SSS_MAX_KEYSHARES 255
+
+
 typedef struct {
     uint8_t x;
     uint8_t y;
@@ -286,10 +292,11 @@ vscf_sss_create_keyshares(sss_Keyshare *out, const uint8_t key[32], uint8_t n, u
     assert(k <= n);
 
     uint8_t share_idx, coeff_idx, unbitsliced_x;
-    /* virgil-crypto-c modification: size the coefficient VLA with a floor of 1
-     * so that k == 1 does not declare a zero-length array (a constraint
-     * violation in strict C99/C11). Only the first (k - 1) rows are ever used. */
-    uint32_t poly0[8], poly[(k > 1) ? (k - 1) : 1][8], x[8], y[8], xpow[8], tmp[8];
+    /* virgil-crypto-c modification: fixed-size array instead of the upstream C99
+     * VLA `poly[k - 1][8]` for MSVC compatibility (MSVC has no VLA support, and
+     * a VLA also made k == 1 a zero-length array). Only the first (k - 1) rows
+     * are ever used. */
+    uint32_t poly0[8], poly[VSCF_SSS_MAX_KEYSHARES][8], x[8], y[8], xpow[8], tmp[8];
 
     /* Put the secret in the bottom part of the polynomial */
     bitslice(poly0, key);
@@ -325,7 +332,10 @@ vscf_sss_create_keyshares(sss_Keyshare *out, const uint8_t key[32], uint8_t n, u
 void
 vscf_sss_combine_keyshares(uint8_t key[32], const sss_Keyshare *key_shares, uint8_t k) {
     size_t share_idx, idx1, idx2;
-    uint32_t xs[k][8], ys[k][8];
+    /* virgil-crypto-c modification: fixed-size arrays instead of upstream C99
+     * VLAs `xs[k][8]`/`ys[k][8]` for MSVC compatibility. Only the first k rows
+     * are used. */
+    uint32_t xs[VSCF_SSS_MAX_KEYSHARES][8], ys[VSCF_SSS_MAX_KEYSHARES][8];
     uint32_t num[8], denom[8], tmp[8];
     uint32_t secret[8] = {0};
 
