@@ -153,16 +153,19 @@ VSCF_PUBLIC vscf_status_t
 vscf_shamir_setup_defaults(vscf_shamir_t *self) VSCF_NODISCARD;
 
 //
-//  Calculate the length in bytes of a single share produced for a secret
-//  of the given length.
+//  Calculate an upper bound on the length in bytes of a single share
+//  produced for a secret of the given length. The buffer given to 'split'
+//  must be at least this size; the actual written length may be a few
+//  bytes smaller.
 //
 VSCF_PUBLIC size_t
 vscf_shamir_share_len(const vscf_shamir_t *self, size_t secret_len);
 
 //
-//  Calculate the length in bytes of the buffer needed to hold all shares
-//  produced by 'split' for a secret of the given length and the given
-//  number of shares.
+//  Calculate an upper bound on the length in bytes of the buffer needed to
+//  hold all shares produced by 'split' for a secret of the given length and
+//  the given number of shares. The actual written length is reported on the
+//  output buffer by 'split'.
 //
 VSCF_PUBLIC size_t
 vscf_shamir_shares_len(const vscf_shamir_t *self, size_t secret_len, size_t share_count);
@@ -182,8 +185,8 @@ vscf_shamir_recovered_secret_len(const vscf_shamir_t *self, size_t shares_len, s
 //
 //  Constraints: 1 <= threshold <= share count <= 255.
 //
-//  The produced shares are written consecutively to 'out', each of length
-//  'share len(secret.len)'.
+//  The produced shares are written consecutively to 'out', all of equal
+//  length and each at most 'share len(secret.len)' bytes.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_shamir_split(vscf_shamir_t *self, vsc_data_t secret, size_t threshold, size_t share_count, vsc_buffer_t *out) VSCF_NODISCARD;
@@ -194,8 +197,12 @@ vscf_shamir_split(vscf_shamir_t *self, vsc_data_t secret, size_t threshold, size
 //  time.
 //
 //  Returns 'success' and writes the secret to 'secret' on success.
-//  Returns 'error shamir recovery failed' if the shares are wrong,
-//  tampered, insufficient, or do not belong to the same split.
+//  Returns 'error bad arguments' if the shares are structurally invalid
+//  (malformed/short input, inconsistent or duplicated shares, or shares
+//  that do not belong to the same split). Returns 'error shamir recovery
+//  failed' if the shares are structurally valid but cryptographically
+//  wrong, tampered, or insufficient to meet the threshold. On any failure
+//  the output buffer is left empty.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_shamir_combine(const vscf_shamir_t *self, vsc_data_t shares, size_t share_count, vsc_buffer_t *secret) VSCF_NODISCARD;

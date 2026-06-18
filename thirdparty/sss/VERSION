@@ -19,6 +19,11 @@ Local modifications (kept minimal for auditability against upstream):
      parameter (32 * (k - 1) bytes), supplied by the caller (vscf_shamir) from
      virgil's RNG. This removes the randombytes dependency and keeps the
      function thread-safe and deterministic given its inputs.
+  3. The polynomial-coefficient VLA is sized `poly[(k > 1) ? (k - 1) : 1][8]`
+     (floor of 1) so that k == 1 is not a zero-length array (strict-C/MSVC
+     portability). The coefficient memcpy copies exactly `(k - 1) * 32` bytes,
+     so k == 1 copies nothing (matching the 0-length random_data the caller
+     passes).
 
 The GF(256) arithmetic itself is byte-identical to upstream and is constant
 time. Do not "optimize" it.

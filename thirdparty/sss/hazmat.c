@@ -286,13 +286,16 @@ vscf_sss_create_keyshares(sss_Keyshare *out, const uint8_t key[32], uint8_t n, u
     assert(k <= n);
 
     uint8_t share_idx, coeff_idx, unbitsliced_x;
-    uint32_t poly0[8], poly[k - 1][8], x[8], y[8], xpow[8], tmp[8];
+    /* virgil-crypto-c modification: size the coefficient VLA with a floor of 1
+     * so that k == 1 does not declare a zero-length array (a constraint
+     * violation in strict C99/C11). Only the first (k - 1) rows are ever used. */
+    uint32_t poly0[8], poly[(k > 1) ? (k - 1) : 1][8], x[8], y[8], xpow[8], tmp[8];
 
     /* Put the secret in the bottom part of the polynomial */
     bitslice(poly0, key);
 
     /* Generate the other terms of the polynomial from caller-supplied entropy */
-    memcpy((void *)poly, random_data, sizeof(poly));
+    memcpy((void *)poly, random_data, (size_t)(k - 1) * sizeof(uint32_t[8]));
 
     for (share_idx = 0; share_idx < n; share_idx++) {
         /* x value is in 1..n */

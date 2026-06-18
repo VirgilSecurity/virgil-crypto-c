@@ -74,17 +74,20 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
-    /// Calculate the length in bytes of a single share produced for a secret
-    /// of the given length.
+    /// Calculate an upper bound on the length in bytes of a single share
+    /// produced for a secret of the given length. The buffer given to 'split'
+    /// must be at least this size; the actual written length may be a few
+    /// bytes smaller.
     @objc public func shareLen(secretLen: Int) -> Int {
         let proxyResult = vscf_shamir_share_len(self.c_ctx, secretLen)
 
         return proxyResult
     }
 
-    /// Calculate the length in bytes of the buffer needed to hold all shares
-    /// produced by 'split' for a secret of the given length and the given
-    /// number of shares.
+    /// Calculate an upper bound on the length in bytes of the buffer needed to
+    /// hold all shares produced by 'split' for a secret of the given length and
+    /// the given number of shares. The actual written length is reported on the
+    /// output buffer by 'split'.
     @objc public func sharesLen(secretLen: Int, shareCount: Int) -> Int {
         let proxyResult = vscf_shamir_shares_len(self.c_ctx, secretLen, shareCount)
 
@@ -106,8 +109,8 @@ import VSCFoundation
     ///
     /// Constraints: 1 <= threshold <= share count <= 255.
     ///
-    /// The produced shares are written consecutively to 'out', each of length
-    /// 'share len(secret.len)'.
+    /// The produced shares are written consecutively to 'out', all of equal
+    /// length and each at most 'share len(secret.len)' bytes.
     @objc public func split(secret: Data, threshold: Int, shareCount: Int) throws -> Data {
         let outCount = self.sharesLen(secretLen: secret.count, shareCount: shareCount)
         var out = Data(count: outCount)
@@ -135,8 +138,12 @@ import VSCFoundation
     /// time.
     ///
     /// Returns 'success' and writes the secret to 'secret' on success.
-    /// Returns 'error shamir recovery failed' if the shares are wrong,
-    /// tampered, insufficient, or do not belong to the same split.
+    /// Returns 'error bad arguments' if the shares are structurally invalid
+    /// (malformed/short input, inconsistent or duplicated shares, or shares
+    /// that do not belong to the same split). Returns 'error shamir recovery
+    /// failed' if the shares are structurally valid but cryptographically
+    /// wrong, tampered, or insufficient to meet the threshold. On any failure
+    /// the output buffer is left empty.
     @objc public func combine(shares: Data, shareCount: Int) throws -> Data {
         let secretCount = self.recoveredSecretLen(sharesLen: shares.count, shareCount: shareCount)
         var secret = Data(count: secretCount)

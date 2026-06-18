@@ -72,15 +72,18 @@ a CTR DRBG random number generator."""
         VscfStatus.handle_status(status)
 
     def share_len(self, secret_len):
-        """Calculate the length in bytes of a single share produced for a secret
-of the given length."""
+        """Calculate an upper bound on the length in bytes of a single share
+produced for a secret of the given length. The buffer given to 'split'
+must be at least this size; the actual written length may be a few
+bytes smaller."""
         result = self._lib_vscf_shamir.vscf_shamir_share_len(self.ctx, secret_len)
         return result
 
     def shares_len(self, secret_len, share_count):
-        """Calculate the length in bytes of the buffer needed to hold all shares
-produced by 'split' for a secret of the given length and the given
-number of shares."""
+        """Calculate an upper bound on the length in bytes of the buffer needed to
+hold all shares produced by 'split' for a secret of the given length and
+the given number of shares. The actual written length is reported on the
+output buffer by 'split'."""
         result = self._lib_vscf_shamir.vscf_shamir_shares_len(self.ctx, secret_len, share_count)
         return result
 
@@ -98,8 +101,8 @@ The exact length is set on the output buffer by 'combine'."""
 
 Constraints: 1 <= threshold <= share count <= 255.
 
-The produced shares are written consecutively to 'out', each of length
-'share len(secret.len)'."""
+The produced shares are written consecutively to 'out', all of equal
+length and each at most 'share len(secret.len)' bytes."""
         d_secret = Data(secret)
         out = Buffer(self.shares_len(secret_len=len(secret), share_count=share_count))
         status = self._lib_vscf_shamir.vscf_shamir_split(self.ctx, d_secret.data, threshold, share_count, out.c_buffer)
@@ -112,8 +115,12 @@ The produced shares are written consecutively to 'out', each of length
 time.
 
 Returns 'success' and writes the secret to 'secret' on success.
-Returns 'error shamir recovery failed' if the shares are wrong,
-tampered, insufficient, or do not belong to the same split."""
+Returns 'error bad arguments' if the shares are structurally invalid
+(malformed/short input, inconsistent or duplicated shares, or shares
+that do not belong to the same split). Returns 'error shamir recovery
+failed' if the shares are structurally valid but cryptographically
+wrong, tampered, or insufficient to meet the threshold. On any failure
+the output buffer is left empty."""
         d_shares = Data(shares)
         secret = Buffer(self.recovered_secret_len(shares_len=len(shares), share_count=share_count))
         status = self._lib_vscf_shamir.vscf_shamir_combine(self.ctx, d_shares.data, share_count, secret.c_buffer)

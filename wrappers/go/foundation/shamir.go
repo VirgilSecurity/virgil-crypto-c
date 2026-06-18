@@ -103,8 +103,10 @@ func (obj *Shamir) SetupDefaults() error {
 }
 
 /*
-* Calculate the length in bytes of a single share produced for a secret
-* of the given length.
+* Calculate an upper bound on the length in bytes of a single share
+* produced for a secret of the given length. The buffer given to 'split'
+* must be at least this size; the actual written length may be a few
+* bytes smaller.
 */
 func (obj *Shamir) ShareLen(secretLen uint) uint {
     proxyResult := C.vscf_shamir_share_len(obj.cCtx, (C.size_t)(secretLen))
@@ -115,9 +117,10 @@ func (obj *Shamir) ShareLen(secretLen uint) uint {
 }
 
 /*
-* Calculate the length in bytes of the buffer needed to hold all shares
-* produced by 'split' for a secret of the given length and the given
-* number of shares.
+* Calculate an upper bound on the length in bytes of the buffer needed to
+* hold all shares produced by 'split' for a secret of the given length and
+* the given number of shares. The actual written length is reported on the
+* output buffer by 'split'.
 */
 func (obj *Shamir) SharesLen(secretLen uint, shareCount uint) uint {
     proxyResult := C.vscf_shamir_shares_len(obj.cCtx, (C.size_t)(secretLen), (C.size_t)(shareCount))
@@ -147,8 +150,8 @@ func (obj *Shamir) RecoveredSecretLen(sharesLen uint, shareCount uint) uint {
 *
 * Constraints: 1 <= threshold <= share count <= 255.
 *
-* The produced shares are written consecutively to 'out', each of length
-* 'share len(secret.len)'.
+* The produced shares are written consecutively to 'out', all of equal
+* length and each at most 'share len(secret.len)' bytes.
 */
 func (obj *Shamir) Split(secret []byte, threshold uint, shareCount uint) ([]byte, error) {
     outBuf, outBufErr := newBuffer(int(obj.SharesLen(uint(len(secret)), shareCount)))
@@ -176,8 +179,12 @@ func (obj *Shamir) Split(secret []byte, threshold uint, shareCount uint) ([]byte
 * time.
 *
 * Returns 'success' and writes the secret to 'secret' on success.
-* Returns 'error shamir recovery failed' if the shares are wrong,
-* tampered, insufficient, or do not belong to the same split.
+* Returns 'error bad arguments' if the shares are structurally invalid
+* (malformed/short input, inconsistent or duplicated shares, or shares
+* that do not belong to the same split). Returns 'error shamir recovery
+* failed' if the shares are structurally valid but cryptographically
+* wrong, tampered, or insufficient to meet the threshold. On any failure
+* the output buffer is left empty.
 */
 func (obj *Shamir) Combine(shares []byte, shareCount uint) ([]byte, error) {
     secretBuf, secretBufErr := newBuffer(int(obj.RecoveredSecretLen(uint(len(shares)), shareCount)))
