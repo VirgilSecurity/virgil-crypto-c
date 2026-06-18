@@ -89,9 +89,9 @@ class Shamir
     * @param int $$secretLen
     * @return int
     */
-    public static function shareLen(int $$secretLen): int
+    public function shareLen(int $$secretLen): int
     {
-        return vscf_shamir_share_len_php($$secretLen);
+        return vscf_shamir_share_len_php($this->ctx, $$secretLen);
     }
 
     /**
@@ -100,9 +100,9 @@ class Shamir
     * @param int $$shareCount
     * @return int
     */
-    public static function sharesLen(int $$secretLen, int $$shareCount): int
+    public function sharesLen(int $$secretLen, int $$shareCount): int
     {
-        return vscf_shamir_shares_len_php($$secretLen, $$shareCount);
+        return vscf_shamir_shares_len_php($this->ctx, $$secretLen, $$shareCount);
     }
 
     /**
@@ -111,9 +111,9 @@ class Shamir
     * @param int $$shareCount
     * @return int
     */
-    public static function recoveredSecretLen(int $$sharesLen, int $$shareCount): int
+    public function recoveredSecretLen(int $$sharesLen, int $$shareCount): int
     {
-        return vscf_shamir_recovered_secret_len_php($$sharesLen, $$shareCount);
+        return vscf_shamir_recovered_secret_len_php($this->ctx, $$sharesLen, $$shareCount);
     }
 
     /**

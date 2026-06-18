@@ -80,42 +80,33 @@ const initShamir = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        static shareLen(secretLen) {
-            precondition.ensureNumber('secretLen', secretLen);
-            
-            let proxyResult;
-            proxyResult = Module._vscf_shamir_share_len(secretLen);
-            return proxyResult;
-        }
-
         shareLen(secretLen) {
-            return Shamir.shareLen(secretLen);
-        }
-
-        static sharesLen(secretLen, shareCount) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('secretLen', secretLen);
-            precondition.ensureNumber('shareCount', shareCount);
             
             let proxyResult;
-            proxyResult = Module._vscf_shamir_shares_len(secretLen, shareCount);
+            proxyResult = Module._vscf_shamir_share_len(this.ctxPtr, secretLen);
             return proxyResult;
         }
 
         sharesLen(secretLen, shareCount) {
-            return Shamir.sharesLen(secretLen, shareCount);
-        }
-
-        static recoveredSecretLen(sharesLen, shareCount) {
-            precondition.ensureNumber('sharesLen', sharesLen);
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('secretLen', secretLen);
             precondition.ensureNumber('shareCount', shareCount);
             
             let proxyResult;
-            proxyResult = Module._vscf_shamir_recovered_secret_len(sharesLen, shareCount);
+            proxyResult = Module._vscf_shamir_shares_len(this.ctxPtr, secretLen, shareCount);
             return proxyResult;
         }
 
         recoveredSecretLen(sharesLen, shareCount) {
-            return Shamir.recoveredSecretLen(sharesLen, shareCount);
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('sharesLen', sharesLen);
+            precondition.ensureNumber('shareCount', shareCount);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_shamir_recovered_secret_len(this.ctxPtr, sharesLen, shareCount);
+            return proxyResult;
         }
 
         split(secret, threshold, shareCount) {

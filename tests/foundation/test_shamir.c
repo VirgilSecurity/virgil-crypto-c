@@ -62,7 +62,7 @@ test_shamir_split(vsc_data_t secret, size_t threshold, size_t share_count) {
     vscf_shamir_t *shamir = vscf_shamir_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_shamir_setup_defaults(shamir));
 
-    vsc_buffer_t *shares = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(secret.len, share_count));
+    vsc_buffer_t *shares = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(shamir, secret.len, share_count));
     vscf_status_t status = vscf_shamir_split(shamir, secret, threshold, share_count, shares);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
@@ -96,7 +96,10 @@ test_shamir_combine_indices(
 static size_t
 test_shamir_out_cap(vsc_data_t all_shares, size_t share_count, size_t use_count) {
     const size_t share_size = all_shares.len / share_count;
-    return vscf_shamir_recovered_secret_len(share_size * use_count, use_count);
+    vscf_shamir_t *shamir = vscf_shamir_new();
+    const size_t cap = vscf_shamir_recovered_secret_len(shamir, share_size * use_count, use_count);
+    vscf_shamir_destroy(&shamir);
+    return cap;
 }
 
 //  Recover with the given indices and assert the secret matches the original.
@@ -303,7 +306,7 @@ test__combine__shares_from_different_splits__bad_arguments(void) {
     vsc_buffer_write_data(mixed, vsc_data(vsc_buffer_bytes(shares_b) + share_size, share_size));
 
     vscf_shamir_t *shamir = vscf_shamir_new();
-    vsc_buffer_t *recovered = vsc_buffer_new_with_capacity(vscf_shamir_recovered_secret_len(share_size * 2, 2));
+    vsc_buffer_t *recovered = vsc_buffer_new_with_capacity(vscf_shamir_recovered_secret_len(shamir, share_size * 2, 2));
     vscf_status_t status =
             vscf_shamir_combine(shamir, vsc_data(vsc_buffer_bytes(mixed), vsc_buffer_len(mixed)), 2, recovered);
 
@@ -339,7 +342,7 @@ test__split__invalid_threshold__bad_arguments(void) {
     vscf_shamir_t *shamir = vscf_shamir_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_shamir_setup_defaults(shamir));
 
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(secret.len, 3));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(shamir, secret.len, 3));
 
     TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ARGUMENTS, vscf_shamir_split(shamir, secret, 0, 3, out)); // k = 0
     vsc_buffer_reset(out);
@@ -356,7 +359,7 @@ test__split__without_rng__uninitialized(void) {
     vsc_data_t secret = vsc_data(test_shamir_SECRET, sizeof(test_shamir_SECRET));
     vscf_shamir_t *shamir = vscf_shamir_new(); // no setup_defaults / use_random
 
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(secret.len, 3));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(shamir, secret.len, 3));
     vscf_status_t status = vscf_shamir_split(shamir, secret, 2, 3, out);
 
     TEST_ASSERT_EQUAL(vscf_status_ERROR_UNINITIALIZED, status);

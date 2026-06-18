@@ -383,7 +383,9 @@ vscf_shamir_setup_defaults(vscf_shamir_t *self) {
 //  of the given length.
 //
 VSCF_PUBLIC size_t
-vscf_shamir_share_len(size_t secret_len) {
+vscf_shamir_share_len(const vscf_shamir_t *self, size_t secret_len) {
+
+    VSCF_ASSERT_PTR(self);
 
     return vscf_shamir_HEADER_LEN + secret_len + vscf_shamir_AEAD_OVERHEAD + sss_KEYSHARE_LEN;
 }
@@ -393,9 +395,11 @@ vscf_shamir_share_len(size_t secret_len) {
 //  produced by 'split'.
 //
 VSCF_PUBLIC size_t
-vscf_shamir_shares_len(size_t secret_len, size_t share_count) {
+vscf_shamir_shares_len(const vscf_shamir_t *self, size_t secret_len, size_t share_count) {
 
-    return vscf_shamir_share_len(secret_len) * share_count;
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_shamir_share_len(self, secret_len) * share_count;
 }
 
 //
@@ -403,7 +407,9 @@ vscf_shamir_shares_len(size_t secret_len, size_t share_count) {
 //  The exact length is set on the output buffer by 'combine'.
 //
 VSCF_PUBLIC size_t
-vscf_shamir_recovered_secret_len(size_t shares_len, size_t share_count) {
+vscf_shamir_recovered_secret_len(const vscf_shamir_t *self, size_t shares_len, size_t share_count) {
+
+    VSCF_ASSERT_PTR(self);
 
     if (share_count == 0) {
         return 0;
@@ -437,7 +443,7 @@ vscf_shamir_split(vscf_shamir_t *self, vsc_data_t secret, size_t threshold, size
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }
 
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_shamir_shares_len(secret.len, share_count));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_shamir_shares_len(self, secret.len, share_count));
 
     const uint8_t k = (uint8_t)threshold;
     const uint8_t n = (uint8_t)share_count;

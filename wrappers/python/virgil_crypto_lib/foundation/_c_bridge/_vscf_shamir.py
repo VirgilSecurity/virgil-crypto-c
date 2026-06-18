@@ -89,31 +89,31 @@ a CTR DRBG random number generator."""
         vscf_shamir_setup_defaults.restype = c_int
         return vscf_shamir_setup_defaults(ctx)
 
-    def vscf_shamir_share_len(self, secret_len):
+    def vscf_shamir_share_len(self, ctx, secret_len):
         """Calculate the length in bytes of a single share produced for a secret
 of the given length."""
         vscf_shamir_share_len = self._lib.vscf_shamir_share_len
-        vscf_shamir_share_len.argtypes = [c_size_t]
+        vscf_shamir_share_len.argtypes = [POINTER(vscf_shamir_t), c_size_t]
         vscf_shamir_share_len.restype = c_size_t
-        return vscf_shamir_share_len(secret_len)
+        return vscf_shamir_share_len(ctx, secret_len)
 
-    def vscf_shamir_shares_len(self, secret_len, share_count):
+    def vscf_shamir_shares_len(self, ctx, secret_len, share_count):
         """Calculate the length in bytes of the buffer needed to hold all shares
 produced by 'split' for a secret of the given length and the given
 number of shares."""
         vscf_shamir_shares_len = self._lib.vscf_shamir_shares_len
-        vscf_shamir_shares_len.argtypes = [c_size_t, c_size_t]
+        vscf_shamir_shares_len.argtypes = [POINTER(vscf_shamir_t), c_size_t, c_size_t]
         vscf_shamir_shares_len.restype = c_size_t
-        return vscf_shamir_shares_len(secret_len, share_count)
+        return vscf_shamir_shares_len(ctx, secret_len, share_count)
 
-    def vscf_shamir_recovered_secret_len(self, shares_len, share_count):
+    def vscf_shamir_recovered_secret_len(self, ctx, shares_len, share_count):
         """Calculate an upper bound on the length in bytes of the recovered secret
 for the given total shares length and number of provided shares.
 The exact length is set on the output buffer by 'combine'."""
         vscf_shamir_recovered_secret_len = self._lib.vscf_shamir_recovered_secret_len
-        vscf_shamir_recovered_secret_len.argtypes = [c_size_t, c_size_t]
+        vscf_shamir_recovered_secret_len.argtypes = [POINTER(vscf_shamir_t), c_size_t, c_size_t]
         vscf_shamir_recovered_secret_len.restype = c_size_t
-        return vscf_shamir_recovered_secret_len(shares_len, share_count)
+        return vscf_shamir_recovered_secret_len(ctx, shares_len, share_count)
 
     def vscf_shamir_split(self, ctx, secret, threshold, share_count, out):
         """Split the given secret into 'share count' shares with reconstruction

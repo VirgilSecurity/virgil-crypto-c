@@ -78,16 +78,16 @@ public class Shamir implements AutoCloseable {
         FoundationJNI.INSTANCE.shamir_setupDefaults(this.cCtx);
     }
 
-    public static int shareLen(int secretLen) {
-        return FoundationJNI.INSTANCE.shamir_shareLen(secretLen);
+    public int shareLen(int secretLen) {
+        return FoundationJNI.INSTANCE.shamir_shareLen(this.cCtx, secretLen);
     }
 
-    public static int sharesLen(int secretLen, int shareCount) {
-        return FoundationJNI.INSTANCE.shamir_sharesLen(secretLen, shareCount);
+    public int sharesLen(int secretLen, int shareCount) {
+        return FoundationJNI.INSTANCE.shamir_sharesLen(this.cCtx, secretLen, shareCount);
     }
 
-    public static int recoveredSecretLen(int sharesLen, int shareCount) {
-        return FoundationJNI.INSTANCE.shamir_recoveredSecretLen(sharesLen, shareCount);
+    public int recoveredSecretLen(int sharesLen, int shareCount) {
+        return FoundationJNI.INSTANCE.shamir_recoveredSecretLen(this.cCtx, sharesLen, shareCount);
     }
 
     public byte[] split(byte[] secret, int threshold, int shareCount) throws FoundationException {

@@ -107,7 +107,7 @@ func (obj *Shamir) SetupDefaults() error {
 * of the given length.
 */
 func (obj *Shamir) ShareLen(secretLen uint) uint {
-    proxyResult := C.vscf_shamir_share_len((C.size_t)(secretLen))
+    proxyResult := C.vscf_shamir_share_len(obj.cCtx, (C.size_t)(secretLen))
 
     runtime.KeepAlive(obj)
 
@@ -120,7 +120,7 @@ func (obj *Shamir) ShareLen(secretLen uint) uint {
 * number of shares.
 */
 func (obj *Shamir) SharesLen(secretLen uint, shareCount uint) uint {
-    proxyResult := C.vscf_shamir_shares_len((C.size_t)(secretLen), (C.size_t)(shareCount))
+    proxyResult := C.vscf_shamir_shares_len(obj.cCtx, (C.size_t)(secretLen), (C.size_t)(shareCount))
 
     runtime.KeepAlive(obj)
 
@@ -133,7 +133,7 @@ func (obj *Shamir) SharesLen(secretLen uint, shareCount uint) uint {
 * The exact length is set on the output buffer by 'combine'.
 */
 func (obj *Shamir) RecoveredSecretLen(sharesLen uint, shareCount uint) uint {
-    proxyResult := C.vscf_shamir_recovered_secret_len((C.size_t)(sharesLen), (C.size_t)(shareCount))
+    proxyResult := C.vscf_shamir_recovered_secret_len(obj.cCtx, (C.size_t)(sharesLen), (C.size_t)(shareCount))
 
     runtime.KeepAlive(obj)
 

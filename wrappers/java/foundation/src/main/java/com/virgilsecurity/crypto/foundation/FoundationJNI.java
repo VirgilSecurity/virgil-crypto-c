@@ -430,11 +430,11 @@ public class FoundationJNI {
 
     public native void shamir_setupDefaults(long cCtx) throws FoundationException;
 
-    public native int shamir_shareLen(int secretLen);
+    public native int shamir_shareLen(long cCtx, int secretLen);
 
-    public native int shamir_sharesLen(int secretLen, int shareCount);
+    public native int shamir_sharesLen(long cCtx, int secretLen, int shareCount);
 
-    public native int shamir_recoveredSecretLen(int sharesLen, int shareCount);
+    public native int shamir_recoveredSecretLen(long cCtx, int sharesLen, int shareCount);
 
     public native byte[] shamir_split(long cCtx, byte[] secret, int threshold, int shareCount) throws FoundationException;
 

@@ -76,8 +76,8 @@ import VSCFoundation
 
     /// Calculate the length in bytes of a single share produced for a secret
     /// of the given length.
-    @objc public static func shareLen(secretLen: Int) -> Int {
-        let proxyResult = vscf_shamir_share_len(secretLen)
+    @objc public func shareLen(secretLen: Int) -> Int {
+        let proxyResult = vscf_shamir_share_len(self.c_ctx, secretLen)
 
         return proxyResult
     }
@@ -85,8 +85,8 @@ import VSCFoundation
     /// Calculate the length in bytes of the buffer needed to hold all shares
     /// produced by 'split' for a secret of the given length and the given
     /// number of shares.
-    @objc public static func sharesLen(secretLen: Int, shareCount: Int) -> Int {
-        let proxyResult = vscf_shamir_shares_len(secretLen, shareCount)
+    @objc public func sharesLen(secretLen: Int, shareCount: Int) -> Int {
+        let proxyResult = vscf_shamir_shares_len(self.c_ctx, secretLen, shareCount)
 
         return proxyResult
     }
@@ -94,8 +94,8 @@ import VSCFoundation
     /// Calculate an upper bound on the length in bytes of the recovered secret
     /// for the given total shares length and number of provided shares.
     /// The exact length is set on the output buffer by 'combine'.
-    @objc public static func recoveredSecretLen(sharesLen: Int, shareCount: Int) -> Int {
-        let proxyResult = vscf_shamir_recovered_secret_len(sharesLen, shareCount)
+    @objc public func recoveredSecretLen(sharesLen: Int, shareCount: Int) -> Int {
+        let proxyResult = vscf_shamir_recovered_secret_len(self.c_ctx, sharesLen, shareCount)
 
         return proxyResult
     }

@@ -4658,18 +4658,27 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     }
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1shareLen (JNIEnv *jenv, jobject jobj, jint jsecretLen) {
-    jint ret = (jint) vscf_shamir_share_len(jsecretLen /*a9*/);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1shareLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jsecretLen) {
+    // Cast class context
+    vscf_shamir_t /*9*/* shamir_ctx = *(vscf_shamir_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_shamir_share_len(shamir_ctx /*a1*/, jsecretLen /*a9*/);
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1sharesLen (JNIEnv *jenv, jobject jobj, jint jsecretLen, jint jshareCount) {
-    jint ret = (jint) vscf_shamir_shares_len(jsecretLen /*a9*/, jshareCount /*a9*/);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1sharesLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jsecretLen, jint jshareCount) {
+    // Cast class context
+    vscf_shamir_t /*9*/* shamir_ctx = *(vscf_shamir_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_shamir_shares_len(shamir_ctx /*a1*/, jsecretLen /*a9*/, jshareCount /*a9*/);
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1recoveredSecretLen (JNIEnv *jenv, jobject jobj, jint jsharesLen, jint jshareCount) {
-    jint ret = (jint) vscf_shamir_recovered_secret_len(jsharesLen /*a9*/, jshareCount /*a9*/);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1recoveredSecretLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jsharesLen, jint jshareCount) {
+    // Cast class context
+    vscf_shamir_t /*9*/* shamir_ctx = *(vscf_shamir_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_shamir_recovered_secret_len(shamir_ctx /*a1*/, jsharesLen /*a9*/, jshareCount /*a9*/);
     return ret;
 }
 

@@ -74,21 +74,21 @@ a CTR DRBG random number generator."""
     def share_len(self, secret_len):
         """Calculate the length in bytes of a single share produced for a secret
 of the given length."""
-        result = self._lib_vscf_shamir.vscf_shamir_share_len(secret_len)
+        result = self._lib_vscf_shamir.vscf_shamir_share_len(self.ctx, secret_len)
         return result
 
     def shares_len(self, secret_len, share_count):
         """Calculate the length in bytes of the buffer needed to hold all shares
 produced by 'split' for a secret of the given length and the given
 number of shares."""
-        result = self._lib_vscf_shamir.vscf_shamir_shares_len(secret_len, share_count)
+        result = self._lib_vscf_shamir.vscf_shamir_shares_len(self.ctx, secret_len, share_count)
         return result
 
     def recovered_secret_len(self, shares_len, share_count):
         """Calculate an upper bound on the length in bytes of the recovered secret
 for the given total shares length and number of provided shares.
 The exact length is set on the output buffer by 'combine'."""
-        result = self._lib_vscf_shamir.vscf_shamir_recovered_secret_len(shares_len, share_count)
+        result = self._lib_vscf_shamir.vscf_shamir_recovered_secret_len(self.ctx, shares_len, share_count)
         return result
 
     def split(self, secret, threshold, share_count):

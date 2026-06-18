@@ -421,11 +421,11 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1shareLen (JNIEnv *, jobject, jint);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1shareLen (JNIEnv *, jobject, jlong, jint);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1sharesLen (JNIEnv *, jobject, jint, jint);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1sharesLen (JNIEnv *, jobject, jlong, jint, jint);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1recoveredSecretLen (JNIEnv *, jobject, jint, jint);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1recoveredSecretLen (JNIEnv *, jobject, jlong, jint, jint);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1split (JNIEnv *, jobject, jlong, jbyteArray, jint, jint);
 

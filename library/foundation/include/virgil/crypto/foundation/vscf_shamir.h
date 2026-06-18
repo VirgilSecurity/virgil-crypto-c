@@ -157,7 +157,7 @@ vscf_shamir_setup_defaults(vscf_shamir_t *self) VSCF_NODISCARD;
 //  of the given length.
 //
 VSCF_PUBLIC size_t
-vscf_shamir_share_len(size_t secret_len);
+vscf_shamir_share_len(const vscf_shamir_t *self, size_t secret_len);
 
 //
 //  Calculate the length in bytes of the buffer needed to hold all shares
@@ -165,7 +165,7 @@ vscf_shamir_share_len(size_t secret_len);
 //  number of shares.
 //
 VSCF_PUBLIC size_t
-vscf_shamir_shares_len(size_t secret_len, size_t share_count);
+vscf_shamir_shares_len(const vscf_shamir_t *self, size_t secret_len, size_t share_count);
 
 //
 //  Calculate an upper bound on the length in bytes of the recovered secret
@@ -173,7 +173,7 @@ vscf_shamir_shares_len(size_t secret_len, size_t share_count);
 //  The exact length is set on the output buffer by 'combine'.
 //
 VSCF_PUBLIC size_t
-vscf_shamir_recovered_secret_len(size_t shares_len, size_t share_count);
+vscf_shamir_recovered_secret_len(const vscf_shamir_t *self, size_t shares_len, size_t share_count);
 
 //
 //  Split the given secret into 'share count' shares with reconstruction

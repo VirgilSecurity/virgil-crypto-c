@@ -9663,10 +9663,11 @@ PHP_FUNCTION(vscf_shamir_setup_defaults_php) {
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscf_shamir_share_len_php,
     0 /*return_reference*/,
-    1 /*required_num_args*/,
+    2 /*required_num_args*/,
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
     ZEND_ARG_TYPE_INFO(0, in_secret_len, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -9675,24 +9676,27 @@ PHP_FUNCTION(vscf_shamir_share_len_php) {
     //
     // Declare input argument
     //
+    zval *in_ctx = NULL;
     zend_long in_secret_len = 0;
 
     //
     // Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
         Z_PARAM_LONG(in_secret_len)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
     size_t secret_len = in_secret_len;
 
     //
     // Call main function
     //
-    size_t res =vscf_shamir_share_len(secret_len);
+    size_t res =vscf_shamir_share_len(shamir, secret_len);
 
     //
     // Write returned result
@@ -9706,10 +9710,11 @@ PHP_FUNCTION(vscf_shamir_share_len_php) {
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscf_shamir_shares_len_php,
     0 /*return_reference*/,
-    2 /*required_num_args*/,
+    3 /*required_num_args*/,
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
     ZEND_ARG_TYPE_INFO(0, in_secret_len, IS_LONG, 0)
     ZEND_ARG_TYPE_INFO(0, in_share_count, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -9719,13 +9724,15 @@ PHP_FUNCTION(vscf_shamir_shares_len_php) {
     //
     // Declare input argument
     //
+    zval *in_ctx = NULL;
     zend_long in_secret_len = 0;
     zend_long in_share_count = 0;
 
     //
     // Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
         Z_PARAM_LONG(in_secret_len)
         Z_PARAM_LONG(in_share_count)
     ZEND_PARSE_PARAMETERS_END();
@@ -9733,13 +9740,14 @@ PHP_FUNCTION(vscf_shamir_shares_len_php) {
     //
     // Proxy call
     //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
     size_t secret_len = in_secret_len;
     size_t share_count = in_share_count;
 
     //
     // Call main function
     //
-    size_t res =vscf_shamir_shares_len(secret_len, share_count);
+    size_t res =vscf_shamir_shares_len(shamir, secret_len, share_count);
 
     //
     // Write returned result
@@ -9753,10 +9761,11 @@ PHP_FUNCTION(vscf_shamir_shares_len_php) {
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscf_shamir_recovered_secret_len_php,
     0 /*return_reference*/,
-    2 /*required_num_args*/,
+    3 /*required_num_args*/,
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
     ZEND_ARG_TYPE_INFO(0, in_shares_len, IS_LONG, 0)
     ZEND_ARG_TYPE_INFO(0, in_share_count, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -9766,13 +9775,15 @@ PHP_FUNCTION(vscf_shamir_recovered_secret_len_php) {
     //
     // Declare input argument
     //
+    zval *in_ctx = NULL;
     zend_long in_shares_len = 0;
     zend_long in_share_count = 0;
 
     //
     // Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
         Z_PARAM_LONG(in_shares_len)
         Z_PARAM_LONG(in_share_count)
     ZEND_PARSE_PARAMETERS_END();
@@ -9780,13 +9791,14 @@ PHP_FUNCTION(vscf_shamir_recovered_secret_len_php) {
     //
     // Proxy call
     //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
     size_t shares_len = in_shares_len;
     size_t share_count = in_share_count;
 
     //
     // Call main function
     //
-    size_t res =vscf_shamir_recovered_secret_len(shares_len, share_count);
+    size_t res =vscf_shamir_recovered_secret_len(shamir, shares_len, share_count);
 
     //
     // Write returned result

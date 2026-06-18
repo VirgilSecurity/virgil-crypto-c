@@ -24,7 +24,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="share len" is_static="1">
+    <method name="share len" is_const="1">
         Calculate the length in bytes of a single share produced for a secret
         of the given length.
 
@@ -33,7 +33,7 @@
         <return type="size"/>
     </method>
 
-    <method name="shares len" is_static="1">
+    <method name="shares len" is_const="1">
         Calculate the length in bytes of the buffer needed to hold all shares
         produced by 'split' for a secret of the given length and the given
         number of shares.
@@ -44,7 +44,7 @@
         <return type="size"/>
     </method>
 
-    <method name="recovered secret len" is_static="1">
+    <method name="recovered secret len" is_const="1">
         Calculate an upper bound on the length in bytes of the recovered secret
         for the given total shares length and number of provided shares.
         The exact length is set on the output buffer by 'combine'.
