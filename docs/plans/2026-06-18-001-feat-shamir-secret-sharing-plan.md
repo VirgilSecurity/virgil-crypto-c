@@ -281,7 +281,7 @@ Split / combine flow:
 
 ## Implementation Units
 
-- [ ] **Unit 1: Vendor `hazmat` and wire the build**
+- [x] **Unit 1: Vendor `hazmat` and wire the build**
 
 **Goal:** Bring the constant-time GF(256) share math into the tree behind a feature flag.
 
@@ -322,7 +322,7 @@ the `target_link_libraries` site in `library/foundation/CMakeLists.txt`.
 
 **Verification:** `foundation` builds with the flag on and off; the vendored sources are reachable.
 
-- [ ] **Unit 2: Author the codegen model and regenerate scaffolding**
+- [x] **Unit 2: Author the codegen model and regenerate scaffolding**
 
 **Goal:** Define `vscf_shamir`'s public surface in the IR model and generate C headers + all six wrappers.
 
@@ -380,7 +380,7 @@ the `target_link_libraries` site in `library/foundation/CMakeLists.txt`.
 
 **Verification:** Clean regeneration; generated surface matches the model in every wrapper.
 
-- [ ] **Unit 3: Implement the envelope + `split` (write path)**
+- [x] **Unit 3: Implement the envelope + `split` (write path)**
 
 **Goal:** Hand-write the C bodies for DK/nonce/split_id generation, AEAD encrypt, keyshare creation,
 envelope assembly, and the length helpers.
@@ -424,7 +424,7 @@ envelope assembly, and the length helpers.
 **Verification:** Split produces well-formed, equal-length shares; all range validation holds; DK,
 keyshares scratch, and output-on-failure are erased on success and error paths.
 
-- [ ] **Unit 4: Implement `combine` (read/validate path)**
+- [x] **Unit 4: Implement `combine` (read/validate path)**
 
 **Goal:** Parse and validate shares, reconstruct DK, verify the commitment, AEAD-decrypt, and recover
 the secret — with the security guards.
@@ -491,7 +491,7 @@ the research.
 **Verification:** All recovery failures return generic errors with zeroed output; only valid k-subsets
 of one split recover the secret; no path returns unauthenticated plaintext.
 
-- [ ] **Unit 5: C test suite registration and full coverage**
+- [x] **Unit 5: C test suite registration and full coverage**
 
 **Goal:** Register `test_shamir.c` in the C test build and ensure the full edge-case matrix runs under
 `ctest`.
@@ -552,7 +552,7 @@ assertions.
 **Verification:** All six wrapper builds pass; round-trip verified locally in Java + Python;
 cross-wrapper interop confirmed; Go validated in CI; codegen pytest green.
 
-- [ ] **Unit 7: Licensing and documentation**
+- [x] **Unit 7: Licensing and documentation**
 
 **Goal:** Record the vendored dependency and document the feature.
 
