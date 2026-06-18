@@ -181,6 +181,7 @@
 #include "vscf_sha256.h"
 #include "vscf_sha384.h"
 #include "vscf_sha512.h"
+#include "vscf_shamir.h"
 #include "vscf_signed_data_info.h"
 #include "vscf_signer.h"
 #include "vscf_signer_info.h"

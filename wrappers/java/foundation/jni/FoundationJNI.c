@@ -4621,6 +4621,108 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_shamir_t **)&c_ctx = vscf_shamir_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_shamir_delete(*(vscf_shamir_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_shamir_release_random((vscf_shamir_t /*2*/ *) c_ctx);
+    vscf_shamir_use_random((vscf_shamir_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_shamir_t /*9*/* shamir_ctx = *(vscf_shamir_t /*9*/**) &c_ctx;
+    
+    vscf_status_t status = vscf_shamir_setup_defaults(shamir_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1shareLen (JNIEnv *jenv, jobject jobj, jint jsecretLen) {
+    jint ret = (jint) vscf_shamir_share_len(jsecretLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1sharesLen (JNIEnv *jenv, jobject jobj, jint jsecretLen, jint jshareCount) {
+    jint ret = (jint) vscf_shamir_shares_len(jsecretLen /*a9*/, jshareCount /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1recoveredSecretLen (JNIEnv *jenv, jobject jobj, jint jsharesLen, jint jshareCount) {
+    jint ret = (jint) vscf_shamir_recovered_secret_len(jsharesLen /*a9*/, jshareCount /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1split (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jsecret, jint jthreshold, jint jshareCount) {
+    // Wrap input data
+    byte* secret_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsecret, NULL);
+    vsc_data_t secret = vsc_data(secret_arr, (*jenv)->GetArrayLength(jenv, jsecret));
+    
+    // Cast class context
+    vscf_shamir_t /*9*/* shamir_ctx = *(vscf_shamir_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_shamir_shares_len(shamir_ctx, secret.len/*a*/, jshareCount));
+    
+    vscf_status_t status = vscf_shamir_split(shamir_ctx /*a1*/, secret /*a3*/, jthreshold /*a9*/, jshareCount /*a9*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jsecret, (jbyte*) secret_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_shamir_1combine (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jshares, jint jshareCount) {
+    // Wrap input data
+    byte* shares_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jshares, NULL);
+    vsc_data_t shares = vsc_data(shares_arr, (*jenv)->GetArrayLength(jenv, jshares));
+    
+    // Cast class context
+    vscf_shamir_t /*9*/* shamir_ctx = *(vscf_shamir_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *secret = vsc_buffer_new_with_capacity(vscf_shamir_recovered_secret_len(shamir_ctx, shares.len/*a*/, jshareCount));
+    
+    vscf_status_t status = vscf_shamir_combine(shamir_ctx /*a1*/, shares /*a3*/, jshareCount /*a9*/, secret /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(secret));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(secret), (jbyte*) vsc_buffer_bytes(secret));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jshares, (jbyte*) shares_arr, 0);
+    
+    vsc_buffer_delete(secret);
+    
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_brainkey_client_t **)&c_ctx = vscf_brainkey_client_new();

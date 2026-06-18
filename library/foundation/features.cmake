@@ -77,6 +77,7 @@ option(VSCF_MESSAGE_INFO_CUSTOM_PARAMS "Enable class 'message info custom params
 option(VSCF_KEY_PROVIDER "Enable class 'key provider'." ON)
 option(VSCF_SIGNER "Enable class 'signer'." ON)
 option(VSCF_VERIFIER "Enable class 'verifier'." ON)
+option(VSCF_SHAMIR "Enable class 'shamir'." ON)
 option(VSCF_SIMPLE_SWU "Enable class 'simple swu'." ON)
 option(VSCF_BRAINKEY_CLIENT "Enable class 'brainkey client'." ON)
 option(VSCF_BRAINKEY_SERVER "Enable class 'brainkey server'." ON)
@@ -226,6 +227,7 @@ mark_as_advanced(
         VSCF_KEY_PROVIDER
         VSCF_SIGNER
         VSCF_VERIFIER
+        VSCF_SHAMIR
         VSCF_SIMPLE_SWU
         VSCF_BRAINKEY_CLIENT
         VSCF_BRAINKEY_SERVER
@@ -1060,6 +1062,33 @@ if(VSCF_VERIFIER AND NOT VSCF_KEY_ALG_FACTORY)
     message("--")
     message("Feature VSCF_VERIFIER depends on the feature:")
     message("     VSCF_KEY_ALG_FACTORY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SHAMIR AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SHAMIR depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SHAMIR AND NOT VSCF_SHA256)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SHAMIR depends on the feature:")
+    message("     VSCF_SHA256 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SHAMIR AND NOT VSCF_AES256_GCM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SHAMIR depends on the feature:")
+    message("     VSCF_AES256_GCM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

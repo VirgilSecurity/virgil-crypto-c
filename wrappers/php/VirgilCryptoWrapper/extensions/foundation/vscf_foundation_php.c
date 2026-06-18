@@ -121,6 +121,7 @@
 #include "vscf_sha256.h"
 #include "vscf_sha384.h"
 #include "vscf_sha512.h"
+#include "vscf_shamir.h"
 #include "vscf_signed_data_info.h"
 #include "vscf_signer.h"
 #include "vscf_signer_info.h"
@@ -367,6 +368,9 @@ vscf_handle_throw_exception(vscf_status_t status) {
     case vscf_status_ERROR_PLAIN_TEXT_TOO_LONG:
         zend_throw_exception_ex(vscf_exception_ce, -707, "Plain text too long.");
         break;
+    case vscf_status_ERROR_SHAMIR_RECOVERY_FAILED:
+        zend_throw_exception_ex(vscf_exception_ce, -708, "Shamir secret-sharing recovery failed: the given shares are wrong, tampered, insufficient, or do not belong to the same split. Returned as a single generic code so that the failure cause cannot be probed.");
+        break;
     }
 }
 
@@ -454,6 +458,7 @@ static const char VSCF_SHA224_T_PHP_RES_NAME[] = "vscf_sha224_t";
 static const char VSCF_SHA256_T_PHP_RES_NAME[] = "vscf_sha256_t";
 static const char VSCF_SHA384_T_PHP_RES_NAME[] = "vscf_sha384_t";
 static const char VSCF_SHA512_T_PHP_RES_NAME[] = "vscf_sha512_t";
+static const char VSCF_SHAMIR_T_PHP_RES_NAME[] = "vscf_shamir_t";
 static const char VSCF_SIGNED_DATA_INFO_T_PHP_RES_NAME[] = "vscf_signed_data_info_t";
 static const char VSCF_SIGNER_T_PHP_RES_NAME[] = "vscf_signer_t";
 static const char VSCF_SIGNER_INFO_T_PHP_RES_NAME[] = "vscf_signer_info_t";
@@ -776,6 +781,10 @@ VSCF_PHP_PUBLIC const char* vscf_sha512_t_php_res_name(void) {
     return VSCF_SHA512_T_PHP_RES_NAME;
 }
 
+VSCF_PHP_PUBLIC const char* vscf_shamir_t_php_res_name(void) {
+    return VSCF_SHAMIR_T_PHP_RES_NAME;
+}
+
 VSCF_PHP_PUBLIC const char* vscf_signed_data_info_t_php_res_name(void) {
     return VSCF_SIGNED_DATA_INFO_T_PHP_RES_NAME;
 }
@@ -881,6 +890,7 @@ int LE_VSCF_SHA224_T;
 int LE_VSCF_SHA256_T;
 int LE_VSCF_SHA384_T;
 int LE_VSCF_SHA512_T;
+int LE_VSCF_SHAMIR_T;
 int LE_VSCF_SIGNED_DATA_INFO_T;
 int LE_VSCF_SIGNER_T;
 int LE_VSCF_SIGNER_INFO_T;
@@ -1201,6 +1211,10 @@ VSCF_PHP_PUBLIC int le_vscf_sha384_t(void) {
 
 VSCF_PHP_PUBLIC int le_vscf_sha512_t(void) {
     return LE_VSCF_SHA512_T;
+}
+
+VSCF_PHP_PUBLIC int le_vscf_shamir_t(void) {
+    return LE_VSCF_SHAMIR_T;
 }
 
 VSCF_PHP_PUBLIC int le_vscf_signed_data_info_t(void) {
@@ -9546,6 +9560,435 @@ PHP_FUNCTION(vscf_verifier_verify_php) {
     // Write returned result
     //
     RETVAL_BOOL(res);
+}
+
+//
+// Wrap method: vscf_shamir_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_shamir_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_new_php) {
+    vscf_shamir_t *shamir = vscf_shamir_new();
+    zend_resource *shamir_res = zend_register_resource(shamir, le_vscf_shamir_t());
+    RETVAL_RES(shamir_res);
+}
+
+//
+// Wrap method: vscf_shamir_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_shamir_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_shamir_setup_defaults
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_setup_defaults_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_setup_defaults_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_shamir_setup_defaults(shamir);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+}
+
+//
+// Wrap method: vscf_shamir_share_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_share_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_secret_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_share_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_secret_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_secret_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t secret_len = in_secret_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_shamir_share_len(secret_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_shamir_shares_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_shares_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_secret_len, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, in_share_count, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_shares_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_secret_len = 0;
+    zend_long in_share_count = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_LONG(in_secret_len)
+        Z_PARAM_LONG(in_share_count)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t secret_len = in_secret_len;
+    size_t share_count = in_share_count;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_shamir_shares_len(secret_len, share_count);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_shamir_recovered_secret_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_recovered_secret_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_shares_len, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, in_share_count, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_recovered_secret_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_shares_len = 0;
+    zend_long in_share_count = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_LONG(in_shares_len)
+        Z_PARAM_LONG(in_share_count)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t shares_len = in_shares_len;
+    size_t share_count = in_share_count;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_shamir_recovered_secret_len(shares_len, share_count);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_shamir_split
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_split_php,
+    0 /*return_reference*/,
+    4 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_secret, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_threshold, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, in_share_count, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_split_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_secret = NULL;
+    size_t in_secret_blen = 0;
+    zend_long in_threshold = 0;
+    zend_long in_share_count = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_secret, in_secret_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_LONG(in_threshold)
+        Z_PARAM_LONG(in_share_count)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
+    vsc_data_t secret = vsc_data((const byte*)in_secret, in_secret_blen);
+    size_t threshold = in_threshold;
+    size_t share_count = in_share_count;
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_shamir_shares_len(shamir, secret.len, share_count), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_shamir_split(shamir, secret, threshold, share_count, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_shamir_combine
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_combine_php,
+    0 /*return_reference*/,
+    3 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_shares, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_share_count, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_combine_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_shares = NULL;
+    size_t in_shares_blen = 0;
+    zend_long in_share_count = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_shares, in_shares_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_LONG(in_share_count)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
+    vsc_data_t shares = vsc_data((const byte*)in_shares, in_shares_blen);
+    size_t share_count = in_share_count;
+
+    //
+    // Allocate output buffer for output 'secret'
+    //
+    zend_string *out_secret = zend_string_alloc(vscf_shamir_recovered_secret_len(shamir, shares.len, share_count), 0);
+    vsc_buffer_t *secret = vsc_buffer_new();
+    vsc_buffer_use(secret, (byte *)ZSTR_VAL(out_secret), ZSTR_LEN(out_secret));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_shamir_combine(shamir, shares, share_count, secret);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_secret) = vsc_buffer_len(secret);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_secret);
+        vsc_buffer_destroy(&secret);
+    }
+    else {
+        zend_string_free(out_secret);
+    }
+}
+
+//
+// Wrap method: vscf_shamir_use_random
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_shamir_use_random_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_shamir_use_random_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_shamir_t *shamir = zend_fetch_resource_ex(in_ctx, vscf_shamir_t_php_res_name(), le_vscf_shamir_t());
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vscf_shamir_use_random(shamir, random);
 }
 
 //
@@ -44592,6 +45035,15 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_verifier_reset_php, arginfo_vscf_verifier_reset_php)
     PHP_FE(vscf_verifier_append_data_php, arginfo_vscf_verifier_append_data_php)
     PHP_FE(vscf_verifier_verify_php, arginfo_vscf_verifier_verify_php)
+    PHP_FE(vscf_shamir_new_php, arginfo_vscf_shamir_new_php)
+    PHP_FE(vscf_shamir_delete_php, arginfo_vscf_shamir_delete_php)
+    PHP_FE(vscf_shamir_setup_defaults_php, arginfo_vscf_shamir_setup_defaults_php)
+    PHP_FE(vscf_shamir_share_len_php, arginfo_vscf_shamir_share_len_php)
+    PHP_FE(vscf_shamir_shares_len_php, arginfo_vscf_shamir_shares_len_php)
+    PHP_FE(vscf_shamir_recovered_secret_len_php, arginfo_vscf_shamir_recovered_secret_len_php)
+    PHP_FE(vscf_shamir_split_php, arginfo_vscf_shamir_split_php)
+    PHP_FE(vscf_shamir_combine_php, arginfo_vscf_shamir_combine_php)
+    PHP_FE(vscf_shamir_use_random_php, arginfo_vscf_shamir_use_random_php)
     PHP_FE(vscf_brainkey_client_new_php, arginfo_vscf_brainkey_client_new_php)
     PHP_FE(vscf_brainkey_client_delete_php, arginfo_vscf_brainkey_client_delete_php)
     PHP_FE(vscf_brainkey_client_setup_defaults_php, arginfo_vscf_brainkey_client_setup_defaults_php)
@@ -45454,6 +45906,9 @@ static void vscf_password_recipient_info_list_dtor_php(zend_resource *rsrc) {
 static void vscf_recipient_cipher_dtor_php(zend_resource *rsrc) {
     vscf_recipient_cipher_delete((vscf_recipient_cipher_t *)rsrc->ptr);
 }
+static void vscf_shamir_dtor_php(zend_resource *rsrc) {
+    vscf_shamir_delete((vscf_shamir_t *)rsrc->ptr);
+}
 static void vscf_signed_data_info_dtor_php(zend_resource *rsrc) {
     vscf_signed_data_info_delete((vscf_signed_data_info_t *)rsrc->ptr);
 }
@@ -45496,6 +45951,7 @@ PHP_MINIT_FUNCTION(vscf_foundation_php) {
     LE_VSCF_PASSWORD_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_password_recipient_info_dtor_php, NULL, vscf_password_recipient_info_t_php_res_name(), module_number);
     LE_VSCF_PASSWORD_RECIPIENT_INFO_LIST_T = zend_register_list_destructors_ex(vscf_password_recipient_info_list_dtor_php, NULL, vscf_password_recipient_info_list_t_php_res_name(), module_number);
     LE_VSCF_RECIPIENT_CIPHER_T = zend_register_list_destructors_ex(vscf_recipient_cipher_dtor_php, NULL, vscf_recipient_cipher_t_php_res_name(), module_number);
+    LE_VSCF_SHAMIR_T = zend_register_list_destructors_ex(vscf_shamir_dtor_php, NULL, vscf_shamir_t_php_res_name(), module_number);
     LE_VSCF_SIGNED_DATA_INFO_T = zend_register_list_destructors_ex(vscf_signed_data_info_dtor_php, NULL, vscf_signed_data_info_t_php_res_name(), module_number);
     LE_VSCF_SIGNER_T = zend_register_list_destructors_ex(vscf_signer_dtor_php, NULL, vscf_signer_t_php_res_name(), module_number);
     LE_VSCF_SIGNER_INFO_T = zend_register_list_destructors_ex(vscf_signer_info_dtor_php, NULL, vscf_signer_info_t_php_res_name(), module_number);

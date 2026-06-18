@@ -352,6 +352,10 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Plain text too long.");
             }
 
+            if (statusCode == -708) {
+                throw new FoundationError("Shamir secret-sharing recovery failed: the given shares are wrong, tampered, insufficient, or do not belong to the same split. Returned as a single generic code so that the failure cause cannot be probed.");
+            }
+
             throw new FoundationError("Unexpected status code:" + statusCode);
         }
 

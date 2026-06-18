@@ -114,6 +114,7 @@
     <class name="key provider"/>
     <class name="signer"/>
     <class name="verifier"/>
+    <class name="shamir"/>
     <class name="simple swu"/>
     <class name="brainkey client"/>
     <class name="brainkey server"/>
