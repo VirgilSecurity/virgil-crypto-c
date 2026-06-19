@@ -324,6 +324,12 @@ const (
     * Plain text too long.
     */
     FoundationErrorErrorPlainTextTooLong int = -707
+    /*
+    * Shamir secret-sharing recovery failed: the given shares are wrong,
+    * tampered, insufficient, or do not belong to the same split. Returned
+    * as a single generic code so that the failure cause cannot be probed.
+    */
+    FoundationErrorErrorShamirRecoveryFailed int = -708
 )
 
 func (obj *FoundationError) Error() string {
@@ -486,6 +492,8 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Duplicate epoch."}
         case C.vscf_status_ERROR_PLAIN_TEXT_TOO_LONG:
             return &FoundationError {int(status), "Plain text too long."}
+        case C.vscf_status_ERROR_SHAMIR_RECOVERY_FAILED:
+            return &FoundationError {int(status), "Shamir secret-sharing recovery failed: the given shares are wrong, tampered, insufficient, or do not belong to the same split. Returned as a single generic code so that the failure cause cannot be probed."}
         }
     }
     return nil

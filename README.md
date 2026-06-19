@@ -39,6 +39,7 @@ This library contains basic cryptographic algorithms and can be used as building
 | Entropy Source              | Linux, macOS [/dev/urandom](https://tls.mbed.org/module-level-design-rng),<br>Windows [CryptGenRandom()](https://tls.mbed.org/module-level-design-rng)                           |
 | Symmetric Algorithms        | [AES-256-GCM](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf), [AES-256-CBC](https://tools.ietf.org/html/rfc3602), [AES-128/256 Key Wrap](https://tools.ietf.org/html/rfc3394)                                  |
 | Encryption schemes          | [PBES2](https://tools.ietf.org/html/rfc8018#section-6.2)                                                                                                                         |
+| Secret sharing              | [Shamir](https://dl.acm.org/doi/10.1145/359168.359176) threshold k-of-n (e.g. 2-of-3), authenticated                                                                             |
 | Elliptic Curves             | [Ed25519](https://tools.ietf.org/html/rfc8032), [Curve25519](https://tools.ietf.org/html/rfc7748), [secp256R1](https://www.secg.org/sec1-v2.pdf)                                 |
 | Post-quantum cryptography   | [ML-KEM-768](https://csrc.nist.gov/pubs/fips/203/final), [ML-DSA-65](https://csrc.nist.gov/pubs/fips/204/final), [Falcon](https://falcon-sign.info)                               |
 

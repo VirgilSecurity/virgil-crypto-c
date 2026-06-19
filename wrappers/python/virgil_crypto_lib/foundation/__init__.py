@@ -59,6 +59,7 @@ from .message_info_custom_params import MessageInfoCustomParams
 from .key_provider import KeyProvider
 from .signer import Signer
 from .verifier import Verifier
+from .shamir import Shamir
 from .brainkey_client import BrainkeyClient
 from .brainkey_server import BrainkeyServer
 from .group_session_message import GroupSessionMessage

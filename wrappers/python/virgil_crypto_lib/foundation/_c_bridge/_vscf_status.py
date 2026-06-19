@@ -204,6 +204,10 @@ class VscfStatus(object):
     ERROR_DUPLICATE_EPOCH = -706
     # Plain text too long.
     ERROR_PLAIN_TEXT_TOO_LONG = -707
+    # Shamir secret-sharing recovery failed: the given shares are wrong,
+    # tampered, insufficient, or do not belong to the same split. Returned
+    # as a single generic code so that the failure cause cannot be probed.
+    ERROR_SHAMIR_RECOVERY_FAILED = -708
 
     STATUS_DICT = {
         0: "No errors was occurred.",
@@ -282,7 +286,8 @@ class VscfStatus(object):
         -704: "Invalid signature.",
         -705: "Ed25519 error.",
         -706: "Duplicate epoch.",
-        -707: "Plain text too long."
+        -707: "Plain text too long.",
+        -708: "Shamir secret-sharing recovery failed: the given shares are wrong, tampered, insufficient, or do not belong to the same split. Returned as a single generic code so that the failure cause cannot be probed."
     }
 
     @classmethod

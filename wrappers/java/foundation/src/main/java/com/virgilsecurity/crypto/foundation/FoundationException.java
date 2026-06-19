@@ -192,6 +192,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_PLAIN_TEXT_TOO_LONG = -707;
 
+    public static final int ERROR_SHAMIR_RECOVERY_FAILED = -708;
+
     private int statusCode;
 
     public FoundationException(int statusCode) {
@@ -359,6 +361,8 @@ public class FoundationException extends RuntimeException {
             return "Duplicate epoch.";
         case ERROR_PLAIN_TEXT_TOO_LONG:
             return "Plain text too long.";
+        case ERROR_SHAMIR_RECOVERY_FAILED:
+            return "Shamir secret-sharing recovery failed: the given shares are wrong, tampered, insufficient, or do not belong to the same split. Returned as a single generic code so that the failure cause cannot be probed.";
         default:
             return "Unknown error";
         }
