@@ -453,8 +453,8 @@ vscf_shamir_split(vscf_shamir_t *self, vsc_data_t secret, size_t threshold, size
     byte data_key[vscf_shamir_DK_LEN];
     byte nonce[vscf_shamir_NONCE_LEN];
     byte header[vscf_shamir_HEADER_LEN];
-    byte *coeffs = NULL;
-    byte *key_shares = NULL;
+    vsc_buffer_t *coeffs = NULL;
+    vsc_buffer_t *key_shares = NULL;
     vscf_aes256_gcm_t *aes = NULL;
     vsc_buffer_t *aead = NULL;
 
@@ -503,12 +503,11 @@ vscf_shamir_split(vscf_shamir_t *self, vsc_data_t secret, size_t threshold, size
     vsc_buffer_cleanup(&wrap);
 
     //  4. Random polynomial coefficients for the share math (32 * (k - 1) bytes).
-    coeffs = vscf_alloc(coeffs_len == 0 ? 1 : coeffs_len);
+    //  An owning, securely-erased buffer; for k == 1 it is empty and unused.
+    coeffs = vsc_buffer_new_with_capacity(coeffs_len == 0 ? 1 : coeffs_len);
+    vsc_buffer_make_secure(coeffs);
     if (coeffs_len > 0) {
-        vsc_buffer_init(&wrap);
-        vsc_buffer_use(&wrap, coeffs, coeffs_len);
-        status = vscf_random(self->random, coeffs_len, &wrap);
-        vsc_buffer_cleanup(&wrap);
+        status = vscf_random(self->random, coeffs_len, coeffs);
         if (status != vscf_status_SUCCESS) {
             goto cleanup;
         }
@@ -526,30 +525,29 @@ vscf_shamir_split(vscf_shamir_t *self, vsc_data_t secret, size_t threshold, size
 
     const size_t aead_len = vsc_buffer_len(aead);
 
-    //  6. Shamir-split the data key.
-    key_shares = vscf_alloc((size_t)n * sss_KEYSHARE_LEN);
-    vscf_sss_create_keyshares((sss_Keyshare *)key_shares, data_key, n, k, coeffs);
+    //  6. Shamir-split the data key. hazmat writes the n key-shares directly,
+    //  so advance the buffer length to match what it produced.
+    key_shares = vsc_buffer_new_with_capacity((size_t)n * sss_KEYSHARE_LEN);
+    vsc_buffer_make_secure(key_shares);
+    vscf_sss_create_keyshares(
+            (sss_Keyshare *)vsc_buffer_unused_bytes(key_shares), data_key, n, k, vsc_buffer_bytes(coeffs));
+    vsc_buffer_inc_used(key_shares, (size_t)n * sss_KEYSHARE_LEN);
 
     //  7. Assemble the self-contained shares into the output buffer.
     byte aead_len_be[vscf_shamir_AEAD_LEN_FIELD];
     vscf_shamir_store_u32_be(aead_len_be, (uint32_t)aead_len);
     for (size_t i = 0; i < n; ++i) {
+        const byte *key_share = vsc_buffer_bytes(key_shares) + i * sss_KEYSHARE_LEN;
         vsc_buffer_write_data(out, vsc_data(header, vscf_shamir_AAD_LEN));
         vsc_buffer_write_data(out, vsc_data(aead_len_be, sizeof(aead_len_be)));
-        vsc_buffer_write_data(out, vsc_data(vsc_buffer_bytes(aead), aead_len));
-        vsc_buffer_write_data(out, vsc_data(key_shares + i * sss_KEYSHARE_LEN, sss_KEYSHARE_LEN));
+        vsc_buffer_write_data(out, vsc_buffer_data(aead));
+        vsc_buffer_write_data(out, vsc_data(key_share, sss_KEYSHARE_LEN));
     }
 
 cleanup:
     vscf_erase(data_key, sizeof(data_key));
-    if (coeffs != NULL) {
-        vscf_erase(coeffs, coeffs_len == 0 ? 1 : coeffs_len);
-        vscf_dealloc(coeffs);
-    }
-    if (key_shares != NULL) {
-        vscf_erase(key_shares, (size_t)n * sss_KEYSHARE_LEN);
-        vscf_dealloc(key_shares);
-    }
+    vsc_buffer_destroy(&coeffs);     // make_secure -> securely erased on destroy
+    vsc_buffer_destroy(&key_shares); // make_secure -> securely erased on destroy
     vscf_aes256_gcm_destroy(&aes);
     vsc_buffer_destroy(&aead);
 
@@ -596,7 +594,8 @@ vscf_shamir_combine(const vscf_shamir_t *self, vsc_data_t shares, size_t share_c
     }
 
     vscf_status_t status = vscf_status_SUCCESS;
-    byte *key_shares = vscf_alloc(share_count * sss_KEYSHARE_LEN);
+    vsc_buffer_t *key_shares = vsc_buffer_new_with_capacity(share_count * sss_KEYSHARE_LEN);
+    vsc_buffer_make_secure(key_shares);
     vscf_aes256_gcm_t *aes = NULL;
     byte data_key[vscf_shamir_DK_LEN];
     byte commitment[vscf_shamir_COMMITMENT_LEN];
@@ -626,20 +625,23 @@ vscf_shamir_combine(const vscf_shamir_t *self, vsc_data_t shares, size_t share_c
             goto cleanup;
         }
 
-        memcpy(key_shares + i * sss_KEYSHARE_LEN, share + vscf_shamir_HEADER_LEN + aead_len, sss_KEYSHARE_LEN);
+        const byte *key_share = share + vscf_shamir_HEADER_LEN + aead_len;
 
         //  A zero x-coordinate is invalid; the secret lives at x == 0.
-        if (key_shares[i * sss_KEYSHARE_LEN] == 0) {
+        if (key_share[0] == 0) {
             status = vscf_status_ERROR_BAD_ARGUMENTS;
             goto cleanup;
         }
+
+        vsc_buffer_write_data(key_shares, vsc_data(key_share, sss_KEYSHARE_LEN));
     }
 
     //  Reject duplicate x-coordinates: colliding indices divide by zero in the
     //  GF(256) interpolation and silently yield garbage.
+    const byte *key_share_bytes = vsc_buffer_bytes(key_shares);
     for (size_t i = 0; i < share_count; ++i) {
         for (size_t j = i + 1; j < share_count; ++j) {
-            if (key_shares[i * sss_KEYSHARE_LEN] == key_shares[j * sss_KEYSHARE_LEN]) {
+            if (key_share_bytes[i * sss_KEYSHARE_LEN] == key_share_bytes[j * sss_KEYSHARE_LEN]) {
                 status = vscf_status_ERROR_BAD_ARGUMENTS;
                 goto cleanup;
             }
@@ -649,7 +651,7 @@ vscf_shamir_combine(const vscf_shamir_t *self, vsc_data_t shares, size_t share_c
     //  Reconstruct the data key and verify the commitment BEFORE touching the
     //  AEAD, so a wrong/insufficient set fails here and the cipher never runs on
     //  a wrong key.
-    vscf_sss_combine_keyshares(data_key, (const sss_Keyshare *)key_shares, (uint8_t)share_count);
+    vscf_sss_combine_keyshares(data_key, (const sss_Keyshare *)key_share_bytes, (uint8_t)share_count);
 
     vsc_buffer_init(&wrap);
     vsc_buffer_use(&wrap, commitment, sizeof(commitment));
@@ -677,10 +679,7 @@ vscf_shamir_combine(const vscf_shamir_t *self, vsc_data_t shares, size_t share_c
 
 cleanup:
     vscf_erase(data_key, sizeof(data_key));
-    if (key_shares != NULL) {
-        vscf_erase(key_shares, share_count * sss_KEYSHARE_LEN);
-        vscf_dealloc(key_shares);
-    }
+    vsc_buffer_destroy(&key_shares); // make_secure -> securely erased on destroy
     vscf_aes256_gcm_destroy(&aes);
 
     if (status != vscf_status_SUCCESS && vsc_buffer_capacity(secret) > 0) {
