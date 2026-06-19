@@ -9,7 +9,7 @@
         wrappers="java,swift,wasm,go"
         >
 
-    <version major="0" minor="20" patch="0"/>
+    <version major="0" minor="21" patch="0"/>
 
     <require project="common" feature="library"/>
     <require project="foundation" feature="library">

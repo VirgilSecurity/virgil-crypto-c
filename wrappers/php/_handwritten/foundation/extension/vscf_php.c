@@ -58,7 +58,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCF_PHP_VERSION[] = "0.20.0";
+const char VSCF_PHP_VERSION[] = "0.21.0";
 const char VSCF_PHP_EXTNAME[] = "vscf_php";
 
 const char VSCF_IMPL_PHP_RES_NAME[] = "vscf_php";
