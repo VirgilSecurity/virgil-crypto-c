@@ -64,6 +64,7 @@ const initMessageInfoCustomParams = require('./MessageInfoCustomParams');
 const initKeyProvider = require('./KeyProvider');
 const initSigner = require('./Signer');
 const initVerifier = require('./Verifier');
+const initShamir = require('./Shamir');
 const initBrainkeyClient = require('./BrainkeyClient');
 const initBrainkeyServer = require('./BrainkeyServer');
 const initGroupSessionMessage = require('./GroupSessionMessage');
@@ -168,6 +169,7 @@ const initProject = options => {
             modules.KeyProvider = initKeyProvider(foundationModule, modules);
             modules.Signer = initSigner(foundationModule, modules);
             modules.Verifier = initVerifier(foundationModule, modules);
+            modules.Shamir = initShamir(foundationModule, modules);
             modules.BrainkeyClient = initBrainkeyClient(foundationModule, modules);
             modules.BrainkeyServer = initBrainkeyServer(foundationModule, modules);
             modules.GroupSessionMessage = initGroupSessionMessage(foundationModule, modules);

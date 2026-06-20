@@ -273,6 +273,11 @@ import VSCFoundation
     /// Plain text too long.
     case errorPlainTextTooLong = -707
 
+    /// Shamir secret-sharing recovery failed: the given shares are wrong,
+    /// tampered, insufficient, or do not belong to the same split. Returned
+    /// as a single generic code so that the failure cause cannot be probed.
+    case errorShamirRecoveryFailed = -708
+
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!
     }

@@ -308,6 +308,9 @@ VSCF_PHP_PUBLIC const char*
 vscf_sha512_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
+vscf_shamir_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
 vscf_signed_data_info_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -561,6 +564,9 @@ le_vscf_sha384_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_sha512_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_shamir_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_signed_data_info_t(void);

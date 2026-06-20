@@ -397,7 +397,13 @@ enum vscf_status_t {
     //
     //  Plain text too long.
     //
-    vscf_status_ERROR_PLAIN_TEXT_TOO_LONG = -707
+    vscf_status_ERROR_PLAIN_TEXT_TOO_LONG = -707,
+    //
+    //  Shamir secret-sharing recovery failed: the given shares are wrong,
+    //  tampered, insufficient, or do not belong to the same split. Returned
+    //  as a single generic code so that the failure cause cannot be probed.
+    //
+    vscf_status_ERROR_SHAMIR_RECOVERY_FAILED = -708
 };
 typedef enum vscf_status_t vscf_status_t;
 

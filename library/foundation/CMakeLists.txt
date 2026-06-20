@@ -84,6 +84,24 @@ include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
+# Shamir secret sharing (vscf_shamir): compile the vendored constant-time
+# GF(256) share math (dsprenkels/sss `hazmat`) directly into foundation.
+# Only two source-less files, no feature variants, so it is compiled into the
+# foundation target rather than a separate static library -- this keeps the
+# symbols inside libvsc_foundation (no extra link entry for Go/wasm/php/etc.).
+# Gated by the generated VSCF_SHAMIR flag (see features.cmake), matching the
+# way class sources are gated in sources.cmake.
+#
+target_sources(foundation
+        PRIVATE
+            "$<$<BOOL:${VSCF_SHAMIR}>:${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/sss/hazmat.c>"
+        )
+target_include_directories(foundation
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/sss"
+        )
+
+#
 # Link to dependencies
 #
 target_link_libraries(foundation

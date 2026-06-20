@@ -1,5 +1,15 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.21.0 released 2026-06-18
+
+### New
+
+- **Shamir threshold secret sharing (`vscf_shamir`)**: New `foundation` class that splits an arbitrary-length secret into `n` shares recoverable from any `k` of them (general k-of-n, e.g. 2-of-3). Uses an authenticated split-key-encrypt-data construction — an AES-256-GCM envelope with a SHA-256 data-key commitment over the constant-time GF(256) share math vendored from `dsprenkels/sss` — so wrong, tampered, insufficient, or cross-split shares fail cleanly. Available in all language wrappers.
+
+### Bugfix
+
+- **Message info: ignore trailing bytes after the SEQUENCE** — optional message-info fields are now bounded to the ASN.1 SEQUENCE, so trailing bytes after a valid message-info no longer cause a misparse.
+
 ## Version 0.20.0 released 2026-06-14
 
 ### New

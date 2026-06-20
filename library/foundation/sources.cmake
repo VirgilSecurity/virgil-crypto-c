@@ -214,6 +214,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_shamir.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -806,6 +811,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_signer_defs.h>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verifier.h>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_verifier_defs.h>"
+            "$<$<BOOL:${VSCF_SHAMIR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_shamir.h>"
+            "$<$<BOOL:${VSCF_SHAMIR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_shamir_defs.h>"
             "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_simple_swu.h>"
             "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_swu_defs.h>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h>"
@@ -1147,6 +1154,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_signer_defs.c>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verifier.c>"
             "$<$<BOOL:${VSCF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verifier_defs.c>"
+            "$<$<BOOL:${VSCF_SHAMIR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_shamir.c>"
+            "$<$<BOOL:${VSCF_SHAMIR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_shamir_defs.c>"
             "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_swu.c>"
             "$<$<BOOL:${VSCF_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_swu_defs.c>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client.c>"

@@ -26,11 +26,11 @@ class FoundationFileCountTests(unittest.TestCase):
 
     def test_total_file_count(self) -> None:
         # 99 JS files + 1 CMakeLists.txt + 1 other = 101
-        self.assertEqual(len(self.files), 101)
+        self.assertEqual(len(self.files), 102)
 
     def test_js_file_count(self) -> None:
         js = [p for p in self.paths if p.endswith(".js")]
-        self.assertEqual(len(js), 99)
+        self.assertEqual(len(js), 100)
 
     def test_cmake_file_generated(self) -> None:
         cmake = [p for p in self.paths if p.endswith("CMakeLists.txt")]

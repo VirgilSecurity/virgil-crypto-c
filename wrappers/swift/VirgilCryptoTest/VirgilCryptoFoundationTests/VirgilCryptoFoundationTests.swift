@@ -63,4 +63,73 @@ class VirgilCryptoFoundationTests: XCTestCase {
         let key = hkdf.derive(data: "".data(using: .utf8)!, keyLen: 10)
         XCTAssert(key.count == 10)
     }
+
+    private func shamirSecret() -> Data {
+        return Data([
+            0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+            0x0f, 0x1e, 0x2d, 0x3c, 0x4b, 0x5a, 0x69, 0x78, 0x87, 0x96, 0xa5, 0xb4, 0xc3, 0xd2, 0xe1, 0xf0])
+    }
+
+    private func selectShares(_ shares: Data, count: Int, _ indices: [Int]) -> Data {
+        let shareSize = shares.count / count
+        var selection = Data()
+        for idx in indices {
+            selection.append(shares.subdata(in: (idx * shareSize)..<((idx + 1) * shareSize)))
+        }
+        return selection
+    }
+
+    func test_Shamir_splitCombine_2of3_everyPairRecovers() {
+        let shamir = Shamir()
+        try! shamir.setupDefaults()
+        let secret = shamirSecret()
+        let shares = try! shamir.split(secret: secret, threshold: 2, shareCount: 3)
+
+        for pair in [[0, 1], [0, 2], [1, 2], [2, 0]] {
+            let recovered = try! shamir.combine(shares: selectShares(shares, count: 3, pair), shareCount: 2)
+            XCTAssertEqual(secret, recovered)
+        }
+    }
+
+    func test_Shamir_splitCombine_generalKofN_recovers() {
+        let shamir = Shamir()
+        try! shamir.setupDefaults()
+        let secret = shamirSecret()
+        let shares = try! shamir.split(secret: secret, threshold: 5, shareCount: 7)
+
+        let recovered = try! shamir.combine(shares: selectShares(shares, count: 7, [6, 4, 2, 1, 0]), shareCount: 5)
+        XCTAssertEqual(secret, recovered)
+    }
+
+    func test_Shamir_combine_insufficientShares_throws() {
+        let shamir = Shamir()
+        try! shamir.setupDefaults()
+        let shares = try! shamir.split(secret: shamirSecret(), threshold: 3, shareCount: 5)
+
+        XCTAssertThrowsError(try shamir.combine(shares: selectShares(shares, count: 5, [0, 1]), shareCount: 2))
+    }
+
+    func test_Shamir_combine_duplicateShare_throws() {
+        let shamir = Shamir()
+        try! shamir.setupDefaults()
+        let shares = try! shamir.split(secret: shamirSecret(), threshold: 2, shareCount: 3)
+
+        XCTAssertThrowsError(try shamir.combine(shares: selectShares(shares, count: 3, [1, 1]), shareCount: 2))
+    }
+
+    func test_Shamir_combine_tamperedShare_throws() {
+        let shamir = Shamir()
+        try! shamir.setupDefaults()
+        var shares = try! shamir.split(secret: shamirSecret(), threshold: 2, shareCount: 3)
+
+        // Flip a ciphertext byte (offset 68 = envelope header length) of share 0.
+        shares[68] ^= 0x01
+        XCTAssertThrowsError(try shamir.combine(shares: selectShares(shares, count: 3, [0, 1]), shareCount: 2))
+    }
+
+    func test_Shamir_split_invalidThreshold_throws() {
+        let shamir = Shamir()
+        try! shamir.setupDefaults()
+        XCTAssertThrowsError(try shamir.split(secret: shamirSecret(), threshold: 4, shareCount: 3))
+    }
 }

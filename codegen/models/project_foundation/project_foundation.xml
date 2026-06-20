@@ -9,7 +9,7 @@
         wrappers="swift,java,python,wasm,go,php"
         >
 
-    <version major="0" minor="20" patch="0"/>
+    <version major="0" minor="21" patch="0"/>
 
     <require project="common" feature="library"/>
     <require library="mbedtls" feature="library"/>
@@ -114,6 +114,7 @@
     <class name="key provider"/>
     <class name="signer"/>
     <class name="verifier"/>
+    <class name="shamir"/>
     <class name="simple swu"/>
     <class name="brainkey client"/>
     <class name="brainkey server"/>

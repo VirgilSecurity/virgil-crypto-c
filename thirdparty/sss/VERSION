@@ -1,0 +1,33 @@
+dsprenkels/sss — Shamir secret sharing (hazmat / low-level GF(256) share math)
+
+Upstream:        https://github.com/dsprenkels/sss
+Pinned commit:   9f2a10b1c0d391bed485c4c7e93788ce37c360f1
+License:         MIT (see ./LICENSE)
+
+Vendored files:  hazmat.c, hazmat.h   (ONLY the constant-time GF(256) share math)
+NOT vendored:    sss.c, tweetnacl.c, randombytes.c  (virgil-crypto-c builds the
+                 authenticated envelope on the in-tree mbedTLS instead, and
+                 supplies entropy via its own RNG interface).
+
+Local modifications (kept minimal for auditability against upstream):
+  1. Public functions prefixed `vscf_sss_*`
+     (sss_create_keyshares -> vscf_sss_create_keyshares,
+      sss_combine_keyshares -> vscf_sss_combine_keyshares)
+     to avoid symbol collisions in the flat multi-wrapper symbol table.
+  2. `#include "randombytes.h"` removed. `vscf_sss_create_keyshares` now takes
+     the random polynomial coefficients as a `const uint8_t *random_data`
+     parameter (32 * (k - 1) bytes), supplied by the caller (vscf_shamir) from
+     virgil's RNG. This removes the randombytes dependency and keeps the
+     function thread-safe and deterministic given its inputs.
+  3. The upstream C99 VLAs (`poly[k - 1][8]`, `xs[k][8]`, `ys[k][8]`) are
+     replaced with fixed-size arrays of `VSCF_SSS_MAX_KEYSHARES` (255) rows,
+     because MSVC has no VLA support (and a VLA also made k == 1 a zero-length
+     array). Only the first (k - 1) / k rows are used. The coefficient memcpy
+     copies exactly `(k - 1) * 32` bytes, so k == 1 copies nothing (matching the
+     0-length random_data the caller passes).
+
+The GF(256) arithmetic itself is byte-identical to upstream and is constant
+time. Do not "optimize" it.
+
+To re-vendor / bump: fetch hazmat.{c,h} at the new commit, re-apply the two
+modifications above, and update the pinned commit hash here.

@@ -87,6 +87,8 @@ from ._vscf_signer import vscf_signer_t
 from ._vscf_signer import VscfSigner
 from ._vscf_verifier import vscf_verifier_t
 from ._vscf_verifier import VscfVerifier
+from ._vscf_shamir import vscf_shamir_t
+from ._vscf_shamir import VscfShamir
 from ._vscf_brainkey_client import vscf_brainkey_client_t
 from ._vscf_brainkey_client import VscfBrainkeyClient
 from ._vscf_brainkey_server import vscf_brainkey_server_t

@@ -170,6 +170,7 @@
 #include "vscf_sha256_defs.h"
 #include "vscf_sha384_defs.h"
 #include "vscf_sha512_defs.h"
+#include "vscf_shamir_defs.h"
 #include "vscf_signed_data_info_defs.h"
 #include "vscf_signer_defs.h"
 #include "vscf_signer_info_defs.h"

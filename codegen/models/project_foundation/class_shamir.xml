@@ -1,0 +1,108 @@
+<class name="shamir" context="public">
+    Threshold secret sharing based on Shamir's scheme over GF(256).
+
+    Splits an arbitrary-length secret into 'share count' shares so that any
+    'threshold' of them reconstruct the secret, while fewer reveal nothing.
+
+    Construction (split-key-encrypt-data): a random 32-byte data key is
+    generated, the secret is encrypted with it using AES-256-GCM, and only the
+    data key is Shamir-split. Each share is self-contained (it embeds the
+    encrypted secret). Recovery combines the shares to rebuild the data key,
+    verifies a commitment to it, and authenticates the decryption with the GCM
+    tag - so wrong, tampered, insufficient, or cross-split shares fail cleanly.
+
+    <require impl="ctr drbg"/>
+    <require impl="sha256"/>
+    <require impl="aes256 gcm"/>
+
+    <dependency name="random" interface="random"/>
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies:
+        a CTR DRBG random number generator.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="share len" is_const="1">
+        Calculate an upper bound on the length in bytes of a single share
+        produced for a secret of the given length. The buffer given to 'split'
+        must be at least this size; the actual written length may be a few
+        bytes smaller.
+
+        <argument name="secret len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="shares len" is_const="1">
+        Calculate an upper bound on the length in bytes of the buffer needed to
+        hold all shares produced by 'split' for a secret of the given length and
+        the given number of shares. The actual written length is reported on the
+        output buffer by 'split'.
+
+        <argument name="secret len" type="size"/>
+        <argument name="share count" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="recovered secret len" is_const="1">
+        Calculate an upper bound on the length in bytes of the recovered secret
+        for the given total shares length and number of provided shares.
+        The exact length is set on the output buffer by 'combine'.
+
+        <argument name="shares len" type="size"/>
+        <argument name="share count" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="split">
+        Split the given secret into 'share count' shares with reconstruction
+        'threshold'. Requires a configured random number generator (see
+        'setup defaults' / 'use random').
+
+        Constraints: 1 &lt;= threshold &lt;= share count &lt;= 255.
+
+        The produced shares are written consecutively to 'out', all of equal
+        length and each at most 'share len(secret.len)' bytes.
+
+        <argument name="secret" class="data"/>
+        <argument name="threshold" type="size"/>
+        <argument name="share count" type="size"/>
+        <argument name="out" class="buffer">
+            <length method="shares len">
+                <proxy argument="secret" to="secret len" cast="data_length"/>
+                <proxy argument="share count" to="share count"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="combine" is_const="1">
+        Reconstruct the secret from 'share count' shares concatenated in
+        'shares'. 'share count' must be at least the threshold used at split
+        time.
+
+        Returns 'success' and writes the secret to 'secret' on success.
+        Returns 'error bad arguments' if the shares are structurally invalid
+        (malformed/short input, inconsistent or duplicated shares, or shares
+        that do not belong to the same split). Returns 'error shamir recovery
+        failed' if the shares are structurally valid but cryptographically
+        wrong, tampered, or insufficient to meet the threshold. On any failure
+        the output buffer is left empty.
+
+        <argument name="shares" class="data"/>
+        <argument name="share count" type="size"/>
+        <argument name="secret" class="buffer">
+            <length method="recovered secret len">
+                <proxy argument="shares" to="shares len" cast="data_length"/>
+                <proxy argument="share count" to="share count"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</class>
