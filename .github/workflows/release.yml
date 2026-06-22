@@ -238,15 +238,28 @@ jobs:
     if: ${{ !contains(inputs.version, '-') && success() }}
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
       BRANCH: ${{ inputs.branch }}
       VERSION: ${{ inputs.version }}
     steps:
+      # Mint a short-lived installation token for the release-bot GitHub App. The app
+      # is a repo admin, so `gh pr merge --admin` below can bypass main's required
+      # review and status checks (enforce_admins is false, so admins bypass). The
+      # default github.token (github-actions[bot]) is NOT an admin and cannot bypass,
+      # which is why this job previously failed and left main to be merged by hand.
+      - name: Generate release-bot token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       # Checkout is required: gh derives the repository from the git remote, and
       # without it `gh pr create`/`gh pr list` fail with "not a git repository".
       - uses: actions/checkout@v6
 
       - name: Merge release branch to main
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
 
@@ -266,8 +279,8 @@ jobs:
           fi
 
           echo "Merging PR #${PR} into main"
-          # --admin bypasses required reviews on the protected main branch. This needs the
-          # Actions token to be a branch-protection bypass actor; if it is not, this step
-          # fails loudly (instead of the previous silent success) and a maintainer merges
-          # PR #${PR} manually.
+          # --admin bypasses main's required review + status checks. The release-bot
+          # GitHub App is a repo admin, so the override succeeds. If the app token ever
+          # lacks admin, this step fails loudly (instead of a silent skip) and a
+          # maintainer merges PR #${PR} manually.
           gh pr merge "$PR" --merge --admin
