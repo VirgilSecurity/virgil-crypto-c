@@ -35,12 +35,18 @@
 
 from ctypes import *
 from ._c_bridge import VscfChunkCipher
+from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from .alg import Alg
+from .encrypt import Encrypt
+from .decrypt import Decrypt
+from .cipher_info import CipherInfo
+from .cipher import Cipher
 
 
-class ChunkCipher(object):
+class ChunkCipher(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     """Provides stream encryption in fixed-size chunks, where each encrypted
 chunk carries its own AES-256-GCM authentication tag.
 
@@ -50,12 +56,26 @@ Nonce derivation follows the TLS 1.3 construction:
 Each encrypted frame layout:
     counter_le64[8] | ciphertext[N] | tag[16]
 
-The initial nonce and chunk size must be stored in the CMS message info
-custom params by the caller; they are not embedded in the ciphertext stream."""
+The construction is self-describing: it produces and restores a
+'chunked alg info' (algorithm id 'aes256 gcm chunked' carrying version,
+chunk size, and the initial nonce) via the 'alg' interface, so the
+generic decryptor (recipient cipher / alg factory) can reconstruct and
+drive it through the 'cipher' interface without out-of-band parameters."""
+
+    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    NONCE_LEN = 12
+    # Cipher key length in bytes.
+    KEY_LEN = 32
+    # Cipher key length in bits.
+    KEY_BITLEN = 256
+    # Cipher block length in bytes.
+    BLOCK_LEN = 16
 
     def __init__(self):
         """Create underlying C context."""
         self._lib_vscf_chunk_cipher = VscfChunkCipher()
+        self._c_impl = None
+        self._ctx = None
         self.ctx = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_new()
 
     def __delete__(self, instance):
@@ -64,17 +84,6 @@ custom params by the caller; they are not embedded in the ciphertext stream."""
 
     def set_random(self, random):
         self._lib_vscf_chunk_cipher.vscf_chunk_cipher_use_random(self.ctx, random.c_impl)
-
-    def set_key(self, key):
-        """Set the 32-byte AES-256 encryption key."""
-        d_key = Data(key)
-        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_set_key(self.ctx, d_key.data)
-
-    def set_nonce(self, nonce):
-        """Set the 12-byte initial nonce for decryption.
-Not needed for encryption: nonce is generated automatically in start_encryption."""
-        d_nonce = Data(nonce)
-        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_set_nonce(self.ctx, d_nonce.data)
 
     def set_chunk_size(self, chunk_size):
         """Set the plaintext chunk size in bytes. Default is 65536."""
@@ -98,11 +107,6 @@ Valid after calling start_encryption; store in CMS custom params for decryption.
         result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_encryption_out_len(self.ctx, data_len)
         return result
 
-    def start_encryption(self):
-        """Initiate encryption. Generates a random 12-byte initial nonce."""
-        status = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_start_encryption(self.ctx)
-        VscfStatus.handle_status(status)
-
     def process_encryption(self, data):
         """Process encryption of a new portion of data."""
         d_data = Data(data)
@@ -122,11 +126,6 @@ Valid after calling start_encryption; store in CMS custom params for decryption.
         """Return buffer length required to hold output of process_decryption and finish_decryption."""
         result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_decryption_out_len(self.ctx, data_len)
         return result
-
-    def start_decryption(self):
-        """Initiate decryption. Caller must call set_nonce with the initial nonce from CMS before this."""
-        status = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_start_decryption(self.ctx)
-        VscfStatus.handle_status(status)
 
     def process_decryption(self, data):
         """Process decryption of a new portion of data."""
@@ -190,6 +189,115 @@ number of frames — protect against truncation by authenticating the chunk coun
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
+    def set_nonce(self, nonce):
+        """Set the 12-byte initial nonce. On encryption this is honored (not
+regenerated) by start_encryption; on decryption it is required."""
+        d_nonce = Data(nonce)
+        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_set_nonce(self.ctx, d_nonce.data)
+
+    def set_key(self, key):
+        """Set the 32-byte AES-256 encryption key."""
+        d_key = Data(key)
+        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_set_key(self.ctx, d_key.data)
+
+    def start_encryption(self):
+        """Initiate encryption. Generates a random 12-byte initial nonce only if
+one was not already set (via set_nonce or restore_alg_info), so an
+injected nonce is honored. An RNG failure is captured and surfaced
+from the first process_encryption/update/finish call."""
+        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_start_encryption(self.ctx)
+
+    def start_decryption(self):
+        """Initiate decryption. Caller must set the initial nonce (via set_nonce
+or restore_alg_info) before this."""
+        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_start_decryption(self.ctx)
+
+    def update(self, data):
+        """Process encryption or decryption of the given data chunk.
+Dispatches to the framed encryption or decryption path depending on
+the current state."""
+        d_data = Data(data)
+        out = Buffer(self.out_len(data_len=len(data)))
+        self._lib_vscf_chunk_cipher.vscf_chunk_cipher_update(self.ctx, d_data.data, out.c_buffer)
+        return out.get_bytes()
+
+    def out_len(self, data_len):
+        """Return buffer length required to hold an output of the methods
+"update" or "finish" in an current mode.
+Pass zero length to define buffer length of the method "finish"."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_out_len(self.ctx, data_len)
+        return result
+
+    def encrypted_out_len(self, data_len):
+        """Return buffer length required to hold an output of the methods
+"update" or "finish" in an encryption mode.
+Pass zero length to define buffer length of the method "finish"."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_encrypted_out_len(self.ctx, data_len)
+        return result
+
+    def decrypted_out_len(self, data_len):
+        """Return buffer length required to hold an output of the methods
+"update" or "finish" in an decryption mode.
+Pass zero length to define buffer length of the method "finish"."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_decrypted_out_len(self.ctx, data_len)
+        return result
+
+    def finish(self):
+        """Accomplish encryption or decryption process.
+Dispatches to finish_encryption or finish_decryption depending on
+the current state."""
+        out = Buffer(self.out_len(0))
+        status = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_finish(self.ctx, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
+
+    def alg_id(self):
+        """Provide algorithm identificator."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_alg_id(self.ctx)
+        return result
+
+    def produce_alg_info(self):
+        """Produce object with algorithm information and configuration parameters."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_produce_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def restore_alg_info(self, alg_info):
+        """Restore algorithm configuration from the given object."""
+        status = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_restore_alg_info(self.ctx, alg_info.c_impl)
+        VscfStatus.handle_status(status)
+
+    def encrypt(self, data):
+        """Encrypt given data."""
+        d_data = Data(data)
+        out = Buffer(self.encrypted_len(data_len=len(data)))
+        status = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_encrypt(self.ctx, d_data.data, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
+
+    def encrypted_len(self, data_len):
+        """Calculate required buffer length to hold the encrypted data."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_encrypted_len(self.ctx, data_len)
+        return result
+
+    def precise_encrypted_len(self, data_len):
+        """Precise length calculation of encrypted data."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_precise_encrypted_len(self.ctx, data_len)
+        return result
+
+    def decrypt(self, data):
+        """Decrypt given data."""
+        d_data = Data(data)
+        out = Buffer(self.decrypted_len(data_len=len(data)))
+        status = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_decrypt(self.ctx, d_data.data, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
+
+    def decrypted_len(self, data_len):
+        """Calculate required buffer length to hold the decrypted data."""
+        result = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_decrypted_len(self.ctx, data_len)
+        return result
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
@@ -203,3 +311,16 @@ number of frames — protect against truncation by authenticating the chunk coun
         inst._lib_vscf_chunk_cipher = VscfChunkCipher()
         inst.ctx = inst._lib_vscf_chunk_cipher.vscf_chunk_cipher_shallow_copy(c_ctx)
         return inst
+
+    @property
+    def c_impl(self):
+        return self._c_impl
+
+    @property
+    def ctx(self):
+        return self._ctx
+
+    @ctx.setter
+    def ctx(self, value):
+        self._ctx = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_shallow_copy(value)
+        self._c_impl = self._lib_vscf_chunk_cipher.vscf_chunk_cipher_impl(self.ctx)

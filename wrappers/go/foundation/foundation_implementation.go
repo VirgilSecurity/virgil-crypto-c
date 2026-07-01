@@ -53,6 +53,8 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
         return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t)(ctx)), nil
     case C.vscf_impl_tag_RANDOM_PADDING:
         return newRandomPaddingWithCtx((*C.vscf_random_padding_t)(ctx)), nil
+    case C.vscf_impl_tag_CHUNK_CIPHER:
+        return newChunkCipherWithCtx((*C.vscf_chunk_cipher_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -105,6 +107,8 @@ func FoundationImplementationWrapEncrypt(ctx *C.vscf_impl_t) (Encrypt, error) {
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     case C.vscf_impl_tag_PKCS5_PBES2:
         return newPkcs5Pbes2WithCtx((*C.vscf_pkcs5_pbes2_t)(ctx)), nil
+    case C.vscf_impl_tag_CHUNK_CIPHER:
+        return newChunkCipherWithCtx((*C.vscf_chunk_cipher_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -130,6 +134,8 @@ func FoundationImplementationWrapDecrypt(ctx *C.vscf_impl_t) (Decrypt, error) {
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     case C.vscf_impl_tag_PKCS5_PBES2:
         return newPkcs5Pbes2WithCtx((*C.vscf_pkcs5_pbes2_t)(ctx)), nil
+    case C.vscf_impl_tag_CHUNK_CIPHER:
+        return newChunkCipherWithCtx((*C.vscf_chunk_cipher_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -153,6 +159,8 @@ func FoundationImplementationWrapCipherInfo(ctx *C.vscf_impl_t) (CipherInfo, err
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
+    case C.vscf_impl_tag_CHUNK_CIPHER:
+        return newChunkCipherWithCtx((*C.vscf_chunk_cipher_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -176,6 +184,8 @@ func FoundationImplementationWrapCipher(ctx *C.vscf_impl_t) (Cipher, error) {
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
+    case C.vscf_impl_tag_CHUNK_CIPHER:
+        return newChunkCipherWithCtx((*C.vscf_chunk_cipher_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }

@@ -54,8 +54,11 @@ Nonce derivation follows the TLS 1.3 construction:
 Each encrypted frame layout:
     counter_le64[8] | ciphertext[N] | tag[16]
 
-The initial nonce and chunk size must be stored in the CMS message info
-custom params by the caller; they are not embedded in the ciphertext stream."""
+The construction is self-describing: it produces and restores a
+'chunked alg info' (algorithm id 'aes256 gcm chunked' carrying version,
+chunk size, and the initial nonce) via the 'alg' interface, so the
+generic decryptor (recipient cipher / alg factory) can reconstruct and
+drive it through the 'cipher' interface without out-of-band parameters."""
 
 
     def __init__(self):
@@ -80,21 +83,6 @@ custom params by the caller; they are not embedded in the ciphertext stream."""
         vscf_chunk_cipher_use_random.argtypes = [POINTER(vscf_chunk_cipher_t), POINTER(vscf_impl_t)]
         vscf_chunk_cipher_use_random.restype = None
         return vscf_chunk_cipher_use_random(ctx, random)
-
-    def vscf_chunk_cipher_set_key(self, ctx, key):
-        """Set the 32-byte AES-256 encryption key."""
-        vscf_chunk_cipher_set_key = self._lib.vscf_chunk_cipher_set_key
-        vscf_chunk_cipher_set_key.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t]
-        vscf_chunk_cipher_set_key.restype = None
-        return vscf_chunk_cipher_set_key(ctx, key)
-
-    def vscf_chunk_cipher_set_nonce(self, ctx, nonce):
-        """Set the 12-byte initial nonce for decryption.
-Not needed for encryption: nonce is generated automatically in start_encryption."""
-        vscf_chunk_cipher_set_nonce = self._lib.vscf_chunk_cipher_set_nonce
-        vscf_chunk_cipher_set_nonce.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t]
-        vscf_chunk_cipher_set_nonce.restype = None
-        return vscf_chunk_cipher_set_nonce(ctx, nonce)
 
     def vscf_chunk_cipher_set_chunk_size(self, ctx, chunk_size):
         """Set the plaintext chunk size in bytes. Default is 65536."""
@@ -125,13 +113,6 @@ Valid after calling start_encryption; store in CMS custom params for decryption.
         vscf_chunk_cipher_encryption_out_len.restype = c_size_t
         return vscf_chunk_cipher_encryption_out_len(ctx, data_len)
 
-    def vscf_chunk_cipher_start_encryption(self, ctx):
-        """Initiate encryption. Generates a random 12-byte initial nonce."""
-        vscf_chunk_cipher_start_encryption = self._lib.vscf_chunk_cipher_start_encryption
-        vscf_chunk_cipher_start_encryption.argtypes = [POINTER(vscf_chunk_cipher_t)]
-        vscf_chunk_cipher_start_encryption.restype = c_int
-        return vscf_chunk_cipher_start_encryption(ctx)
-
     def vscf_chunk_cipher_process_encryption(self, ctx, data, out):
         """Process encryption of a new portion of data."""
         vscf_chunk_cipher_process_encryption = self._lib.vscf_chunk_cipher_process_encryption
@@ -152,13 +133,6 @@ Valid after calling start_encryption; store in CMS custom params for decryption.
         vscf_chunk_cipher_decryption_out_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
         vscf_chunk_cipher_decryption_out_len.restype = c_size_t
         return vscf_chunk_cipher_decryption_out_len(ctx, data_len)
-
-    def vscf_chunk_cipher_start_decryption(self, ctx):
-        """Initiate decryption. Caller must call set_nonce with the initial nonce from CMS before this."""
-        vscf_chunk_cipher_start_decryption = self._lib.vscf_chunk_cipher_start_decryption
-        vscf_chunk_cipher_start_decryption.argtypes = [POINTER(vscf_chunk_cipher_t)]
-        vscf_chunk_cipher_start_decryption.restype = c_int
-        return vscf_chunk_cipher_start_decryption(ctx)
 
     def vscf_chunk_cipher_process_decryption(self, ctx, data, out):
         """Process decryption of a new portion of data."""
@@ -221,8 +195,148 @@ number of frames — protect against truncation by authenticating the chunk coun
         vscf_chunk_cipher_decrypt_at.restype = c_int
         return vscf_chunk_cipher_decrypt_at(ctx, chunk_index, is_last, frame, out)
 
+    def vscf_chunk_cipher_set_nonce(self, ctx, nonce):
+        """Set the 12-byte initial nonce. On encryption this is honored (not
+regenerated) by start_encryption; on decryption it is required."""
+        vscf_chunk_cipher_set_nonce = self._lib.vscf_chunk_cipher_set_nonce
+        vscf_chunk_cipher_set_nonce.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t]
+        vscf_chunk_cipher_set_nonce.restype = None
+        return vscf_chunk_cipher_set_nonce(ctx, nonce)
+
+    def vscf_chunk_cipher_set_key(self, ctx, key):
+        """Set the 32-byte AES-256 encryption key."""
+        vscf_chunk_cipher_set_key = self._lib.vscf_chunk_cipher_set_key
+        vscf_chunk_cipher_set_key.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t]
+        vscf_chunk_cipher_set_key.restype = None
+        return vscf_chunk_cipher_set_key(ctx, key)
+
+    def vscf_chunk_cipher_start_encryption(self, ctx):
+        """Initiate encryption. Generates a random 12-byte initial nonce only if
+one was not already set (via set_nonce or restore_alg_info), so an
+injected nonce is honored. An RNG failure is captured and surfaced
+from the first process_encryption/update/finish call."""
+        vscf_chunk_cipher_start_encryption = self._lib.vscf_chunk_cipher_start_encryption
+        vscf_chunk_cipher_start_encryption.argtypes = [POINTER(vscf_chunk_cipher_t)]
+        vscf_chunk_cipher_start_encryption.restype = None
+        return vscf_chunk_cipher_start_encryption(ctx)
+
+    def vscf_chunk_cipher_start_decryption(self, ctx):
+        """Initiate decryption. Caller must set the initial nonce (via set_nonce
+or restore_alg_info) before this."""
+        vscf_chunk_cipher_start_decryption = self._lib.vscf_chunk_cipher_start_decryption
+        vscf_chunk_cipher_start_decryption.argtypes = [POINTER(vscf_chunk_cipher_t)]
+        vscf_chunk_cipher_start_decryption.restype = None
+        return vscf_chunk_cipher_start_decryption(ctx)
+
+    def vscf_chunk_cipher_update(self, ctx, data, out):
+        """Process encryption or decryption of the given data chunk.
+Dispatches to the framed encryption or decryption path depending on
+the current state."""
+        vscf_chunk_cipher_update = self._lib.vscf_chunk_cipher_update
+        vscf_chunk_cipher_update.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_chunk_cipher_update.restype = None
+        return vscf_chunk_cipher_update(ctx, data, out)
+
+    def vscf_chunk_cipher_out_len(self, ctx, data_len):
+        """Return buffer length required to hold an output of the methods
+"update" or "finish" in an current mode.
+Pass zero length to define buffer length of the method "finish"."""
+        vscf_chunk_cipher_out_len = self._lib.vscf_chunk_cipher_out_len
+        vscf_chunk_cipher_out_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_out_len.restype = c_size_t
+        return vscf_chunk_cipher_out_len(ctx, data_len)
+
+    def vscf_chunk_cipher_encrypted_out_len(self, ctx, data_len):
+        """Return buffer length required to hold an output of the methods
+"update" or "finish" in an encryption mode.
+Pass zero length to define buffer length of the method "finish"."""
+        vscf_chunk_cipher_encrypted_out_len = self._lib.vscf_chunk_cipher_encrypted_out_len
+        vscf_chunk_cipher_encrypted_out_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_encrypted_out_len.restype = c_size_t
+        return vscf_chunk_cipher_encrypted_out_len(ctx, data_len)
+
+    def vscf_chunk_cipher_decrypted_out_len(self, ctx, data_len):
+        """Return buffer length required to hold an output of the methods
+"update" or "finish" in an decryption mode.
+Pass zero length to define buffer length of the method "finish"."""
+        vscf_chunk_cipher_decrypted_out_len = self._lib.vscf_chunk_cipher_decrypted_out_len
+        vscf_chunk_cipher_decrypted_out_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_decrypted_out_len.restype = c_size_t
+        return vscf_chunk_cipher_decrypted_out_len(ctx, data_len)
+
+    def vscf_chunk_cipher_finish(self, ctx, out):
+        """Accomplish encryption or decryption process.
+Dispatches to finish_encryption or finish_decryption depending on
+the current state."""
+        vscf_chunk_cipher_finish = self._lib.vscf_chunk_cipher_finish
+        vscf_chunk_cipher_finish.argtypes = [POINTER(vscf_chunk_cipher_t), POINTER(vsc_buffer_t)]
+        vscf_chunk_cipher_finish.restype = c_int
+        return vscf_chunk_cipher_finish(ctx, out)
+
+    def vscf_chunk_cipher_alg_id(self, ctx):
+        """Provide algorithm identificator."""
+        vscf_chunk_cipher_alg_id = self._lib.vscf_chunk_cipher_alg_id
+        vscf_chunk_cipher_alg_id.argtypes = [POINTER(vscf_chunk_cipher_t)]
+        vscf_chunk_cipher_alg_id.restype = c_int
+        return vscf_chunk_cipher_alg_id(ctx)
+
+    def vscf_chunk_cipher_produce_alg_info(self, ctx):
+        """Produce object with algorithm information and configuration parameters."""
+        vscf_chunk_cipher_produce_alg_info = self._lib.vscf_chunk_cipher_produce_alg_info
+        vscf_chunk_cipher_produce_alg_info.argtypes = [POINTER(vscf_chunk_cipher_t)]
+        vscf_chunk_cipher_produce_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_chunk_cipher_produce_alg_info(ctx)
+
+    def vscf_chunk_cipher_restore_alg_info(self, ctx, alg_info):
+        """Restore algorithm configuration from the given object."""
+        vscf_chunk_cipher_restore_alg_info = self._lib.vscf_chunk_cipher_restore_alg_info
+        vscf_chunk_cipher_restore_alg_info.argtypes = [POINTER(vscf_chunk_cipher_t), POINTER(vscf_impl_t)]
+        vscf_chunk_cipher_restore_alg_info.restype = c_int
+        return vscf_chunk_cipher_restore_alg_info(ctx, alg_info)
+
+    def vscf_chunk_cipher_encrypt(self, ctx, data, out):
+        """Encrypt given data."""
+        vscf_chunk_cipher_encrypt = self._lib.vscf_chunk_cipher_encrypt
+        vscf_chunk_cipher_encrypt.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_chunk_cipher_encrypt.restype = c_int
+        return vscf_chunk_cipher_encrypt(ctx, data, out)
+
+    def vscf_chunk_cipher_encrypted_len(self, ctx, data_len):
+        """Calculate required buffer length to hold the encrypted data."""
+        vscf_chunk_cipher_encrypted_len = self._lib.vscf_chunk_cipher_encrypted_len
+        vscf_chunk_cipher_encrypted_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_encrypted_len.restype = c_size_t
+        return vscf_chunk_cipher_encrypted_len(ctx, data_len)
+
+    def vscf_chunk_cipher_precise_encrypted_len(self, ctx, data_len):
+        """Precise length calculation of encrypted data."""
+        vscf_chunk_cipher_precise_encrypted_len = self._lib.vscf_chunk_cipher_precise_encrypted_len
+        vscf_chunk_cipher_precise_encrypted_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_precise_encrypted_len.restype = c_size_t
+        return vscf_chunk_cipher_precise_encrypted_len(ctx, data_len)
+
+    def vscf_chunk_cipher_decrypt(self, ctx, data, out):
+        """Decrypt given data."""
+        vscf_chunk_cipher_decrypt = self._lib.vscf_chunk_cipher_decrypt
+        vscf_chunk_cipher_decrypt.argtypes = [POINTER(vscf_chunk_cipher_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_chunk_cipher_decrypt.restype = c_int
+        return vscf_chunk_cipher_decrypt(ctx, data, out)
+
+    def vscf_chunk_cipher_decrypted_len(self, ctx, data_len):
+        """Calculate required buffer length to hold the decrypted data."""
+        vscf_chunk_cipher_decrypted_len = self._lib.vscf_chunk_cipher_decrypted_len
+        vscf_chunk_cipher_decrypted_len.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_decrypted_len.restype = c_size_t
+        return vscf_chunk_cipher_decrypted_len(ctx, data_len)
+
     def vscf_chunk_cipher_shallow_copy(self, ctx):
         vscf_chunk_cipher_shallow_copy = self._lib.vscf_chunk_cipher_shallow_copy
         vscf_chunk_cipher_shallow_copy.argtypes = [POINTER(vscf_chunk_cipher_t)]
         vscf_chunk_cipher_shallow_copy.restype = POINTER(vscf_chunk_cipher_t)
         return vscf_chunk_cipher_shallow_copy(ctx)
+
+    def vscf_chunk_cipher_impl(self, ctx):
+        vscf_chunk_cipher_impl = self._lib.vscf_chunk_cipher_impl
+        vscf_chunk_cipher_impl.argtypes = [POINTER(vscf_chunk_cipher_t)]
+        vscf_chunk_cipher_impl.restype = POINTER(vscf_impl_t)
+        return vscf_chunk_cipher_impl(ctx)

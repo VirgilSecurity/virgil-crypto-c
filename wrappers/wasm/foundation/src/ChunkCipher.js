@@ -74,6 +74,182 @@ const initChunkCipher = (Module, modules) => {
             Module._vscf_chunk_cipher_use_random(this.ctxPtr, random.ctxPtr)
         }
 
+        static get NONCE_LEN() {
+            return 12;
+        }
+
+        get NONCE_LEN() {
+            return 12;
+        }
+
+        static get KEY_LEN() {
+            return 32;
+        }
+
+        get KEY_LEN() {
+            return 32;
+        }
+
+        static get KEY_BITLEN() {
+            return 256;
+        }
+
+        get KEY_BITLEN() {
+            return 256;
+        }
+
+        static get BLOCK_LEN() {
+            return 16;
+        }
+
+        get BLOCK_LEN() {
+            return 16;
+        }
+
+        algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_alg_id(this.ctxPtr);
+            return proxyResult;
+        }
+
+        produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_produce_alg_info(this.ctxPtr);
+            
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            const proxyResult = Module._vscf_chunk_cipher_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        encrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+            
+            // Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            const outCapacity = this.encryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                const proxyResult = Module._vscf_chunk_cipher_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        encryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        preciseEncryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_precise_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        decrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+            
+            // Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            const outCapacity = this.decryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                const proxyResult = Module._vscf_chunk_cipher_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        decryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_decrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        setNonce(nonce) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('nonce', nonce);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
+            const noncePtr = Module._malloc(nonceSize);
+            Module.HEAP8.set(nonce, noncePtr);
+            
+            // Create C structure vsc_data_t.
+            const nonceCtxSize = Module._vsc_data_ctx_size();
+            const nonceCtxPtr = Module._malloc(nonceCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
+            
+            try {
+                Module._vscf_chunk_cipher_set_nonce(this.ctxPtr, nonceCtxPtr);
+            } finally {
+                Module._free(noncePtr);
+                Module._free(nonceCtxPtr);
+            }
+        }
+
         setKey(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
@@ -98,27 +274,92 @@ const initChunkCipher = (Module, modules) => {
             }
         }
 
-        setNonce(nonce) {
+        startEncryption() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('nonce', nonce);
+            Module._vscf_chunk_cipher_start_encryption(this.ctxPtr);
+        }
+
+        startDecryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_chunk_cipher_start_decryption(this.ctxPtr);
+        }
+
+        update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
             
             // Copy bytes from JS memory to the WASM memory.
-            const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
-            const noncePtr = Module._malloc(nonceSize);
-            Module.HEAP8.set(nonce, noncePtr);
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
             
             // Create C structure vsc_data_t.
-            const nonceCtxSize = Module._vsc_data_ctx_size();
-            const nonceCtxPtr = Module._malloc(nonceCtxSize);
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
             
             // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            const outCapacity = this.outLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
             
             try {
-                Module._vscf_chunk_cipher_set_nonce(this.ctxPtr, nonceCtxPtr);
+                Module._vscf_chunk_cipher_update(this.ctxPtr, dataCtxPtr, outCtxPtr);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
             } finally {
-                Module._free(noncePtr);
-                Module._free(nonceCtxPtr);
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        outLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_out_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        encryptedOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_encrypted_out_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        decryptedOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_decrypted_out_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        finish() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            const outCapacity = this.outLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                const proxyResult = Module._vscf_chunk_cipher_finish(this.ctxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._vsc_buffer_delete(outCtxPtr);
             }
         }
 
@@ -148,12 +389,6 @@ const initChunkCipher = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_chunk_cipher_encryption_out_len(this.ctxPtr, dataLen);
             return proxyResult;
-        }
-
-        startEncryption() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscf_chunk_cipher_start_encryption(this.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         processEncryption(data) {
@@ -216,12 +451,6 @@ const initChunkCipher = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_chunk_cipher_decryption_out_len(this.ctxPtr, dataLen);
             return proxyResult;
-        }
-
-        startDecryption() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscf_chunk_cipher_start_decryption(this.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         processDecryption(data) {
@@ -354,6 +583,143 @@ const initChunkCipher = (Module, modules) => {
             } finally {
                 Module._free(framePtr);
                 Module._free(frameCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        setNonce(nonce) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('nonce', nonce);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
+            const noncePtr = Module._malloc(nonceSize);
+            Module.HEAP8.set(nonce, noncePtr);
+            
+            // Create C structure vsc_data_t.
+            const nonceCtxSize = Module._vsc_data_ctx_size();
+            const nonceCtxPtr = Module._malloc(nonceCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
+            
+            try {
+                Module._vscf_chunk_cipher_set_nonce(this.ctxPtr, nonceCtxPtr);
+            } finally {
+                Module._free(noncePtr);
+                Module._free(nonceCtxPtr);
+            }
+        }
+
+        setKey(key) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('key', key);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const keySize = key.length * key.BYTES_PER_ELEMENT;
+            const keyPtr = Module._malloc(keySize);
+            Module.HEAP8.set(key, keyPtr);
+            
+            // Create C structure vsc_data_t.
+            const keyCtxSize = Module._vsc_data_ctx_size();
+            const keyCtxPtr = Module._malloc(keyCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(keyCtxPtr, keyPtr, keySize);
+            
+            try {
+                Module._vscf_chunk_cipher_set_key(this.ctxPtr, keyCtxPtr);
+            } finally {
+                Module._free(keyPtr);
+                Module._free(keyCtxPtr);
+            }
+        }
+
+        startEncryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_chunk_cipher_start_encryption(this.ctxPtr);
+        }
+
+        startDecryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_chunk_cipher_start_decryption(this.ctxPtr);
+        }
+
+        update(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+            
+            // Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            const outCapacity = this.outLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                Module._vscf_chunk_cipher_update(this.ctxPtr, dataCtxPtr, outCtxPtr);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        outLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_out_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        encryptedOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_encrypted_out_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        decryptedOutLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunk_cipher_decrypted_out_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        finish() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            const outCapacity = this.outLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                const proxyResult = Module._vscf_chunk_cipher_finish(this.ctxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
             }
         }

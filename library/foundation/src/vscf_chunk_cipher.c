@@ -60,217 +60,19 @@
 // clang-format on
 //  @end
 
+#include "vscf_chunk_cipher_internal.h"
+#include "vscf_alg.h"
+#include "vscf_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_impl.h"
+#include "vscf_chunked_alg_info.h"
+
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_chunk_cipher_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscf_chunk_cipher_init_ctx(vscf_chunk_cipher_t *self);
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscf_chunk_cipher_cleanup_ctx(vscf_chunk_cipher_t *self);
-
-//
-//  Encrypt one plaintext chunk and write frame: counter_le64[8] | ciphertext | tag[16].
-//
-static vscf_status_t
-vscf_chunk_cipher_encrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t plaintext, uint64_t chunk_index, bool is_last, vsc_buffer_t *out);
-
-//
-//  Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
-//  The frame's embedded counter is validated against expected_index.
-//
-static vscf_status_t
-vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, uint64_t expected_index, bool is_last, vsc_buffer_t *out);
-
-//
-//  Return size of 'vscf_chunk_cipher_t'.
-//
-VSCF_PUBLIC size_t
-vscf_chunk_cipher_ctx_size(void) {
-
-    return sizeof(vscf_chunk_cipher_t);
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_init(vscf_chunk_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_chunk_cipher_t));
-
-    self->refcnt = 1;
-
-    vscf_chunk_cipher_init_ctx(self);
-}
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_cleanup(vscf_chunk_cipher_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    vscf_chunk_cipher_cleanup_ctx(self);
-
-    vscf_chunk_cipher_release_random(self);
-
-    vscf_zeroize(self, sizeof(vscf_chunk_cipher_t));
-}
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_chunk_cipher_t *
-vscf_chunk_cipher_new(void) {
-
-    vscf_chunk_cipher_t *self = (vscf_chunk_cipher_t *) vscf_alloc(sizeof (vscf_chunk_cipher_t));
-    VSCF_ASSERT_ALLOC(self);
-
-    vscf_chunk_cipher_init(self);
-
-    self->self_dealloc_cb = vscf_dealloc;
-
-    return self;
-}
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_delete(vscf_chunk_cipher_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    size_t old_counter = self->refcnt;
-    VSCF_ASSERT(old_counter != 0);
-    size_t new_counter = old_counter - 1;
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
-        VSCF_ASSERT(old_counter != 0);
-        new_counter = old_counter - 1;
-    }
-    #else
-    self->refcnt = new_counter;
-    #endif
-
-    if (new_counter > 0) {
-        return;
-    }
-
-    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
-
-    vscf_chunk_cipher_cleanup(self);
-
-    if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
-    }
-}
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_chunk_cipher_new ()'.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_destroy(vscf_chunk_cipher_t **self_ref) {
-
-    VSCF_ASSERT_PTR(self_ref);
-
-    vscf_chunk_cipher_t *self = *self_ref;
-    *self_ref = NULL;
-
-    vscf_chunk_cipher_delete(self);
-}
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_chunk_cipher_t *
-vscf_chunk_cipher_shallow_copy(vscf_chunk_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    size_t old_counter;
-    size_t new_counter;
-    do {
-        old_counter = self->refcnt;
-        new_counter = old_counter + 1;
-    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
-    #else
-    ++self->refcnt;
-    #endif
-
-    return self;
-}
-
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_use_random(vscf_chunk_cipher_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_take_random(vscf_chunk_cipher_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_release_random(vscf_chunk_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
 
 
 // --------------------------------------------------------------------------
@@ -288,7 +90,22 @@ vscf_chunk_cipher_release_random(vscf_chunk_cipher_t *self) {
 //
 #define VSCF_CHUNK_CIPHER_MAX_CHUNK_INDEX (UINT64_C(1) << 48)
 
-static void
+//
+//  Encrypt one plaintext chunk and write frame: counter_le64[8] | ciphertext | tag[16].
+//
+static vscf_status_t
+vscf_chunk_cipher_encrypt_chunk(
+        vscf_chunk_cipher_t *self, vsc_data_t plaintext, uint64_t chunk_index, bool is_last, vsc_buffer_t *out);
+
+//
+//  Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
+//  The frame's embedded counter is validated against expected_index.
+//
+static vscf_status_t
+vscf_chunk_cipher_decrypt_chunk(
+        vscf_chunk_cipher_t *self, vsc_data_t frame, uint64_t expected_index, bool is_last, vsc_buffer_t *out);
+
+VSCF_PRIVATE void
 vscf_chunk_cipher_init_ctx(vscf_chunk_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -297,7 +114,7 @@ vscf_chunk_cipher_init_ctx(vscf_chunk_cipher_t *self) {
     self->chunk_size = VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
 }
 
-static void
+VSCF_PRIVATE void
 vscf_chunk_cipher_cleanup_ctx(vscf_chunk_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -387,24 +204,35 @@ vscf_chunk_cipher_decryption_out_len(const vscf_chunk_cipher_t *self, size_t dat
     return num_frames * plaintext_per_frame;
 }
 
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_chunk_cipher_start_encryption(vscf_chunk_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(self->key);
+
+    self->cipher_error = vscf_status_SUCCESS;
 
     if (self->chunk_size == 0) {
         self->chunk_size = VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
     }
 
-    vsc_buffer_destroy(&self->nonce_buffer);
-    self->nonce_buffer = vsc_buffer_new_with_capacity(vscf_aes256_gcm_NONCE_LEN);
-    vsc_buffer_make_secure(self->nonce_buffer);
+    //  Nonce ownership: generate a fresh random initial nonce ONLY when one was
+    //  not already provided (via set_nonce or restore_alg_info). This lets the
+    //  recipient_cipher-injected nonce, or a restored nonce, be honored. The
+    //  interface 'start_encryption' returns void, so an RNG failure is captured
+    //  in 'cipher_error' and surfaced from the first process/update/finish.
+    const bool has_nonce =
+            self->nonce_buffer != NULL && vsc_buffer_len(self->nonce_buffer) == vscf_aes256_gcm_NONCE_LEN;
+    if (!has_nonce) {
+        VSCF_ASSERT_PTR(self->random);
+        vsc_buffer_destroy(&self->nonce_buffer);
+        self->nonce_buffer = vsc_buffer_new_with_capacity(vscf_aes256_gcm_NONCE_LEN);
+        vsc_buffer_make_secure(self->nonce_buffer);
 
-    vscf_status_t status = vscf_random(self->random, vscf_aes256_gcm_NONCE_LEN, self->nonce_buffer);
-    if (status != vscf_status_SUCCESS) {
-        return status;
+        const vscf_status_t status = vscf_random(self->random, vscf_aes256_gcm_NONCE_LEN, self->nonce_buffer);
+        if (status != vscf_status_SUCCESS) {
+            self->cipher_error = status;
+        }
     }
 
     vsc_buffer_destroy(&self->pending);
@@ -412,8 +240,6 @@ vscf_chunk_cipher_start_encryption(vscf_chunk_cipher_t *self) {
 
     self->chunk_index = 0;
     self->state = vscf_cipher_state_ENCRYPTION;
-
-    return vscf_status_SUCCESS;
 }
 
 VSCF_PUBLIC vscf_status_t
@@ -471,13 +297,15 @@ vscf_chunk_cipher_finish_encryption(vscf_chunk_cipher_t *self, vsc_buffer_t *out
     return status;
 }
 
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC void
 vscf_chunk_cipher_start_decryption(vscf_chunk_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->key);
     VSCF_ASSERT_PTR(self->nonce_buffer);
     VSCF_ASSERT(vsc_buffer_len(self->nonce_buffer) == vscf_aes256_gcm_NONCE_LEN);
+
+    self->cipher_error = vscf_status_SUCCESS;
 
     if (self->chunk_size == 0) {
         self->chunk_size = VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
@@ -488,8 +316,6 @@ vscf_chunk_cipher_start_decryption(vscf_chunk_cipher_t *self) {
 
     self->chunk_index = 0;
     self->state = vscf_cipher_state_DECRYPTION;
-
-    return vscf_status_SUCCESS;
 }
 
 VSCF_PUBLIC vscf_status_t
@@ -776,4 +602,241 @@ vscf_chunk_cipher_decrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_
     vsc_data_t tag = vsc_data(frame.bytes + 8 + ciphertext_len, vscf_aes256_gcm_AUTH_TAG_LEN);
 
     return vscf_aes256_gcm_auth_decrypt(gcm, ciphertext, vsc_data(aad, aad_len), tag, out);
+}
+
+//  Version stored in the produced 'chunked alg info'. Bump only on a framing
+//  change; the version field lets a future change avoid a new OID.
+#define VSCF_CHUNK_CIPHER_ALG_INFO_VERSION 1
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_chunk_cipher_alg_id(const vscf_chunk_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_alg_id_AES256_GCM_CHUNKED;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_chunk_cipher_produce_alg_info(const vscf_chunk_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->nonce_buffer);
+    VSCF_ASSERT(vsc_buffer_len(self->nonce_buffer) == vscf_aes256_gcm_NONCE_LEN);
+
+    const size_t chunk_size = self->chunk_size > 0 ? self->chunk_size : VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
+
+    vscf_chunked_alg_info_t *chunked_alg_info = vscf_chunked_alg_info_new_with_members(vscf_alg_id_AES256_GCM_CHUNKED,
+            VSCF_CHUNK_CIPHER_ALG_INFO_VERSION, chunk_size, vsc_buffer_data(self->nonce_buffer));
+
+    return vscf_chunked_alg_info_impl(chunked_alg_info);
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_chunk_cipher_restore_alg_info(vscf_chunk_cipher_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_AES256_GCM_CHUNKED);
+
+    const vscf_chunked_alg_info_t *chunked_alg_info = (const vscf_chunked_alg_info_t *)alg_info;
+
+    const size_t chunk_size = vscf_chunked_alg_info_chunk_size(chunked_alg_info);
+    const vsc_data_t nonce = vscf_chunked_alg_info_nonce(chunked_alg_info);
+
+    if (chunk_size == 0 || nonce.len != vscf_aes256_gcm_NONCE_LEN) {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
+
+    //  Set the parameters directly on the struct, bypassing set_chunk_size's
+    //  'state == INITIAL' assert: restore must work regardless of state (the
+    //  generic decryptor may restore after other configuration).
+    self->chunk_size = chunk_size;
+
+    vsc_buffer_destroy(&self->nonce_buffer);
+    self->nonce_buffer = vsc_buffer_new_with_data(nonce);
+    vsc_buffer_make_secure(self->nonce_buffer);
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Encrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_chunk_cipher_encrypt(vscf_chunk_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_chunk_cipher_encrypted_len(self, data.len));
+
+    vscf_chunk_cipher_start_encryption(self);
+    vscf_chunk_cipher_update(self, data, out);
+    return vscf_chunk_cipher_finish(self, out);
+}
+
+//
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_encrypted_len(const vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    //  process_encryption output for data_len, plus the trailing FIN frame.
+    return vscf_chunk_cipher_encryption_out_len(self, data_len) + vscf_chunk_cipher_encryption_out_len(self, 0);
+}
+
+//
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_precise_encrypted_len(const vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_chunk_cipher_encrypted_len(self, data_len);
+}
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_chunk_cipher_decrypt(vscf_chunk_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_chunk_cipher_decrypted_len(self, data.len));
+
+    vscf_chunk_cipher_start_decryption(self);
+    vscf_chunk_cipher_update(self, data, out);
+    return vscf_chunk_cipher_finish(self, out);
+}
+
+//
+//  Calculate required buffer length to hold the decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_decrypted_len(const vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_chunk_cipher_decryption_out_len(self, data_len);
+}
+
+//
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_chunk_cipher_state(const vscf_chunk_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->state;
+}
+
+//
+//  Process encryption or decryption of the given data chunk.
+//  State dispatcher over the existing framed process_encryption/process_decryption.
+//
+VSCF_PUBLIC void
+vscf_chunk_cipher_update(vscf_chunk_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(out);
+
+    //  A deferred error from the void start_encryption (e.g. RNG failure) makes
+    //  the stream unusable; drop this chunk rather than emitting frames under a
+    //  broken nonce. The error is returned from finish.
+    if (self->cipher_error != vscf_status_SUCCESS) {
+        return;
+    }
+
+    if (self->state == vscf_cipher_state_DECRYPTION) {
+        const vscf_status_t status = vscf_chunk_cipher_process_decryption(self, data, out);
+        if (status != vscf_status_SUCCESS) {
+            self->cipher_error = status;
+        }
+    } else {
+        const vscf_status_t status = vscf_chunk_cipher_process_encryption(self, data, out);
+        if (status != vscf_status_SUCCESS) {
+            self->cipher_error = status;
+        }
+    }
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an current mode.
+//
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_out_len(vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (self->state == vscf_cipher_state_DECRYPTION) {
+        return vscf_chunk_cipher_decrypted_out_len(self, data_len);
+    } else {
+        return vscf_chunk_cipher_encrypted_out_len(self, data_len);
+    }
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an encryption mode.
+//
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_encrypted_out_len(const vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_chunk_cipher_encryption_out_len(self, data_len);
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an decryption mode.
+//
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_decrypted_out_len(const vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_chunk_cipher_decryption_out_len(self, data_len);
+}
+
+//
+//  Accomplish encryption or decryption process.
+//  State dispatcher over the existing framed finish_encryption/finish_decryption.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_chunk_cipher_finish(vscf_chunk_cipher_t *self, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(out);
+
+    //  Surface any deferred error from start/update; leave the state machine reset.
+    if (self->cipher_error != vscf_status_SUCCESS) {
+        const vscf_status_t deferred = self->cipher_error;
+        self->cipher_error = vscf_status_SUCCESS;
+        self->state = vscf_cipher_state_INITIAL;
+        return deferred;
+    }
+
+    if (self->state == vscf_cipher_state_DECRYPTION) {
+        return vscf_chunk_cipher_finish_decryption(self, out);
+    } else {
+        return vscf_chunk_cipher_finish_encryption(self, out);
+    }
 }

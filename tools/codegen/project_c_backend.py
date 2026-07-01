@@ -4794,7 +4794,9 @@ def _resolve_impl_property_type(
             })
     else:
         # Primitive type (byte, size, etc.)
-        rendered_type, kind = type_map(prop.type_name)
+        # Pass type_size so sized integers (e.g. unsigned/size 8 -> uint64_t)
+        # resolve identically to class struct fields.
+        rendered_type, kind = type_map(prop.type_name, getattr(prop, "type_size", None))
         accessed_by = "pointer" if prop.is_reference else "value"
         attrs.update({
             "type": rendered_type,

@@ -77,8 +77,6 @@ from ._vscf_ecies import vscf_ecies_t
 from ._vscf_ecies import VscfEcies
 from ._vscf_recipient_cipher import vscf_recipient_cipher_t
 from ._vscf_recipient_cipher import VscfRecipientCipher
-from ._vscf_chunk_cipher import vscf_chunk_cipher_t
-from ._vscf_chunk_cipher import VscfChunkCipher
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from ._vscf_message_info_custom_params import VscfMessageInfoCustomParams
 from ._vscf_key_provider import vscf_key_provider_t
@@ -229,4 +227,6 @@ from ._vscf_message_info_der_serializer import vscf_message_info_der_serializer_
 from ._vscf_message_info_der_serializer import VscfMessageInfoDerSerializer
 from ._vscf_random_padding import vscf_random_padding_t
 from ._vscf_random_padding import VscfRandomPadding
+from ._vscf_chunk_cipher import vscf_chunk_cipher_t
+from ._vscf_chunk_cipher import VscfChunkCipher
 from ._vscf_impl_tag import VscfImplTag

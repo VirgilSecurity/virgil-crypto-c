@@ -106,7 +106,6 @@
     <class name="ecies"/>
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>
-    <class name="chunk cipher"/>
     <class name="key recipient list"/>
     <class name="kek recipient list"/>
     <class name="list key value node"/>
@@ -156,6 +155,7 @@
     <implementor name="alg info der"/>
     <implementor name="message info der serializer"/>
     <implementor name="padding"/>
+    <implementor name="chunk cipher"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

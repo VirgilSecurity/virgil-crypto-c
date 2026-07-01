@@ -46,12 +46,13 @@
 //  @description
 // --------------------------------------------------------------------------
 //  //
-//  //  Class 'chunk cipher' types definition.
+//  //  This module contains logic for interface/implementation architecture.
+//  //  Do not use this module in any part of the code.
 //  //
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_CHUNK_CIPHER_DEFS_H_INCLUDED
-#define VSCF_CHUNK_CIPHER_DEFS_H_INCLUDED
+#ifndef VSCF_CHUNK_CIPHER_INTERNAL_H_INCLUDED
+#define VSCF_CHUNK_CIPHER_INTERNAL_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -63,10 +64,6 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_cipher_state.h"
-#include "vscf_impl.h"
-#include "vscf_impl_private.h"
 #include "vscf_chunk_cipher.h"
 
 // --------------------------------------------------------------------------
@@ -75,16 +72,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
-#include "vscf_aes256_gcm.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#include <VSCCommon/vsc_buffer.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -97,54 +84,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_chunk_cipher_init() is called.
+//  Note, that context is already zeroed.
 //
-struct vscf_chunk_cipher_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    VSCF_ATOMIC size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    vscf_aes256_gcm_t *aes256_gcm;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *key;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *nonce_buffer;
-    //
-    //  Implementation specific context.
-    //
-    size_t chunk_size;
-    //
-    //  Implementation specific context.
-    //
-    uint64_t chunk_index;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *pending;
-    //
-    //  Implementation specific context.
-    //
-    vscf_cipher_state_t state;
-    //
-    //  Implementation specific context.
-    //
-    vscf_status_t cipher_error;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-};
+VSCF_PRIVATE void
+vscf_chunk_cipher_init_ctx(vscf_chunk_cipher_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_chunk_cipher_cleanup_ctx(vscf_chunk_cipher_t *self);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -157,5 +110,5 @@ struct vscf_chunk_cipher_t {
 #endif
 
 //  @footer
-#endif // VSCF_CHUNK_CIPHER_DEFS_H_INCLUDED
+#endif // VSCF_CHUNK_CIPHER_INTERNAL_H_INCLUDED
 //  @end

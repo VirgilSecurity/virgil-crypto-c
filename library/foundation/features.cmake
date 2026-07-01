@@ -69,7 +69,6 @@ option(VSCF_KEY_ALG_FACTORY "Enable class 'key alg factory'." ON)
 option(VSCF_ECIES "Enable class 'ecies'." ON)
 option(VSCF_ECIES_ENVELOPE "Enable class 'ecies envelope'." ON)
 option(VSCF_RECIPIENT_CIPHER "Enable class 'recipient cipher'." ON)
-option(VSCF_CHUNK_CIPHER "Enable class 'chunk cipher'." ON)
 option(VSCF_KEY_RECIPIENT_LIST "Enable class 'key recipient list'." ON)
 option(VSCF_KEK_RECIPIENT_LIST "Enable class 'kek recipient list'." ON)
 option(VSCF_LIST_KEY_VALUE_NODE "Enable class 'list key value node'." ON)
@@ -195,6 +194,7 @@ option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der seriali
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
 option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable implementation 'message info der serializer'." ON)
 option(VSCF_RANDOM_PADDING "Enable implementation 'random padding'." ON)
+option(VSCF_CHUNK_CIPHER "Enable implementation 'chunk cipher'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -220,7 +220,6 @@ mark_as_advanced(
         VSCF_ECIES
         VSCF_ECIES_ENVELOPE
         VSCF_RECIPIENT_CIPHER
-        VSCF_CHUNK_CIPHER
         VSCF_KEY_RECIPIENT_LIST
         VSCF_KEK_RECIPIENT_LIST
         VSCF_LIST_KEY_VALUE_NODE
@@ -346,6 +345,7 @@ mark_as_advanced(
         VSCF_ALG_INFO_DER_DESERIALIZER
         VSCF_MESSAGE_INFO_DER_SERIALIZER
         VSCF_RANDOM_PADDING
+        VSCF_CHUNK_CIPHER
         )
 
 if(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER AND NOT VSCF_ASN1_WRITER)
@@ -812,15 +812,6 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_RANDOM_PADDING)
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_RANDOM_PADDING - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_CHUNK_CIPHER AND NOT VSCF_AES256_GCM)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_CHUNK_CIPHER depends on the feature:")
-    message("     VSCF_AES256_GCM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -3197,6 +3188,24 @@ if(VSCF_RANDOM_PADDING AND NOT VSCF_SIMPLE_ALG_INFO)
     message("--")
     message("Feature VSCF_RANDOM_PADDING depends on the feature:")
     message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CHUNK_CIPHER AND NOT VSCF_AES256_GCM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CHUNK_CIPHER depends on the feature:")
+    message("     VSCF_AES256_GCM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CHUNK_CIPHER AND NOT VSCF_CHUNKED_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CHUNK_CIPHER depends on the feature:")
+    message("     VSCF_CHUNKED_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

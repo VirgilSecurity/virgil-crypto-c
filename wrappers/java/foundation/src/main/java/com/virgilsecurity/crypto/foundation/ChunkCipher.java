@@ -36,7 +36,7 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class ChunkCipher implements AutoCloseable {
+public class ChunkCipher implements AutoCloseable, Alg, Encrypt, Decrypt, CipherInfo, Cipher {
 
     public long cCtx;
 
@@ -74,12 +74,88 @@ public class ChunkCipher implements AutoCloseable {
         FoundationJNI.INSTANCE.chunkCipher_setRandom(this.cCtx, random);
     }
 
-    public void setKey(byte[] key) {
-        FoundationJNI.INSTANCE.chunkCipher_setKey(this.cCtx, key);
+    public int getNonceLen() {
+        return 12;
+    }
+
+    public int getKeyLen() {
+        return 32;
+    }
+
+    public int getKeyBitlen() {
+        return 256;
+    }
+
+    public int getBlockLen() {
+        return 16;
+    }
+
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.chunkCipher_algId(this.cCtx);
+    }
+
+    public AlgInfo produceAlgInfo() {
+        return FoundationJNI.INSTANCE.chunkCipher_produceAlgInfo(this.cCtx);
+    }
+
+    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
+        FoundationJNI.INSTANCE.chunkCipher_restoreAlgInfo(this.cCtx, algInfo);
+    }
+
+    public byte[] encrypt(byte[] data) throws FoundationException {
+        return FoundationJNI.INSTANCE.chunkCipher_encrypt(this.cCtx, data);
+    }
+
+    public int encryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_encryptedLen(this.cCtx, dataLen);
+    }
+
+    public int preciseEncryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_preciseEncryptedLen(this.cCtx, dataLen);
+    }
+
+    public byte[] decrypt(byte[] data) throws FoundationException {
+        return FoundationJNI.INSTANCE.chunkCipher_decrypt(this.cCtx, data);
+    }
+
+    public int decryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_decryptedLen(this.cCtx, dataLen);
     }
 
     public void setNonce(byte[] nonce) {
         FoundationJNI.INSTANCE.chunkCipher_setNonce(this.cCtx, nonce);
+    }
+
+    public void setKey(byte[] key) {
+        FoundationJNI.INSTANCE.chunkCipher_setKey(this.cCtx, key);
+    }
+
+    public void startEncryption() {
+        FoundationJNI.INSTANCE.chunkCipher_startEncryption(this.cCtx);
+    }
+
+    public void startDecryption() {
+        FoundationJNI.INSTANCE.chunkCipher_startDecryption(this.cCtx);
+    }
+
+    public byte[] update(byte[] data) {
+        return FoundationJNI.INSTANCE.chunkCipher_update(this.cCtx, data);
+    }
+
+    public int outLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_outLen(this.cCtx, dataLen);
+    }
+
+    public int encryptedOutLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_encryptedOutLen(this.cCtx, dataLen);
+    }
+
+    public int decryptedOutLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_decryptedOutLen(this.cCtx, dataLen);
+    }
+
+    public byte[] finish() throws FoundationException {
+        return FoundationJNI.INSTANCE.chunkCipher_finish(this.cCtx);
     }
 
     public void setChunkSize(int chunkSize) {
@@ -98,10 +174,6 @@ public class ChunkCipher implements AutoCloseable {
         return FoundationJNI.INSTANCE.chunkCipher_encryptionOutLen(this.cCtx, dataLen);
     }
 
-    public void startEncryption() throws FoundationException {
-        FoundationJNI.INSTANCE.chunkCipher_startEncryption(this.cCtx);
-    }
-
     public byte[] processEncryption(byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.chunkCipher_processEncryption(this.cCtx, data);
     }
@@ -112,10 +184,6 @@ public class ChunkCipher implements AutoCloseable {
 
     public int decryptionOutLen(int dataLen) {
         return FoundationJNI.INSTANCE.chunkCipher_decryptionOutLen(this.cCtx, dataLen);
-    }
-
-    public void startDecryption() throws FoundationException {
-        FoundationJNI.INSTANCE.chunkCipher_startDecryption(this.cCtx);
     }
 
     public byte[] processDecryption(byte[] data) throws FoundationException {
@@ -136,6 +204,42 @@ public class ChunkCipher implements AutoCloseable {
 
     public byte[] decryptAt(long chunkIndex, boolean isLast, byte[] frame) throws FoundationException {
         return FoundationJNI.INSTANCE.chunkCipher_decryptAt(this.cCtx, chunkIndex, isLast, frame);
+    }
+
+    public void setNonce(byte[] nonce) {
+        FoundationJNI.INSTANCE.chunkCipher_setNonce(this.cCtx, nonce);
+    }
+
+    public void setKey(byte[] key) {
+        FoundationJNI.INSTANCE.chunkCipher_setKey(this.cCtx, key);
+    }
+
+    public void startEncryption() {
+        FoundationJNI.INSTANCE.chunkCipher_startEncryption(this.cCtx);
+    }
+
+    public void startDecryption() {
+        FoundationJNI.INSTANCE.chunkCipher_startDecryption(this.cCtx);
+    }
+
+    public byte[] update(byte[] data) {
+        return FoundationJNI.INSTANCE.chunkCipher_update(this.cCtx, data);
+    }
+
+    public int outLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_outLen(this.cCtx, dataLen);
+    }
+
+    public int encryptedOutLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_encryptedOutLen(this.cCtx, dataLen);
+    }
+
+    public int decryptedOutLen(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_decryptedOutLen(this.cCtx, dataLen);
+    }
+
+    public byte[] finish() throws FoundationException {
+        return FoundationJNI.INSTANCE.chunkCipher_finish(this.cCtx);
     }
 
 }

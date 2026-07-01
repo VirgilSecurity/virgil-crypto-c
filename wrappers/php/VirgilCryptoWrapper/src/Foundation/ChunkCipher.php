@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-class ChunkCipher
+class ChunkCipher implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
 {
 
     /**
@@ -76,12 +76,85 @@ class ChunkCipher
 
     /**
     *
-    * @param string $$key
-    * @return void
+    * @return AlgId
     */
-    public function setKey(string $$key): void
+    public function algId(): AlgId
     {
-        vscf_chunk_cipher_set_key_php($this->ctx, $$key);
+        $enum = vscf_chunk_cipher_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
+    *
+    * @return AlgInfo
+    */
+    public function produceAlgInfo(): AlgInfo
+    {
+        $ctx = vscf_chunk_cipher_produce_alg_info_php($this->ctx);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
+    {
+        vscf_chunk_cipher_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @return string
+    * @throws \Exception
+    */
+    public function encrypt(string $$data): string
+    {
+        return vscf_chunk_cipher_encrypt_php($this->ctx, $$data);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function encryptedLen(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_encrypted_len_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function preciseEncryptedLen(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_precise_encrypted_len_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @return string
+    * @throws \Exception
+    */
+    public function decrypt(string $$data): string
+    {
+        return vscf_chunk_cipher_decrypt_php($this->ctx, $$data);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function decryptedLen(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_decrypted_len_php($this->ctx, $$dataLen);
     }
 
     /**
@@ -92,6 +165,84 @@ class ChunkCipher
     public function setNonce(string $$nonce): void
     {
         vscf_chunk_cipher_set_nonce_php($this->ctx, $$nonce);
+    }
+
+    /**
+    *
+    * @param string $$key
+    * @return void
+    */
+    public function setKey(string $$key): void
+    {
+        vscf_chunk_cipher_set_key_php($this->ctx, $$key);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function startEncryption(): void
+    {
+        vscf_chunk_cipher_start_encryption_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function startDecryption(): void
+    {
+        vscf_chunk_cipher_start_decryption_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @return string
+    */
+    public function update(string $$data): string
+    {
+        return vscf_chunk_cipher_update_php($this->ctx, $$data);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function outLen(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_out_len_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function encryptedOutLen(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_encrypted_out_len_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function decryptedOutLen(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_decrypted_out_len_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @return string
+    * @throws \Exception
+    */
+    public function finish(): string
+    {
+        return vscf_chunk_cipher_finish_php($this->ctx);
     }
 
     /**
@@ -134,16 +285,6 @@ class ChunkCipher
 
     /**
     *
-    * @return void
-    * @throws \Exception
-    */
-    public function startEncryption(): void
-    {
-        vscf_chunk_cipher_start_encryption_php($this->ctx);
-    }
-
-    /**
-    *
     * @param string $$data
     * @return string
     * @throws \Exception
@@ -171,16 +312,6 @@ class ChunkCipher
     public function decryptionOutLen(int $$dataLen): int
     {
         return vscf_chunk_cipher_decryption_out_len_php($this->ctx, $$dataLen);
-    }
-
-    /**
-    *
-    * @return void
-    * @throws \Exception
-    */
-    public function startDecryption(): void
-    {
-        vscf_chunk_cipher_start_decryption_php($this->ctx);
     }
 
     /**
