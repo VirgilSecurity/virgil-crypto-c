@@ -94,11 +94,12 @@ vsc_buffer_write_data(buf, data);   // VSC_ASSERT(data.len <= vsc_buffer_unused_
 vsc_buffer_append_data(buf, data);  // requires is_owner; no-op on empty data
 ```
 
-- `vsc_buffer_write_data` does **not** grow. If `data.len > unused_len`, it
-  aborts (in release-with-asserts) or silently truncates to `unused_len`
-  otherwise. Use it only when you have pre-sized the buffer with the correct
-  `*_out_len` (see below). This is the single most common source of an abort in
-  `vsc_buffer.c`.
+- `vsc_buffer_write_data` does **not** grow. If `data.len > unused_len` it
+  aborts on `VSC_ASSERT(data.len <= vsc_buffer_unused_len(self))`. These are
+  custom assertions that are **always enabled** (no `NDEBUG` gate), so this
+  aborts in every build — it never silently truncates in practice. Use it only
+  when you have pre-sized the buffer with the correct `*_out_len` (see below).
+  This is the single most common source of an abort in `vsc_buffer.c`.
 - `vsc_buffer_append_data` grows automatically **but requires `is_owner == true`**.
   It aborts on a buffer created with `vsc_buffer_use` (non-owning). It is a no-op
   for empty `data`. If `bytes == NULL` it allocs to `data.len` first. Use it when
