@@ -67,6 +67,7 @@
 #include "vscf_hkdf.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_aes256_cbc.h"
+#include "vscf_chunk_cipher.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
@@ -275,6 +276,11 @@ vscf_alg_factory_create_cipher_from_alg_id(vscf_alg_id_t alg_id) {
     case vscf_alg_id_AES256_GCM:
         return vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
 #endif // VSCF_AES256_GCM
+
+#if VSCF_CHUNK_CIPHER
+    case vscf_alg_id_AES256_GCM_CHUNKED:
+        return vscf_chunk_cipher_impl(vscf_chunk_cipher_new());
+#endif // VSCF_CHUNK_CIPHER
 
 #if VSCF_AES256_CBC
     case vscf_alg_id_AES256_CBC:

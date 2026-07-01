@@ -39,7 +39,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_CHUNK_CIPHER && VSCF_AES256_GCM && VSCF_FAKE_RANDOM
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_CHUNK_CIPHER && VSCF_AES256_GCM && VSCF_FAKE_RANDOM &&VSCF_ALG_FACTORY
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_memory.h"
@@ -52,6 +52,9 @@
 #include "vscf_alg_info.h"
 #include "vscf_chunked_alg_info.h"
 #include "vscf_impl.h"
+#include "vscf_alg_factory.h"
+#include "vscf_alg.h"
+#include "vscf_cipher.h"
 
 // Must match VSCF_CHUNK_CIPHER_MAX_CHUNK_INDEX in vscf_chunk_cipher.c
 static const uint64_t k_max_chunk_index = UINT64_C(1) << 48;
@@ -1084,6 +1087,109 @@ test__restore_alg_info__state_not_initial__still_restores(void) {
 }
 
 
+// --------------------------------------------------------------------------
+// alg_factory: reconstruct a chunk_cipher from a chunked_alg_info produced by
+// encryption, then decrypt a previously-encrypted stream through the generic
+// cipher interface (set_key / update / finish). Restored chunk_size + nonce.
+// --------------------------------------------------------------------------
+void
+test__alg_factory__create_cipher_from_info__restores_and_decrypts(void) {
+
+    const size_t CHUNK_SIZE = 16;
+    byte plaintext_bytes[40];
+    memset(plaintext_bytes, 0x37, sizeof(plaintext_bytes));
+    vsc_data_t plaintext = vsc_data(plaintext_bytes, sizeof(plaintext_bytes));
+
+    //
+    //  Encrypt a multi-chunk stream and capture the produced alg_info.
+    //
+    vscf_chunk_cipher_t *enc = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(enc, CHUNK_SIZE);
+    vscf_chunk_cipher_start_encryption(enc);
+
+    byte nonce_bytes[vscf_aes256_gcm_NONCE_LEN];
+    memcpy(nonce_bytes, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
+
+    vsc_buffer_t *ciphertext = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, ciphertext));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_encryption(enc, ciphertext));
+
+    vscf_impl_t *alg_info = vscf_chunk_cipher_produce_alg_info(enc);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM_CHUNKED, vscf_alg_info_alg_id(alg_info));
+    vscf_chunk_cipher_destroy(&enc);
+
+    //
+    //  Reconstruct the cipher purely from the alg_info via the factory.
+    //  The factory routes AES256_GCM_CHUNKED -> chunk_cipher and calls
+    //  restore_alg_info (chunk_size + nonce) via the alg vtable.
+    //
+    vscf_impl_t *dec = vscf_alg_factory_create_cipher_from_info(alg_info);
+    TEST_ASSERT_NOT_NULL(dec);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM_CHUNKED, vscf_alg_alg_id(dec));
+
+    // The concrete instance had its chunk_size + nonce restored.
+    vscf_chunk_cipher_t *dec_chunk = (vscf_chunk_cipher_t *)dec;
+    TEST_ASSERT_EQUAL(CHUNK_SIZE, dec_chunk->chunk_size);
+    TEST_ASSERT_EQUAL_MEMORY(nonce_bytes, vscf_chunk_cipher_nonce(dec_chunk).bytes, vscf_aes256_gcm_NONCE_LEN);
+
+    //
+    //  Drive decryption through the generic cipher interface. The factory does
+    //  NOT set the key (not part of the alg_info), so the caller supplies it.
+    //
+    vscf_cipher_set_key(dec, vsc_data(k_key, sizeof(k_key)));
+    vscf_cipher_start_decryption(dec);
+
+    vsc_buffer_t *recovered = vsc_buffer_new_with_capacity(vscf_cipher_out_len(dec, vsc_buffer_len(ciphertext)));
+    vscf_cipher_update(dec, vsc_buffer_data(ciphertext), recovered);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_cipher_finish(dec, recovered));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(plaintext, recovered);
+
+    vscf_impl_destroy(&alg_info);
+    vscf_impl_destroy(&dec);
+    vsc_buffer_destroy(&ciphertext);
+    vsc_buffer_destroy(&recovered);
+}
+
+
+// --------------------------------------------------------------------------
+// alg_factory round-trip: build a chunked_alg_info via produce_alg_info from a
+// configured chunk_cipher, then reconstruct through the factory and confirm the
+// params survive the round-trip.
+// --------------------------------------------------------------------------
+void
+test__alg_factory__produce_then_reconstruct__params_round_trip(void) {
+
+    const size_t CHUNK_SIZE = 128;
+
+    // Configure a chunk_cipher with a known nonce + chunk_size and produce its
+    // alg_info (the CMS identifier a recipient_cipher would emit).
+    byte src_nonce[vscf_aes256_gcm_NONCE_LEN];
+    memset(src_nonce, 0x5C, sizeof(src_nonce));
+
+    vscf_chunk_cipher_t *src = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(src, CHUNK_SIZE);
+    vscf_chunk_cipher_set_nonce(src, vsc_data(src_nonce, sizeof(src_nonce)));
+    vscf_chunk_cipher_start_encryption(src);
+
+    vscf_impl_t *alg_info = vscf_chunk_cipher_produce_alg_info(src);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM_CHUNKED, vscf_alg_info_alg_id(alg_info));
+    vscf_chunk_cipher_destroy(&src);
+
+    // Reconstruct through the factory; params must survive the round-trip.
+    vscf_impl_t *restored = vscf_alg_factory_create_cipher_from_info(alg_info);
+    TEST_ASSERT_NOT_NULL(restored);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM_CHUNKED, vscf_alg_alg_id(restored));
+
+    vscf_chunk_cipher_t *restored_chunk = (vscf_chunk_cipher_t *)restored;
+    TEST_ASSERT_EQUAL(CHUNK_SIZE, restored_chunk->chunk_size);
+    TEST_ASSERT_EQUAL(vscf_aes256_gcm_NONCE_LEN, vscf_chunk_cipher_nonce(restored_chunk).len);
+    TEST_ASSERT_EQUAL_MEMORY(src_nonce, vscf_chunk_cipher_nonce(restored_chunk).bytes, vscf_aes256_gcm_NONCE_LEN);
+
+    vscf_impl_destroy(&alg_info);
+    vscf_impl_destroy(&restored);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -1122,6 +1228,8 @@ main(void) {
     RUN_TEST(test__cipher_interface__update_finish__roundtrips);
     RUN_TEST(test__start_encryption__preset_nonce__is_honored);
     RUN_TEST(test__restore_alg_info__state_not_initial__still_restores);
+    RUN_TEST(test__alg_factory__create_cipher_from_info__restores_and_decrypts);
+    RUN_TEST(test__alg_factory__produce_then_reconstruct__params_round_trip);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
