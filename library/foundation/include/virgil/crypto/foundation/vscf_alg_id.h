@@ -108,7 +108,8 @@ enum vscf_alg_id_t {
     vscf_alg_id_FALCON,
     vscf_alg_id_RANDOM_PADDING,
     vscf_alg_id_ML_KEM_768,
-    vscf_alg_id_ML_DSA_65
+    vscf_alg_id_ML_DSA_65,
+    vscf_alg_id_AES256_SIV
 };
 typedef enum vscf_alg_id_t vscf_alg_id_t;
 

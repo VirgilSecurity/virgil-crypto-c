@@ -28,8 +28,13 @@
     <feature name="BASE64 C"/>
     <feature name="THREADING C"/>
     <feature name="CIPHER MODE CBC"/>
+    <feature name="CIPHER MODE CTR"/>
     <feature name="CIPHER MODE WITH PADDING"/>
     <feature name="CIPHER PADDING PKCS7"/>
+    <feature name="CMAC C">
+        <require feature="AES C"/>
+        <require feature="CIPHER C"/>
+    </feature>
 
     <feature name="ECP_DP_SECP256R1_ENABLED"/>
     <feature name="ECP C">

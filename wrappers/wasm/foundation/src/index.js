@@ -83,6 +83,7 @@ const initSha256 = require('./Sha256');
 const initSha384 = require('./Sha384');
 const initSha512 = require('./Sha512');
 const initAes256Gcm = require('./Aes256Gcm');
+const initAes256Siv = require('./Aes256Siv');
 const initAes256Cbc = require('./Aes256Cbc');
 const initAes128Kw = require('./Aes128Kw');
 const initAes256Kw = require('./Aes256Kw');
@@ -188,6 +189,7 @@ const initProject = options => {
             modules.Sha384 = initSha384(foundationModule, modules);
             modules.Sha512 = initSha512(foundationModule, modules);
             modules.Aes256Gcm = initAes256Gcm(foundationModule, modules);
+            modules.Aes256Siv = initAes256Siv(foundationModule, modules);
             modules.Aes256Cbc = initAes256Cbc(foundationModule, modules);
             modules.Aes128Kw = initAes128Kw(foundationModule, modules);
             modules.Aes256Kw = initAes256Kw(foundationModule, modules);

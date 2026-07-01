@@ -89,6 +89,8 @@ import VSCFoundation
 
     case mlDsa65
 
+    case aes256Siv
+
     /// Create enumeration value from the correspond C enumeration value.
     init(fromC algId: vscf_alg_id_t) {
         self.init(rawValue: Int(algId.rawValue))!

@@ -53,6 +53,9 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.AES256_KW:
                     return modules.Aes256Kw.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.AES256_SIV:
+                    return modules.Aes256Siv.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.ALG_INFO_DER_DESERIALIZER:
                     return modules.AlgInfoDerDeserializer.newAndTakeCContext(ctxPtr);
 

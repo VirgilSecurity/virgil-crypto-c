@@ -71,6 +71,9 @@ char* getCipherClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
         break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
+        break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
         break;
@@ -116,6 +119,9 @@ char* getAuthEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
         break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
+        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -157,6 +163,9 @@ char* getAuthDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1
     switch(implTag) {
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
+        break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
         break;
     default:
         free(classFullName);
@@ -200,6 +209,9 @@ char* getCipherAuthClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
         break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
+        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -242,6 +254,9 @@ char* getCipherAuthInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t 
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
         break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
+        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -283,6 +298,9 @@ char* getCipherInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     switch(implTag) {
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
+        break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
         break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
@@ -328,6 +346,9 @@ char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     switch(implTag) {
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
+        break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
         break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
@@ -376,6 +397,9 @@ char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     switch(implTag) {
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
+        break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
         break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
@@ -1303,6 +1327,9 @@ char* getAlgClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ob
         break;
     case vscf_impl_tag_AES256_GCM:
         strcat (classFullName, "Aes256Gcm");
+        break;
+    case vscf_impl_tag_AES256_SIV:
+        strcat (classFullName, "Aes256Siv");
         break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
@@ -7074,6 +7101,422 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_gcm_out_len(aes256_gcm_ctx, 0));
     
     vscf_status_t status = vscf_aes256_gcm_finish_auth_decryption(aes256_gcm_ctx /*a1*/, tag /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jtag, (jbyte*) tag_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_aes256_siv_t **)&c_ctx = vscf_aes256_siv_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_aes256_siv_delete(*(vscf_aes256_siv_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    const vscf_alg_id_t proxyResult = vscf_aes256_siv_alg_id(aes256_siv_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+    
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_aes256_siv_produce_alg_info(aes256_siv_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vscf_status_t status = vscf_aes256_siv_restore_alg_info(aes256_siv_ctx /*a1*/, alg_info /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_encrypted_len(aes256_siv_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes256_siv_encrypt(aes256_siv_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1encryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_encrypted_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1preciseEncryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_precise_encrypted_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_decrypted_len(aes256_siv_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes256_siv_decrypt(aes256_siv_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1decryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_decrypted_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1setNonce (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jnonce) {
+    // Wrap input data
+    byte* nonce_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jnonce, NULL);
+    vsc_data_t nonce = vsc_data(nonce_arr, (*jenv)->GetArrayLength(jenv, jnonce));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vscf_aes256_siv_set_nonce(aes256_siv_ctx /*a1*/, nonce /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jnonce, (jbyte*) nonce_arr, 0);
+    
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1setKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkey) {
+    // Wrap input data
+    byte* key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkey, NULL);
+    vsc_data_t key = vsc_data(key_arr, (*jenv)->GetArrayLength(jenv, jkey));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vscf_aes256_siv_set_key(aes256_siv_ctx /*a1*/, key /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
+    
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1startEncryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vscf_aes256_siv_start_encryption(aes256_siv_ctx /*a1*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1startDecryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vscf_aes256_siv_start_decryption(aes256_siv_ctx /*a1*/);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1update (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_out_len(aes256_siv_ctx, data.len/*a*/));
+    
+    vscf_aes256_siv_update(aes256_siv_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1outLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_out_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1encryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_encrypted_out_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1decryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_decrypted_out_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1finish (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_out_len(aes256_siv_ctx, 0));
+    
+    vscf_status_t status = vscf_aes256_siv_finish(aes256_siv_ctx /*a1*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1authEncrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata, jbyteArray jauthData) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Wrap input data
+    byte* auth_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jauthData, NULL);
+    vsc_data_t auth_data = vsc_data(auth_data_arr, (*jenv)->GetArrayLength(jenv, jauthData));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_auth_encrypted_len(aes256_siv_ctx, data.len/*a*/));
+    
+    vsc_buffer_t *tag = vsc_buffer_new_with_capacity(vscf_aes256_siv_AUTH_TAG_LEN);
+    
+    vscf_status_t status = vscf_aes256_siv_auth_encrypt(aes256_siv_ctx /*a1*/, data /*a3*/, auth_data /*a3*/, out /*a3*/, tag /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AuthEncryptAuthEncryptResult");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class AuthEncryptAuthEncryptResult not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
+    jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
+    jfieldID fidOut = (*jenv)->GetFieldID(jenv, result_cls, "out", "[B");
+    jbyteArray jOutArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, jOutArr, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    (*jenv)->SetObjectField(jenv, newObj, fidOut, jOutArr);
+    jfieldID fidTag = (*jenv)->GetFieldID(jenv, result_cls, "tag", "[B");
+    jbyteArray jTagArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(tag));
+    (*jenv)->SetByteArrayRegion (jenv, jTagArr, 0, vsc_buffer_len(tag), (jbyte*) vsc_buffer_bytes(tag));
+    (*jenv)->SetObjectField(jenv, newObj, fidTag, jTagArr);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jauthData, (jbyte*) auth_data_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    vsc_buffer_delete(tag);
+    
+    return newObj;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1authEncryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_auth_encrypted_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1authDecrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata, jbyteArray jauthData, jbyteArray jtag) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Wrap input data
+    byte* auth_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jauthData, NULL);
+    vsc_data_t auth_data = vsc_data(auth_data_arr, (*jenv)->GetArrayLength(jenv, jauthData));
+    
+    // Wrap input data
+    byte* tag_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtag, NULL);
+    vsc_data_t tag = vsc_data(tag_arr, (*jenv)->GetArrayLength(jenv, jtag));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_auth_decrypted_len(aes256_siv_ctx, data.len/*a*/));
+    
+    vscf_status_t status = vscf_aes256_siv_auth_decrypt(aes256_siv_ctx /*a1*/, data /*a3*/, auth_data /*a3*/, tag /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jauthData, (jbyte*) auth_data_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jtag, (jbyte*) tag_arr, 0);
+    
+    vsc_buffer_delete(out);
+    
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1authDecryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_aes256_siv_auth_decrypted_len(aes256_siv_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1setAuthData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jauthData) {
+    // Wrap input data
+    byte* auth_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jauthData, NULL);
+    vsc_data_t auth_data = vsc_data(auth_data_arr, (*jenv)->GetArrayLength(jenv, jauthData));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vscf_aes256_siv_set_auth_data(aes256_siv_ctx /*a1*/, auth_data /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jauthData, (jbyte*) auth_data_arr, 0);
+    
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1finishAuthEncryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_out_len(aes256_siv_ctx, 0));
+    
+    vsc_buffer_t *tag = vsc_buffer_new_with_capacity(vscf_aes256_siv_AUTH_TAG_LEN);
+    
+    vscf_status_t status = vscf_aes256_siv_finish_auth_encryption(aes256_siv_ctx /*a1*/, out /*a3*/, tag /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/CipherAuthFinishAuthEncryptionResult");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class CipherAuthFinishAuthEncryptionResult not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
+    jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
+    jfieldID fidOut = (*jenv)->GetFieldID(jenv, result_cls, "out", "[B");
+    jbyteArray jOutArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, jOutArr, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    (*jenv)->SetObjectField(jenv, newObj, fidOut, jOutArr);
+    jfieldID fidTag = (*jenv)->GetFieldID(jenv, result_cls, "tag", "[B");
+    jbyteArray jTagArr = (*jenv)->NewByteArray(jenv, vsc_buffer_len(tag));
+    (*jenv)->SetByteArrayRegion (jenv, jTagArr, 0, vsc_buffer_len(tag), (jbyte*) vsc_buffer_bytes(tag));
+    (*jenv)->SetObjectField(jenv, newObj, fidTag, jTagArr);
+    vsc_buffer_delete(out);
+    
+    vsc_buffer_delete(tag);
+    
+    return newObj;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Siv_1finishAuthDecryption (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jtag) {
+    // Wrap input data
+    byte* tag_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jtag, NULL);
+    vsc_data_t tag = vsc_data(tag_arr, (*jenv)->GetArrayLength(jenv, jtag));
+    
+    // Cast class context
+    vscf_aes256_siv_t /*9*/* aes256_siv_ctx = *(vscf_aes256_siv_t /*9*/**) &c_ctx;
+    
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_siv_out_len(aes256_siv_ctx, 0));
+    
+    vscf_status_t status = vscf_aes256_siv_finish_auth_decryption(aes256_siv_ctx /*a1*/, tag /*a3*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
         return NULL;

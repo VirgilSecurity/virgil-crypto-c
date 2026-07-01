@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,124 +43,36 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  //
+//  //  Types of the 'aes256 siv' implementation.
+//  //  This types SHOULD NOT be used directly.
+//  //  The only purpose of including this module is to place implementation
+//  //  object in the stack memory.
+//  //
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PLATFORM_H_INCLUDED
-#define VSCE_PLATFORM_H_INCLUDED
+#ifndef VSCF_AES256_SIV_DEFS_H_INCLUDED
+#define VSCF_AES256_SIV_DEFS_H_INCLUDED
 
 // clang-format on
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
+//  @generated_header_includes
 // --------------------------------------------------------------------------
 // clang-format off
-//  Generated section start.
+//  Generated header includes start.
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_HAVE_ASSERT_H
-#define VSCE_HAVE_ASSERT_H 1
-#endif
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_aes256_siv.h"
+#include "vscf_atomic.h"
 
-#ifndef VSCE_HAVE_STDATOMIC_H
-#define VSCE_HAVE_STDATOMIC_H 1
-#endif
-
-#ifndef VSCE_SHARED_LIBRARY
-#define VSCE_SHARED_LIBRARY 0
-#endif
-
-#ifndef VSCE_MULTI_THREADING
-#define VSCE_MULTI_THREADING 1
-#endif
-
-#ifndef VSCE_ERROR
-#define VSCE_ERROR 1
-#endif
-
-#ifndef VSCE_PHE_COMMON
-#define VSCE_PHE_COMMON 1
-#endif
-
-#ifndef VSCE_PHE_HASH
-#define VSCE_PHE_HASH 1
-#endif
-
-#ifndef VSCE_PROOF_GENERATOR
-#define VSCE_PROOF_GENERATOR 1
-#endif
-
-#ifndef VSCE_PHE_PROOF_GENERATOR
-#define VSCE_PHE_PROOF_GENERATOR 1
-#endif
-
-#ifndef VSCE_PROOF_VERIFIER
-#define VSCE_PROOF_VERIFIER 1
-#endif
-
-#ifndef VSCE_PHE_PROOF_VERIFIER
-#define VSCE_PHE_PROOF_VERIFIER 1
-#endif
-
-#ifndef VSCE_PHE_SERVER
-#define VSCE_PHE_SERVER 1
-#endif
-
-#ifndef VSCE_PHE_CLIENT
-#define VSCE_PHE_CLIENT 1
-#endif
-
-#ifndef VSCE_PHE_CIPHER
-#define VSCE_PHE_CIPHER 1
-#endif
-
-#ifndef VSCE_UOKMS_PROOF_GENERATOR
-#define VSCE_UOKMS_PROOF_GENERATOR 1
-#endif
-
-#ifndef VSCE_UOKMS_PROOF_VERIFIER
-#define VSCE_UOKMS_PROOF_VERIFIER 1
-#endif
-
-#ifndef VSCE_UOKMS_CLIENT
-#define VSCE_UOKMS_CLIENT 1
-#endif
-
-#ifndef VSCE_UOKMS_SERVER
-#define VSCE_UOKMS_SERVER 1
-#endif
-
-#ifndef VSCE_UOKMS_WRAP_ROTATION
-#define VSCE_UOKMS_WRAP_ROTATION 1
-#endif
-
-//
-//  Defines namespace include prefix for project 'common'.
-//
-#if !defined(VSCE_INTERNAL_BUILD)
-#define VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#else
-#define VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'foundation'.
-//
-#if !defined(VSCE_INTERNAL_BUILD)
-#define VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#else
-#define VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#endif
-
+#include <mbedtls/cmac.h>
+#include <mbedtls/cipher.h>
+#include <mbedtls/aes.h>
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -171,10 +82,71 @@ extern "C" {
 
 
 #ifdef __cplusplus
+extern "C" {
+#endif
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+//
+//  Handles implementation details.
+//
+struct vscf_aes256_siv_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    mbedtls_cipher_context_t cmac_cipher_ctx;
+    //
+    //  Implementation specific context.
+    //
+    mbedtls_aes_context aes_ctx;
+    //
+    //  Implementation specific context.
+    //
+    byte key[vscf_aes256_siv_KEY_LEN];
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *auth_data;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *cached_data;
+    //
+    //  Implementation specific context.
+    //
+    byte auth_tag[vscf_aes256_siv_AUTH_TAG_LEN];
+    //
+    //  Implementation specific context.
+    //
+    vscf_cipher_state_t state;
+    //
+    //  Implementation specific context.
+    //
+    bool is_key_set;
+};
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+#ifdef __cplusplus
 }
 #endif
 
-
 //  @footer
-#endif // VSCE_PLATFORM_H_INCLUDED
+#endif // VSCF_AES256_SIV_DEFS_H_INCLUDED
 //  @end

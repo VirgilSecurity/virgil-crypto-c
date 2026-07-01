@@ -80,8 +80,12 @@ vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_TIMING_C
 #cmakedefine MBEDTLS_BASE64_C
 #cmakedefine MBEDTLS_CIPHER_MODE_CBC
+#cmakedefine MBEDTLS_CIPHER_MODE_CTR
 #cmakedefine MBEDTLS_CIPHER_MODE_WITH_PADDING
 #cmakedefine MBEDTLS_CIPHER_PADDING_PKCS7
+/* AES-256-SIV (RFC 5297) building blocks — paired with the "CMAC C" and
+   "CIPHER MODE CTR" features in codegen/models/external/library_mbedtls.xml */
+#cmakedefine MBEDTLS_CMAC_C
 
 #if !defined(MBEDTLS_PLATFORM_ENTROPY)
 #define MBEDTLS_NO_PLATFORM_ENTROPY

@@ -89,6 +89,9 @@ VSCF_PHP_PUBLIC const char*
 vscf_aes256_kw_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
+vscf_aes256_siv_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
 vscf_alg_info_der_deserializer_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -345,6 +348,9 @@ le_vscf_aes256_gcm_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_aes256_kw_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_aes256_siv_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_alg_info_der_deserializer_t(void);

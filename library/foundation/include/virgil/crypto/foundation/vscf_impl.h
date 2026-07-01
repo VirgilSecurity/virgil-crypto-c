@@ -90,6 +90,7 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_AES256_CBC,
     vscf_impl_tag_AES256_GCM,
     vscf_impl_tag_AES256_KW,
+    vscf_impl_tag_AES256_SIV,
     vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
     vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
     vscf_impl_tag_ASN1RD,

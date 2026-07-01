@@ -140,6 +140,67 @@
         </method>
     </implementation>
 
+    <implementation name="aes256 siv">
+        Implementation of AES-256-SIV deterministic authenticated encryption (RFC 5297).
+
+        WARNING: SIV is a deterministic AEAD. Equal (key, associated data, plaintext)
+        inputs always produce equal ciphertext, so it intentionally leaks plaintext
+        equality. A key shared across isolation domains (e.g. tenants) leaks equality
+        across them: use a unique key per domain and/or include a domain-specific value
+        in the associated data. Do not assume IND-CPA semantics.
+
+        <interface name="alg"/>
+        <interface name="encrypt"/>
+        <interface name="decrypt"/>
+        <interface name="cipher info">
+            <constant name="nonce len" value="0"/>
+            <constant name="key len" value="64"/>
+            <constant name="key bitlen" value="512"/>
+            <constant name="block len" value="16"/>
+        </interface>
+        <interface name="cipher"/>
+        <interface name="cipher auth info">
+            <constant name="auth tag len" value="16"/>
+        </interface>
+        <interface name="auth encrypt"/>
+        <interface name="auth decrypt"/>
+        <interface name="cipher auth"/>
+
+        <require library="mbedtls" feature="CIPHER C"/>
+        <require library="mbedtls" feature="CMAC C"/>
+        <require library="mbedtls" feature="CIPHER MODE CTR"/>
+        <require library="mbedtls" feature="AES C"/>
+        <require header="mbedtls/cmac.h" scope="context"/>
+        <require header="mbedtls/cipher.h" scope="context"/>
+        <require header="mbedtls/aes.h" scope="context"/>
+        <require impl="alg info"/>
+
+        <property name="cmac cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
+
+        <property name="aes ctx" class="mbedtls_aes_context" library="mbedtls" is_reference="0"/>
+
+        <property name="key" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_siv_constant_key_len)"/>
+        </property>
+
+        <property name="auth data" class="buffer"/>
+
+        <property name="cached data" class="buffer">
+            SIV is two-pass: streaming update() accumulates the full plaintext here
+            before finish() computes the synthetic IV.
+        </property>
+
+        <property name="auth tag" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_siv_constant_auth_tag_len)"/>
+        </property>
+
+        <property name="state" enum="cipher state"/>
+
+        <property name="is key set" type="boolean">
+            True after set_key. Guards auth_encrypt/auth_decrypt against use before keying.
+        </property>
+    </implementation>
+
 
     <implementation name="aes256 cbc">
         Implementation of the symmetric cipher AES-256 bit in a CBC mode.

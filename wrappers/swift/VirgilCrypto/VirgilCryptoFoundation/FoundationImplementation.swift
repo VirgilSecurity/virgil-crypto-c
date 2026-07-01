@@ -55,6 +55,8 @@ import VSCFoundation
             return Sha512(take: c_ctx)
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_AES128_KW:
@@ -127,6 +129,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
@@ -150,6 +154,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
@@ -173,6 +179,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         default:
@@ -194,6 +202,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
         default:
@@ -215,6 +225,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -234,6 +246,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -253,6 +267,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -272,6 +288,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_AES256_GCM:
             return Aes256Gcm(take: c_ctx)
+        case vscf_impl_tag_AES256_SIV:
+            return Aes256Siv(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

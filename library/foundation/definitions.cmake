@@ -151,6 +151,7 @@ target_compile_definitions(foundation
             "VSCF_SHA384=$<BOOL:${VSCF_SHA384}>"
             "VSCF_SHA512=$<BOOL:${VSCF_SHA512}>"
             "VSCF_AES256_GCM=$<BOOL:${VSCF_AES256_GCM}>"
+            "VSCF_AES256_SIV=$<BOOL:${VSCF_AES256_SIV}>"
             "VSCF_AES256_CBC=$<BOOL:${VSCF_AES256_CBC}>"
             "VSCF_AES128_KW=$<BOOL:${VSCF_AES128_KW}>"
             "VSCF_AES256_KW=$<BOOL:${VSCF_AES256_KW}>"

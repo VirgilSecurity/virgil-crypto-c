@@ -25,6 +25,8 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
         return newSha512WithCtx((*C.vscf_sha512_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     case C.vscf_impl_tag_AES128_KW:
@@ -101,6 +103,8 @@ func FoundationImplementationWrapEncrypt(ctx *C.vscf_impl_t) (Encrypt, error) {
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     case C.vscf_impl_tag_PKCS5_PBES2:
@@ -126,6 +130,8 @@ func FoundationImplementationWrapDecrypt(ctx *C.vscf_impl_t) (Decrypt, error) {
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     case C.vscf_impl_tag_PKCS5_PBES2:
@@ -151,6 +157,8 @@ func FoundationImplementationWrapCipherInfo(ctx *C.vscf_impl_t) (CipherInfo, err
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     default:
@@ -174,6 +182,8 @@ func FoundationImplementationWrapCipher(ctx *C.vscf_impl_t) (Cipher, error) {
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     case C.vscf_impl_tag_AES256_CBC:
         return newAes256CbcWithCtx((*C.vscf_aes256_cbc_t)(ctx)), nil
     default:
@@ -197,6 +207,8 @@ func FoundationImplementationWrapCipherAuthInfo(ctx *C.vscf_impl_t) (CipherAuthI
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -218,6 +230,8 @@ func FoundationImplementationWrapAuthEncrypt(ctx *C.vscf_impl_t) (AuthEncrypt, e
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -239,6 +253,8 @@ func FoundationImplementationWrapAuthDecrypt(ctx *C.vscf_impl_t) (AuthDecrypt, e
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -260,6 +276,8 @@ func FoundationImplementationWrapCipherAuth(ctx *C.vscf_impl_t) (CipherAuth, err
     switch (implTag) {
     case C.vscf_impl_tag_AES256_GCM:
         return newAes256GcmWithCtx((*C.vscf_aes256_gcm_t)(ctx)), nil
+    case C.vscf_impl_tag_AES256_SIV:
+        return newAes256SivWithCtx((*C.vscf_aes256_siv_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }

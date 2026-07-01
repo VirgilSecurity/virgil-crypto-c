@@ -57,6 +57,7 @@
 #include "vscf_aes256_cbc_defs.h"
 #include "vscf_aes256_gcm_defs.h"
 #include "vscf_aes256_kw_defs.h"
+#include "vscf_aes256_siv_defs.h"
 #include "vscf_alg_api.h"
 #include "vscf_alg_info_api.h"
 #include "vscf_alg_info_der_deserializer_defs.h"

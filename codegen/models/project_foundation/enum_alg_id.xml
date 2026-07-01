@@ -27,4 +27,6 @@
     <constant name="random padding"/>
     <constant name="ml kem 768"/>
     <constant name="ml dsa 65"/>
+    <!-- Appended at end: alg-id values are serialized; do not reorder. Deterministic AEAD (RFC 5297), reached via the dedicated deterministic-cipher API, excluded from the CMS/envelope factory. -->
+    <constant name="aes256 siv"/>
 </enum>

@@ -125,6 +125,8 @@ from ._vscf_sha512 import vscf_sha512_t
 from ._vscf_sha512 import VscfSha512
 from ._vscf_aes256_gcm import vscf_aes256_gcm_t
 from ._vscf_aes256_gcm import VscfAes256Gcm
+from ._vscf_aes256_siv import vscf_aes256_siv_t
+from ._vscf_aes256_siv import VscfAes256Siv
 from ._vscf_aes256_cbc import vscf_aes256_cbc_t
 from ._vscf_aes256_cbc import VscfAes256Cbc
 from ._vscf_aes128_kw import vscf_aes128_kw_t

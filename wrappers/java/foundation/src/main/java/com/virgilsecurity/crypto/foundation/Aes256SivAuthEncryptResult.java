@@ -36,52 +36,37 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public enum AlgId {
 
-    NONE(0),
-    SHA224(1),
-    SHA256(2),
-    SHA384(3),
-    SHA512(4),
-    KDF1(5),
-    KDF2(6),
-    RSA(7),
-    ED25519(8),
-    CURVE25519(9),
-    SECP256R1(10),
-    AES256_GCM(11),
-    AES256_CBC(12),
-    AES128_KW(13),
-    AES192_KW(14),
-    AES256_KW(15),
-    HMAC(16),
-    HKDF(17),
-    PKCS5_PBKDF2(18),
-    PKCS5_PBES2(19),
-    COMPOUND_KEY(20),
-    HYBRID_KEY(21),
-    FALCON(22),
-    RANDOM_PADDING(23),
-    ML_KEM_768(24),
-    ML_DSA_65(25),
-    AES256_SIV(26);
+public class Aes256SivAuthEncryptResult {
 
-    private final int code;
+    private byte[] out;
 
-    private AlgId(int code) {
-        this.code = code;
+    public byte[] getOut() {
+        return this.out;
     }
 
-    public int getCode() {
-        return code;
+    public void setOut(byte[] out) {
+        this.out = out;
     }
 
-    public static AlgId fromCode(int code) {
-        for (AlgId a : AlgId.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
+    private byte[] tag;
+
+    public byte[] getTag() {
+        return this.tag;
     }
+
+    public void setTag(byte[] tag) {
+        this.tag = tag;
+    }
+
+    Aes256SivAuthEncryptResult() {
+        super();
+    }
+
+    Aes256SivAuthEncryptResult(byte[] out, byte[] tag) {
+        super();
+        this.out = out;
+        this.tag = tag;
+    }
+
 }

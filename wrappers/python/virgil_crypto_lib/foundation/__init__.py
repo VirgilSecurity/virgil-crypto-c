@@ -78,6 +78,7 @@ from .sha256 import Sha256
 from .sha384 import Sha384
 from .sha512 import Sha512
 from .aes256_gcm import Aes256Gcm
+from .aes256_siv import Aes256Siv
 from .aes256_cbc import Aes256Cbc
 from .aes128_kw import Aes128Kw
 from .aes256_kw import Aes256Kw

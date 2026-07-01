@@ -68,8 +68,10 @@ option(MBEDTLS_PLATFORM_ENTROPY "Enable feature 'PLATFORM ENTROPY'." ON)
 option(MBEDTLS_BASE64_C "Enable feature 'BASE64 C'." ON)
 option(MBEDTLS_THREADING_C "Enable feature 'THREADING C'." ON)
 option(MBEDTLS_CIPHER_MODE_CBC "Enable feature 'CIPHER MODE CBC'." ON)
+option(MBEDTLS_CIPHER_MODE_CTR "Enable feature 'CIPHER MODE CTR'." ON)
 option(MBEDTLS_CIPHER_MODE_WITH_PADDING "Enable feature 'CIPHER MODE WITH PADDING'." ON)
 option(MBEDTLS_CIPHER_PADDING_PKCS7 "Enable feature 'CIPHER PADDING PKCS7'." ON)
+option(MBEDTLS_CMAC_C "Enable feature 'CMAC C'." ON)
 option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "Enable feature 'ECP_DP_SECP256R1_ENABLED'." ON)
 option(MBEDTLS_ECP_C "Enable feature 'ECP C'." ON)
 option(MBEDTLS_ECDH_C "Enable feature 'ECDH C'." ON)
@@ -105,8 +107,10 @@ mark_as_advanced(
         MBEDTLS_BASE64_C
         MBEDTLS_THREADING_C
         MBEDTLS_CIPHER_MODE_CBC
+        MBEDTLS_CIPHER_MODE_CTR
         MBEDTLS_CIPHER_MODE_WITH_PADDING
         MBEDTLS_CIPHER_PADDING_PKCS7
+        MBEDTLS_CMAC_C
         MBEDTLS_ECP_DP_SECP256R1_ENABLED
         MBEDTLS_ECP_C
         MBEDTLS_ECDH_C
@@ -125,6 +129,24 @@ if(MBEDTLS_NIST_KW_C AND NOT MBEDTLS_AES_C)
     message("--")
     message("Feature MBEDTLS_NIST_KW_C depends on the feature:")
     message("     MBEDTLS_AES_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_CMAC_C AND NOT MBEDTLS_AES_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_CMAC_C depends on the feature:")
+    message("     MBEDTLS_AES_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_CMAC_C AND NOT MBEDTLS_CIPHER_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_CMAC_C depends on the feature:")
+    message("     MBEDTLS_CIPHER_C - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

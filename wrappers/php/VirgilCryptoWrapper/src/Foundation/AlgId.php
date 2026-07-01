@@ -66,5 +66,6 @@ class AlgId extends Enum
     private const RANDOM_PADDING = 23;
     private const ML_KEM_768 = 24;
     private const ML_DSA_65 = 25;
+    private const AES256_SIV = 26;
 
 }

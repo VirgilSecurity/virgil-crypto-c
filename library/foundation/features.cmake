@@ -143,6 +143,7 @@ option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
 option(VSCF_SHA512 "Enable implementation 'sha512'." ON)
 option(VSCF_AES256_GCM "Enable implementation 'aes256 gcm'." ON)
+option(VSCF_AES256_SIV "Enable implementation 'aes256 siv'." ON)
 option(VSCF_AES256_CBC "Enable implementation 'aes256 cbc'." ON)
 option(VSCF_AES128_KW "Enable implementation 'aes128 kw'." ON)
 option(VSCF_AES256_KW "Enable implementation 'aes256 kw'." ON)
@@ -293,6 +294,7 @@ mark_as_advanced(
         VSCF_SHA384
         VSCF_SHA512
         VSCF_AES256_GCM
+        VSCF_AES256_SIV
         VSCF_AES256_CBC
         VSCF_AES128_KW
         VSCF_AES256_KW
@@ -1485,6 +1487,15 @@ if(VSCF_AES256_GCM AND NOT VSCF_CIPHER_ALG_INFO)
     message("--")
     message("Feature VSCF_AES256_GCM depends on the feature:")
     message("     VSCF_CIPHER_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_SIV AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_SIV depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

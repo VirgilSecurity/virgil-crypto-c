@@ -43,6 +43,7 @@
 #include "vscf_aes256_cbc.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_aes256_kw.h"
+#include "vscf_aes256_siv.h"
 #include "vscf_alg_factory.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_alg_info_der_serializer.h"
@@ -385,6 +386,7 @@ static const char VSCF_AES128_KW_T_PHP_RES_NAME[] = "vscf_aes128_kw_t";
 static const char VSCF_AES256_CBC_T_PHP_RES_NAME[] = "vscf_aes256_cbc_t";
 static const char VSCF_AES256_GCM_T_PHP_RES_NAME[] = "vscf_aes256_gcm_t";
 static const char VSCF_AES256_KW_T_PHP_RES_NAME[] = "vscf_aes256_kw_t";
+static const char VSCF_AES256_SIV_T_PHP_RES_NAME[] = "vscf_aes256_siv_t";
 static const char VSCF_ALG_INFO_DER_DESERIALIZER_T_PHP_RES_NAME[] = "vscf_alg_info_der_deserializer_t";
 static const char VSCF_ALG_INFO_DER_SERIALIZER_T_PHP_RES_NAME[] = "vscf_alg_info_der_serializer_t";
 static const char VSCF_ASN1RD_T_PHP_RES_NAME[] = "vscf_asn1rd_t";
@@ -487,6 +489,10 @@ VSCF_PHP_PUBLIC const char* vscf_aes256_gcm_t_php_res_name(void) {
 
 VSCF_PHP_PUBLIC const char* vscf_aes256_kw_t_php_res_name(void) {
     return VSCF_AES256_KW_T_PHP_RES_NAME;
+}
+
+VSCF_PHP_PUBLIC const char* vscf_aes256_siv_t_php_res_name(void) {
+    return VSCF_AES256_SIV_T_PHP_RES_NAME;
 }
 
 VSCF_PHP_PUBLIC const char* vscf_alg_info_der_deserializer_t_php_res_name(void) {
@@ -817,6 +823,7 @@ int LE_VSCF_AES128_KW_T;
 int LE_VSCF_AES256_CBC_T;
 int LE_VSCF_AES256_GCM_T;
 int LE_VSCF_AES256_KW_T;
+int LE_VSCF_AES256_SIV_T;
 int LE_VSCF_ALG_INFO_DER_DESERIALIZER_T;
 int LE_VSCF_ALG_INFO_DER_SERIALIZER_T;
 int LE_VSCF_ASN1RD_T;
@@ -919,6 +926,10 @@ VSCF_PHP_PUBLIC int le_vscf_aes256_gcm_t(void) {
 
 VSCF_PHP_PUBLIC int le_vscf_aes256_kw_t(void) {
     return LE_VSCF_AES256_KW_T;
+}
+
+VSCF_PHP_PUBLIC int le_vscf_aes256_siv_t(void) {
+    return LE_VSCF_AES256_SIV_T;
 }
 
 VSCF_PHP_PUBLIC int le_vscf_alg_info_der_deserializer_t(void) {
@@ -17315,6 +17326,1354 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_auth_decryption_php) {
     // Call main function
     //
     vscf_status_t status =vscf_aes256_gcm_finish_auth_decryption(aes256_gcm, tag, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_aes256_siv_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_new_php) {
+    vscf_impl_t *aes256_siv = vscf_aes256_siv_new();
+    zend_resource *aes256_siv_res = zend_register_resource(aes256_siv, le_vscf_impl_t());
+    RETVAL_RES(aes256_siv_res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_aes256_siv_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_aes256_siv_alg_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_alg_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_alg_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    int res =vscf_aes256_siv_alg_id(aes256_siv);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_produce_alg_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_produce_alg_info_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_produce_alg_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *alg_info =vscf_aes256_siv_produce_alg_info(aes256_siv);
+
+    //
+    // Write returned result
+    //
+    zend_resource *alg_info_res = zend_register_resource(alg_info, le_vscf_impl_t());
+    RETVAL_RES(alg_info_res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_restore_alg_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_restore_alg_info_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_alg_info, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_restore_alg_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_alg_info = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_alg_info, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vscf_impl_t *alg_info = zend_fetch_resource_ex(in_alg_info, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_restore_alg_info(aes256_siv, alg_info);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+}
+
+//
+// Wrap method: vscf_aes256_siv_encrypt
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_encrypt_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_encrypt_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_data = NULL;
+    size_t in_data_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_data, in_data_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_encrypted_len(aes256_siv, data.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_encrypt(aes256_siv, data, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_encrypted_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_encrypted_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_encrypted_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_encrypted_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_precise_encrypted_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_precise_encrypted_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_precise_encrypted_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_precise_encrypted_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_decrypt
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_decrypt_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_decrypt_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_data = NULL;
+    size_t in_data_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_data, in_data_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_decrypted_len(aes256_siv, data.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_decrypt(aes256_siv, data, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_decrypted_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_decrypted_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_decrypted_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_decrypted_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_set_nonce
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_set_nonce_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_nonce, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_set_nonce_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_nonce = NULL;
+    size_t in_nonce_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_nonce, in_nonce_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t nonce = vsc_data((const byte*)in_nonce, in_nonce_blen);
+
+    //
+    // Call main function
+    //
+    vscf_aes256_siv_set_nonce(aes256_siv, nonce);
+
+}
+
+//
+// Wrap method: vscf_aes256_siv_set_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_set_key_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_set_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_key = NULL;
+    size_t in_key_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_key, in_key_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t key = vsc_data((const byte*)in_key, in_key_blen);
+
+    //
+    // Call main function
+    //
+    vscf_aes256_siv_set_key(aes256_siv, key);
+
+}
+
+//
+// Wrap method: vscf_aes256_siv_start_encryption
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_start_encryption_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_start_encryption_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vscf_aes256_siv_start_encryption(aes256_siv);
+
+}
+
+//
+// Wrap method: vscf_aes256_siv_start_decryption
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_start_decryption_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_start_decryption_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vscf_aes256_siv_start_decryption(aes256_siv);
+
+}
+
+//
+// Wrap method: vscf_aes256_siv_update
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_update_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_update_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_data = NULL;
+    size_t in_data_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_data, in_data_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_out_len(aes256_siv, data.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_aes256_siv_update(aes256_siv, data, out);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_out);
+}
+
+//
+// Wrap method: vscf_aes256_siv_out_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_out_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_out_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_out_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_encrypted_out_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_encrypted_out_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_encrypted_out_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_encrypted_out_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_decrypted_out_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_decrypted_out_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_decrypted_out_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_decrypted_out_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_finish
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_finish_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_finish_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_out_len(aes256_siv, 0), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_finish(aes256_siv, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_auth_encrypt
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_auth_encrypt_php,
+    0 /*return_reference*/,
+    3 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_auth_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_auth_encrypt_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_data = NULL;
+    size_t in_data_blen = 0;
+    char *in_auth_data = NULL;
+    size_t in_auth_data_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_data, in_data_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_auth_data, in_auth_data_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_blen);
+    vsc_data_t auth_data = vsc_data((const byte*)in_auth_data, in_auth_data_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_auth_encrypted_len(aes256_siv, data.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Allocate output buffer for output 'tag'
+    //
+    zend_string *out_tag = zend_string_alloc(vscf_aes256_siv_AUTH_TAG_LEN, 0);
+    vsc_buffer_t *tag = vsc_buffer_new();
+    vsc_buffer_use(tag, (byte *)ZSTR_VAL(out_tag), ZSTR_LEN(out_tag));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_auth_encrypt(aes256_siv, data, auth_data, out, tag);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_auth_encrypted_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_auth_encrypted_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_auth_encrypted_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_auth_encrypted_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_auth_decrypt
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_auth_decrypt_php,
+    0 /*return_reference*/,
+    4 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_auth_data, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_tag, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_auth_decrypt_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_data = NULL;
+    size_t in_data_blen = 0;
+    char *in_auth_data = NULL;
+    size_t in_auth_data_blen = 0;
+    char *in_tag = NULL;
+    size_t in_tag_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_data, in_data_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_auth_data, in_auth_data_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_tag, in_tag_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_blen);
+    vsc_data_t auth_data = vsc_data((const byte*)in_auth_data, in_auth_data_blen);
+    vsc_data_t tag = vsc_data((const byte*)in_tag, in_tag_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_auth_decrypted_len(aes256_siv, data.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_auth_decrypt(aes256_siv, data, auth_data, tag, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_auth_decrypted_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_auth_decrypted_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_auth_decrypted_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_aes256_siv_auth_decrypted_len(aes256_siv, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_aes256_siv_set_auth_data
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_set_auth_data_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_auth_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_set_auth_data_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_auth_data = NULL;
+    size_t in_auth_data_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_auth_data, in_auth_data_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t auth_data = vsc_data((const byte*)in_auth_data, in_auth_data_blen);
+
+    //
+    // Call main function
+    //
+    vscf_aes256_siv_set_auth_data(aes256_siv, auth_data);
+
+}
+
+//
+// Wrap method: vscf_aes256_siv_finish_auth_encryption
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_finish_auth_encryption_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_finish_auth_encryption_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_out_len(aes256_siv, 0), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Allocate output buffer for output 'tag'
+    //
+    zend_string *out_tag = zend_string_alloc(vscf_aes256_siv_AUTH_TAG_LEN, 0);
+    vsc_buffer_t *tag = vsc_buffer_new();
+    vsc_buffer_use(tag, (byte *)ZSTR_VAL(out_tag), ZSTR_LEN(out_tag));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_finish_auth_encryption(aes256_siv, out, tag);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_aes256_siv_finish_auth_decryption
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_aes256_siv_finish_auth_decryption_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_tag, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_aes256_siv_finish_auth_decryption_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_tag = NULL;
+    size_t in_tag_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_tag, in_tag_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *aes256_siv = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t tag = vsc_data((const byte*)in_tag, in_tag_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_aes256_siv_out_len(aes256_siv, 0), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_aes256_siv_finish_auth_decryption(aes256_siv, tag, out);
 
     //
     // Handle error
@@ -45223,6 +46582,32 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_aes256_gcm_set_auth_data_php, arginfo_vscf_aes256_gcm_set_auth_data_php)
     PHP_FE(vscf_aes256_gcm_finish_auth_encryption_php, arginfo_vscf_aes256_gcm_finish_auth_encryption_php)
     PHP_FE(vscf_aes256_gcm_finish_auth_decryption_php, arginfo_vscf_aes256_gcm_finish_auth_decryption_php)
+    PHP_FE(vscf_aes256_siv_new_php, arginfo_vscf_aes256_siv_new_php)
+    PHP_FE(vscf_aes256_siv_delete_php, arginfo_vscf_aes256_siv_delete_php)
+    PHP_FE(vscf_aes256_siv_alg_id_php, arginfo_vscf_aes256_siv_alg_id_php)
+    PHP_FE(vscf_aes256_siv_produce_alg_info_php, arginfo_vscf_aes256_siv_produce_alg_info_php)
+    PHP_FE(vscf_aes256_siv_restore_alg_info_php, arginfo_vscf_aes256_siv_restore_alg_info_php)
+    PHP_FE(vscf_aes256_siv_encrypt_php, arginfo_vscf_aes256_siv_encrypt_php)
+    PHP_FE(vscf_aes256_siv_encrypted_len_php, arginfo_vscf_aes256_siv_encrypted_len_php)
+    PHP_FE(vscf_aes256_siv_precise_encrypted_len_php, arginfo_vscf_aes256_siv_precise_encrypted_len_php)
+    PHP_FE(vscf_aes256_siv_decrypt_php, arginfo_vscf_aes256_siv_decrypt_php)
+    PHP_FE(vscf_aes256_siv_decrypted_len_php, arginfo_vscf_aes256_siv_decrypted_len_php)
+    PHP_FE(vscf_aes256_siv_set_nonce_php, arginfo_vscf_aes256_siv_set_nonce_php)
+    PHP_FE(vscf_aes256_siv_set_key_php, arginfo_vscf_aes256_siv_set_key_php)
+    PHP_FE(vscf_aes256_siv_start_encryption_php, arginfo_vscf_aes256_siv_start_encryption_php)
+    PHP_FE(vscf_aes256_siv_start_decryption_php, arginfo_vscf_aes256_siv_start_decryption_php)
+    PHP_FE(vscf_aes256_siv_update_php, arginfo_vscf_aes256_siv_update_php)
+    PHP_FE(vscf_aes256_siv_out_len_php, arginfo_vscf_aes256_siv_out_len_php)
+    PHP_FE(vscf_aes256_siv_encrypted_out_len_php, arginfo_vscf_aes256_siv_encrypted_out_len_php)
+    PHP_FE(vscf_aes256_siv_decrypted_out_len_php, arginfo_vscf_aes256_siv_decrypted_out_len_php)
+    PHP_FE(vscf_aes256_siv_finish_php, arginfo_vscf_aes256_siv_finish_php)
+    PHP_FE(vscf_aes256_siv_auth_encrypt_php, arginfo_vscf_aes256_siv_auth_encrypt_php)
+    PHP_FE(vscf_aes256_siv_auth_encrypted_len_php, arginfo_vscf_aes256_siv_auth_encrypted_len_php)
+    PHP_FE(vscf_aes256_siv_auth_decrypt_php, arginfo_vscf_aes256_siv_auth_decrypt_php)
+    PHP_FE(vscf_aes256_siv_auth_decrypted_len_php, arginfo_vscf_aes256_siv_auth_decrypted_len_php)
+    PHP_FE(vscf_aes256_siv_set_auth_data_php, arginfo_vscf_aes256_siv_set_auth_data_php)
+    PHP_FE(vscf_aes256_siv_finish_auth_encryption_php, arginfo_vscf_aes256_siv_finish_auth_encryption_php)
+    PHP_FE(vscf_aes256_siv_finish_auth_decryption_php, arginfo_vscf_aes256_siv_finish_auth_decryption_php)
     PHP_FE(vscf_aes256_cbc_new_php, arginfo_vscf_aes256_cbc_new_php)
     PHP_FE(vscf_aes256_cbc_delete_php, arginfo_vscf_aes256_cbc_delete_php)
     PHP_FE(vscf_aes256_cbc_alg_id_php, arginfo_vscf_aes256_cbc_alg_id_php)

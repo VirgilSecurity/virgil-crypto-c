@@ -778,6 +778,58 @@ public class FoundationJNI {
 
     public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
 
+    public native long aes256Siv_new();
+
+    public native void aes256Siv_close(long cCtx);
+
+    public native AlgId aes256Siv_algId(long cCtx);
+
+    public native AlgInfo aes256Siv_produceAlgInfo(long cCtx);
+
+    public native void aes256Siv_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] aes256Siv_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int aes256Siv_encryptedLen(long cCtx, int dataLen);
+
+    public native int aes256Siv_preciseEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Siv_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int aes256Siv_decryptedLen(long cCtx, int dataLen);
+
+    public native void aes256Siv_setNonce(long cCtx, byte[] nonce);
+
+    public native void aes256Siv_setKey(long cCtx, byte[] key);
+
+    public native void aes256Siv_startEncryption(long cCtx);
+
+    public native void aes256Siv_startDecryption(long cCtx);
+
+    public native byte[] aes256Siv_update(long cCtx, byte[] data);
+
+    public native int aes256Siv_outLen(long cCtx, int dataLen);
+
+    public native int aes256Siv_encryptedOutLen(long cCtx, int dataLen);
+
+    public native int aes256Siv_decryptedOutLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Siv_finish(long cCtx) throws FoundationException;
+
+    public native AuthEncryptAuthEncryptResult aes256Siv_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
+
+    public native int aes256Siv_authEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Siv_authDecrypt(long cCtx, byte[] data, byte[] authData, byte[] tag) throws FoundationException;
+
+    public native int aes256Siv_authDecryptedLen(long cCtx, int dataLen);
+
+    public native void aes256Siv_setAuthData(long cCtx, byte[] authData);
+
+    public native CipherAuthFinishAuthEncryptionResult aes256Siv_finishAuthEncryption(long cCtx) throws FoundationException;
+
+    public native byte[] aes256Siv_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
+
     public native long aes256Cbc_new();
 
     public native void aes256Cbc_close(long cCtx);

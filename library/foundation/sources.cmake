@@ -479,6 +479,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_siv.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_cbc.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -938,6 +943,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_AES256_GCM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_gcm.h>"
             "$<$<BOOL:${VSCF_AES256_GCM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_gcm_defs.h>"
             "$<$<BOOL:${VSCF_AES256_GCM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_internal.h>"
+            "$<$<BOOL:${VSCF_AES256_SIV}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_siv.h>"
+            "$<$<BOOL:${VSCF_AES256_SIV}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_siv_defs.h>"
+            "$<$<BOOL:${VSCF_AES256_SIV}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_siv_internal.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_cbc.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_cbc_defs.h>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.h>"
@@ -1281,6 +1289,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_AES256_GCM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm.c>"
             "$<$<BOOL:${VSCF_AES256_GCM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_defs.c>"
             "$<$<BOOL:${VSCF_AES256_GCM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_internal.c>"
+            "$<$<BOOL:${VSCF_AES256_SIV}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_siv.c>"
+            "$<$<BOOL:${VSCF_AES256_SIV}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_siv_defs.c>"
+            "$<$<BOOL:${VSCF_AES256_SIV}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_siv_internal.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_defs.c>"
             "$<$<BOOL:${VSCF_AES256_CBC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_cbc_internal.c>"

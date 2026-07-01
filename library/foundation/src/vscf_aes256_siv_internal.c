@@ -1,0 +1,585 @@
+//  @license
+// --------------------------------------------------------------------------
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+//  All rights reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
+//
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
+//
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
+//
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
+
+
+//  @description
+// --------------------------------------------------------------------------
+//  //
+//  //  This module contains logic for interface/implementation architecture.
+//  //  Do not use this module in any part of the code.
+//  //
+// --------------------------------------------------------------------------
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscf_aes256_siv_internal.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
+#include "vscf_aes256_siv_defs.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
+#include "vscf_encrypt.h"
+#include "vscf_encrypt_api.h"
+#include "vscf_decrypt.h"
+#include "vscf_decrypt_api.h"
+#include "vscf_cipher_info.h"
+#include "vscf_cipher_info_api.h"
+#include "vscf_cipher.h"
+#include "vscf_cipher_api.h"
+#include "vscf_cipher_auth_info.h"
+#include "vscf_cipher_auth_info_api.h"
+#include "vscf_auth_encrypt.h"
+#include "vscf_auth_encrypt_api.h"
+#include "vscf_auth_decrypt.h"
+#include "vscf_auth_decrypt_api.h"
+#include "vscf_cipher_auth.h"
+#include "vscf_cipher_auth_api.h"
+
+// clang-format on
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+static const vscf_api_t *
+vscf_aes256_siv_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_aes256_siv_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_aes256_siv_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_aes256_siv_restore_alg_info
+};
+
+//
+//  Configuration of the interface API 'encrypt api'.
+//
+static const vscf_encrypt_api_t encrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'encrypt' MUST be equal to the  'vscf_api_tag_ENCRYPT'.
+    //
+    vscf_api_tag_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Encrypt given data.
+    //
+    (vscf_encrypt_api_encrypt_fn)vscf_aes256_siv_encrypt,
+    //
+    //  Calculate required buffer length to hold the encrypted data.
+    //
+    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_siv_encrypted_len,
+    //
+    //  Precise length calculation of encrypted data.
+    //
+    (vscf_encrypt_api_precise_encrypted_len_fn)vscf_aes256_siv_precise_encrypted_len
+};
+
+//
+//  Configuration of the interface API 'decrypt api'.
+//
+static const vscf_decrypt_api_t decrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'decrypt' MUST be equal to the  'vscf_api_tag_DECRYPT'.
+    //
+    vscf_api_tag_DECRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_decrypt_api_decrypt_fn)vscf_aes256_siv_decrypt,
+    //
+    //  Calculate required buffer length to hold the decrypted data.
+    //
+    (vscf_decrypt_api_decrypted_len_fn)vscf_aes256_siv_decrypted_len
+};
+
+//
+//  Configuration of the interface API 'cipher info api'.
+//
+static const vscf_cipher_info_api_t cipher_info_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher info' MUST be equal to the  'vscf_api_tag_CIPHER_INFO'.
+    //
+    vscf_api_tag_CIPHER_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //
+    vscf_aes256_siv_NONCE_LEN,
+    //
+    //  Cipher key length in bytes.
+    //
+    vscf_aes256_siv_KEY_LEN,
+    //
+    //  Cipher key length in bits.
+    //
+    vscf_aes256_siv_KEY_BITLEN,
+    //
+    //  Cipher block length in bytes.
+    //
+    vscf_aes256_siv_BLOCK_LEN
+};
+
+//
+//  Configuration of the interface API 'cipher api'.
+//
+static const vscf_cipher_api_t cipher_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher' MUST be equal to the  'vscf_api_tag_CIPHER'.
+    //
+    vscf_api_tag_CIPHER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Link to the inherited interface API 'encrypt'.
+    //
+    &encrypt_api,
+    //
+    //  Link to the inherited interface API 'decrypt'.
+    //
+    &decrypt_api,
+    //
+    //  Link to the inherited interface API 'cipher info'.
+    //
+    &cipher_info_api,
+    //
+    //  Setup IV or nonce.
+    //
+    (vscf_cipher_api_set_nonce_fn)vscf_aes256_siv_set_nonce,
+    //
+    //  Set cipher encryption / decryption key.
+    //
+    (vscf_cipher_api_set_key_fn)vscf_aes256_siv_set_key,
+    //
+    //  Return cipher's current state.
+    //
+    (vscf_cipher_api_state_fn)vscf_aes256_siv_state,
+    //
+    //  Start sequential encryption.
+    //
+    (vscf_cipher_api_start_encryption_fn)vscf_aes256_siv_start_encryption,
+    //
+    //  Start sequential decryption.
+    //
+    (vscf_cipher_api_start_decryption_fn)vscf_aes256_siv_start_decryption,
+    //
+    //  Process encryption or decryption of the given data chunk.
+    //
+    (vscf_cipher_api_update_fn)vscf_aes256_siv_update,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an current mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_out_len_fn)vscf_aes256_siv_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an encryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_encrypted_out_len_fn)vscf_aes256_siv_encrypted_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an decryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_decrypted_out_len_fn)vscf_aes256_siv_decrypted_out_len,
+    //
+    //  Accomplish encryption or decryption process.
+    //
+    (vscf_cipher_api_finish_fn)vscf_aes256_siv_finish
+};
+
+//
+//  Configuration of the interface API 'cipher auth info api'.
+//
+static const vscf_cipher_auth_info_api_t cipher_auth_info_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher auth info' MUST be equal to the  'vscf_api_tag_CIPHER_AUTH_INFO'.
+    //
+    vscf_api_tag_CIPHER_AUTH_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Defines authentication tag length in bytes.
+    //
+    vscf_aes256_siv_AUTH_TAG_LEN
+};
+
+//
+//  Configuration of the interface API 'auth encrypt api'.
+//
+static const vscf_auth_encrypt_api_t auth_encrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'auth encrypt' MUST be equal to the  'vscf_api_tag_AUTH_ENCRYPT'.
+    //
+    vscf_api_tag_AUTH_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    &cipher_auth_info_api,
+    //
+    //  Encrypt given data.
+    //  If 'tag' is not given, then it will written to the 'enc'.
+    //
+    (vscf_auth_encrypt_api_auth_encrypt_fn)vscf_aes256_siv_auth_encrypt,
+    //
+    //  Calculate required buffer length to hold the authenticated encrypted data.
+    //
+    (vscf_auth_encrypt_api_auth_encrypted_len_fn)vscf_aes256_siv_auth_encrypted_len
+};
+
+//
+//  Configuration of the interface API 'auth decrypt api'.
+//
+static const vscf_auth_decrypt_api_t auth_decrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'auth decrypt' MUST be equal to the  'vscf_api_tag_AUTH_DECRYPT'.
+    //
+    vscf_api_tag_AUTH_DECRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    &cipher_auth_info_api,
+    //
+    //  Decrypt given data.
+    //  If 'tag' is not given, then it will be taken from the 'enc'.
+    //
+    (vscf_auth_decrypt_api_auth_decrypt_fn)vscf_aes256_siv_auth_decrypt,
+    //
+    //  Calculate required buffer length to hold the authenticated decrypted data.
+    //
+    (vscf_auth_decrypt_api_auth_decrypted_len_fn)vscf_aes256_siv_auth_decrypted_len
+};
+
+//
+//  Configuration of the interface API 'cipher auth api'.
+//
+static const vscf_cipher_auth_api_t cipher_auth_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher auth' MUST be equal to the  'vscf_api_tag_CIPHER_AUTH'.
+    //
+    vscf_api_tag_CIPHER_AUTH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Link to the inherited interface API 'cipher'.
+    //
+    &cipher_api,
+    //
+    //  Link to the inherited interface API 'auth encrypt'.
+    //
+    &auth_encrypt_api,
+    //
+    //  Link to the inherited interface API 'auth decrypt'.
+    //
+    &auth_decrypt_api,
+    //
+    //  Set additional data for for AEAD ciphers.
+    //
+    (vscf_cipher_auth_api_set_auth_data_fn)vscf_aes256_siv_set_auth_data,
+    //
+    //  Accomplish an authenticated encryption and place tag separately.
+    //
+    //  Note, if authentication tag should be added to an encrypted data,
+    //  method "finish" can be used.
+    //
+    (vscf_cipher_auth_api_finish_auth_encryption_fn)vscf_aes256_siv_finish_auth_encryption,
+    //
+    //  Accomplish an authenticated decryption with explicitly given tag.
+    //
+    //  Note, if authentication tag is a part of an encrypted data then,
+    //  method "finish" can be used for simplicity.
+    //
+    (vscf_cipher_auth_api_finish_auth_decryption_fn)vscf_aes256_siv_finish_auth_decryption
+};
+
+//
+//  Compile-time known information about 'aes256 siv' implementation.
+//
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_AES256_SIV,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_aes256_siv_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)vscf_aes256_siv_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)vscf_aes256_siv_delete
+};
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_aes256_siv_init(vscf_aes256_siv_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_aes256_siv_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_aes256_siv_init_ctx(self);
+}
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_aes256_siv_init()'.
+//
+VSCF_PUBLIC void
+vscf_aes256_siv_cleanup(vscf_aes256_siv_t *self) {
+
+    if (self == NULL) {
+        return;
+    }
+
+    vscf_aes256_siv_cleanup_ctx(self);
+
+    vscf_zeroize(self, sizeof(vscf_aes256_siv_t));
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_aes256_siv_t *
+vscf_aes256_siv_new(void) {
+
+    vscf_aes256_siv_t *self = (vscf_aes256_siv_t *) vscf_alloc(sizeof (vscf_aes256_siv_t));
+    VSCF_ASSERT_ALLOC(self);
+
+    vscf_aes256_siv_init(self);
+
+    return self;
+}
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_aes256_siv_new()'.
+//
+VSCF_PUBLIC void
+vscf_aes256_siv_delete(vscf_aes256_siv_t *self) {
+
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
+    vscf_aes256_siv_cleanup(self);
+
+    vscf_dealloc(self);
+}
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_aes256_siv_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_aes256_siv_destroy(vscf_aes256_siv_t **self_ref) {
+
+    VSCF_ASSERT_PTR(self_ref);
+
+    vscf_aes256_siv_t *self = *self_ref;
+    *self_ref = NULL;
+
+    vscf_aes256_siv_delete(self);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_aes256_siv_t *
+vscf_aes256_siv_shallow_copy(vscf_aes256_siv_t *self) {
+
+    // Proxy to the parent implementation.
+    return (vscf_aes256_siv_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+}
+
+//
+//  Return size of 'vscf_aes256_siv_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_siv_impl_size(void) {
+
+    return sizeof (vscf_aes256_siv_t);
+}
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_aes256_siv_impl(vscf_aes256_siv_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_aes256_siv_impl_const(const vscf_aes256_siv_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
+}
+
+static const vscf_api_t *
+vscf_aes256_siv_find_api(vscf_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscf_api_tag_ALG:
+        return (const vscf_api_t *)                 &alg_api;
+        case vscf_api_tag_AUTH_DECRYPT:
+        return (const vscf_api_t *)                 &auth_decrypt_api;
+        case vscf_api_tag_AUTH_ENCRYPT:
+        return (const vscf_api_t *)                 &auth_encrypt_api;
+        case vscf_api_tag_CIPHER:
+        return (const vscf_api_t *)                 &cipher_api;
+        case vscf_api_tag_CIPHER_AUTH:
+        return (const vscf_api_t *)                 &cipher_auth_api;
+        case vscf_api_tag_CIPHER_AUTH_INFO:
+        return (const vscf_api_t *)                 &cipher_auth_info_api;
+        case vscf_api_tag_CIPHER_INFO:
+        return (const vscf_api_t *)                 &cipher_info_api;
+        case vscf_api_tag_DECRYPT:
+        return (const vscf_api_t *)                 &decrypt_api;
+        case vscf_api_tag_ENCRYPT:
+        return (const vscf_api_t *)                 &encrypt_api;
+        default:
+            return NULL;
+    }
+}
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
