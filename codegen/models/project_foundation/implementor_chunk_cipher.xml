@@ -39,6 +39,13 @@
         <property name="chunk size" type="size"/>
         <property name="chunk index" type="unsigned" size="8"/>
         <property name="pending" class="buffer"/>
+        <property name="auth data" class="buffer">
+            Associated data bound into the stream authentication (frame 0 AAD).
+            Set by the generic encryptor/decryptor (recipient cipher) to the
+            serialized CMS 'data encryption alg info' so an OID swap or a
+            chunk_size/initial_nonce tamper fails closed. Empty for the raw
+            (non-CMS) seek/stream API, keeping the shipped frame format.
+        </property>
         <property name="state" enum="cipher state"/>
         <property name="cipher error" enum="status">
             Deferred error captured by the void 'start encryption'/'start decryption'
@@ -229,6 +236,18 @@
             Set the 32-byte AES-256 encryption key.
 
             <argument name="key" class="data"/>
+        </method>
+
+        <method name="set auth data" declaration="public">
+            Set associated data bound into the stream authentication.
+            The generic encryptor/decryptor (recipient cipher) sets this to the
+            serialized CMS 'data encryption alg info' so metadata tampering
+            (OID swap, chunk_size/initial_nonce change) fails closed. Must be
+            set before start_encryption/start_decryption (and before
+            encrypt_at/decrypt_at). Empty auth_data preserves the shipped raw
+            frame format.
+
+            <argument name="auth data" class="data"/>
         </method>
 
         <method name="start encryption" declaration="public">

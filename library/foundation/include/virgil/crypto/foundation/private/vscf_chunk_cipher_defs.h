@@ -135,6 +135,10 @@ struct vscf_chunk_cipher_t {
     //
     //  Implementation specific context.
     //
+    vsc_buffer_t *auth_data;
+    //
+    //  Implementation specific context.
+    //
     vscf_cipher_state_t state;
     //
     //  Implementation specific context.

@@ -58,6 +58,8 @@
 #include "vscf_error.h"
 
 #include "vscf_private_key.h"
+#include "vscf_chunk_cipher.h"
+#include "vscf_ctr_drbg.h"
 
 #include "test_data_recipient_cipher.h"
 #include "test_data_compound_key.h"
@@ -1963,6 +1965,324 @@ test__kek__misaligned_encrypted_key__fails_without_abort(void) {
 }
 
 // --------------------------------------------------------------------------
+//  Chunk cipher envelope: authenticated metadata binding (R8).
+//
+//  The chunked data cipher binds its serialized CMS 'data encryption alg info'
+//  (chunked OID + chunk_size + initial_nonce) into the data AEAD, so an OID
+//  swap or a chunk_size/initial_nonce tamper fails closed on both the signed
+//  and unsigned envelope paths.
+// --------------------------------------------------------------------------
+
+//  The chunked alg_info DER deserializer enforces chunk_size in [256, 64 MiB],
+//  so use a valid chunk_size and a plaintext that spans several frames.
+#define CHUNK_ENVELOPE_CHUNK_SIZE 256
+#define CHUNK_ENVELOPE_PLAINTEXT_LEN 700
+
+static byte chunk_envelope_plaintext_bytes[CHUNK_ENVELOPE_PLAINTEXT_LEN];
+
+static vsc_data_t
+chunk_envelope_plaintext(void) {
+    for (size_t i = 0; i < CHUNK_ENVELOPE_PLAINTEXT_LEN; ++i) {
+        chunk_envelope_plaintext_bytes[i] = (byte)(i * 31u + 7u);
+    }
+    return vsc_data(chunk_envelope_plaintext_bytes, CHUNK_ENVELOPE_PLAINTEXT_LEN);
+}
+
+//  Build a chunk_cipher configured as the encryption cipher (key + chunk_size;
+//  the recipient cipher injects a random key and nonce, so no key set here).
+static vscf_impl_t *
+make_encryption_chunk_cipher(void) {
+    vscf_chunk_cipher_t *chunk_cipher = vscf_chunk_cipher_new();
+
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+    vscf_chunk_cipher_take_random(chunk_cipher, vscf_ctr_drbg_impl(rng));
+
+    vscf_chunk_cipher_set_chunk_size(chunk_cipher, CHUNK_ENVELOPE_CHUNK_SIZE);
+
+    return vscf_chunk_cipher_impl(chunk_cipher);
+}
+
+//  Encrypt MESSAGE into an unsigned envelope using an injected chunk_cipher.
+//  Returns the full serialized envelope (message info || framed ciphertext).
+static vsc_buffer_t *
+chunk_envelope_encrypt_unsigned(vscf_impl_t *public_key) {
+    const vsc_data_t plaintext = chunk_envelope_plaintext();
+
+    vscf_recipient_cipher_t *enc_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(enc_cipher, test_data_recipient_cipher_RECIPIENT_ID, public_key);
+    vscf_recipient_cipher_take_encryption_cipher(enc_cipher, make_encryption_chunk_cipher());
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(enc_cipher));
+
+    const size_t msg_info_len = vscf_recipient_cipher_message_info_len(enc_cipher);
+    const size_t enc_len = vscf_recipient_cipher_encryption_out_len(enc_cipher, plaintext.len) +
+                           vscf_recipient_cipher_encryption_out_len(enc_cipher, 0);
+
+    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(msg_info_len + enc_len);
+    vscf_recipient_cipher_pack_message_info(enc_cipher, enc_msg);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_encryption(enc_cipher, plaintext, enc_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(enc_cipher, enc_msg));
+
+    vscf_recipient_cipher_destroy(&enc_cipher);
+    return enc_msg;
+}
+
+//  Decrypt an unsigned chunked envelope through a fresh recipient cipher with
+//  no chunk knowledge.  Returns the final finish_decryption status; on success
+//  the plaintext is written to 'out'.
+static vscf_status_t
+chunk_envelope_decrypt_unsigned(vsc_data_t envelope, vscf_impl_t *private_key, vsc_buffer_t **out_ref) {
+    vscf_recipient_cipher_t *dec_cipher = vscf_recipient_cipher_new();
+
+    const vscf_status_t start_status = vscf_recipient_cipher_start_decryption_with_key(
+            dec_cipher, test_data_recipient_cipher_RECIPIENT_ID, private_key, vsc_data_empty());
+    if (start_status != vscf_status_SUCCESS) {
+        vscf_recipient_cipher_destroy(&dec_cipher);
+        return start_status;
+    }
+
+    const size_t out_len = vscf_recipient_cipher_decryption_out_len(dec_cipher, envelope.len) +
+                           vscf_recipient_cipher_decryption_out_len(dec_cipher, 0);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+
+    const vscf_status_t proc_status = vscf_recipient_cipher_process_decryption(dec_cipher, envelope, out);
+    if (proc_status != vscf_status_SUCCESS) {
+        vscf_recipient_cipher_destroy(&dec_cipher);
+        *out_ref = out;
+        return proc_status;
+    }
+
+    const vscf_status_t status = vscf_recipient_cipher_finish_decryption(dec_cipher, out);
+
+    vscf_recipient_cipher_destroy(&dec_cipher);
+    *out_ref = out;
+    return status;
+}
+
+//  Find the chunked OID (1.3.6.1.4.1.54811.1.4) inside the serialized envelope
+//  and return the offset of its first byte, or SIZE_MAX if not present.
+static size_t
+find_chunked_oid_offset(vsc_data_t envelope) {
+    static const byte chunked_oid[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x04};
+    if (envelope.len < sizeof(chunked_oid)) {
+        return SIZE_MAX;
+    }
+    for (size_t i = 0; i + sizeof(chunked_oid) <= envelope.len; ++i) {
+        if (memcmp(envelope.bytes + i, chunked_oid, sizeof(chunked_oid)) == 0) {
+            return i;
+        }
+    }
+    return SIZE_MAX;
+}
+
+void
+test__chunk_cipher_envelope__unsigned_round_trip__success(void) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vsc_buffer_t *envelope = chunk_envelope_encrypt_unsigned(public_key);
+
+    //  Sanity: the envelope really uses the chunked identifier.
+    TEST_ASSERT_NOT_EQUAL(SIZE_MAX, find_chunked_oid_offset(vsc_buffer_data(envelope)));
+
+    vsc_buffer_t *out = NULL;
+    const vscf_status_t status = chunk_envelope_decrypt_unsigned(vsc_buffer_data(envelope), private_key, &out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(chunk_envelope_plaintext(), out);
+
+    vsc_buffer_destroy(&out);
+    vsc_buffer_destroy(&envelope);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__chunk_cipher_envelope__signed_round_trip__success(void) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Signed encryption with an injected chunk_cipher.
+    //
+    vscf_recipient_cipher_t *enc_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(enc_cipher, test_data_recipient_cipher_RECIPIENT_ID, public_key);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_add_signer(enc_cipher, test_data_recipient_cipher_RECIPIENT_ID, private_key));
+    vscf_recipient_cipher_take_encryption_cipher(enc_cipher, make_encryption_chunk_cipher());
+
+    const vsc_data_t plaintext = chunk_envelope_plaintext();
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_signed_encryption(enc_cipher, plaintext.len));
+
+    const size_t msg_info_len = vscf_recipient_cipher_message_info_len(enc_cipher);
+    const size_t enc_len = vscf_recipient_cipher_encryption_out_len(enc_cipher, plaintext.len) +
+                           vscf_recipient_cipher_encryption_out_len(enc_cipher, 0);
+
+    vsc_buffer_t *enc_header = vsc_buffer_new_with_capacity(msg_info_len);
+    vsc_buffer_t *enc_data = vsc_buffer_new_with_capacity(enc_len);
+
+    vscf_recipient_cipher_pack_message_info(enc_cipher, enc_header);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_encryption(enc_cipher, plaintext, enc_data));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(enc_cipher, enc_data));
+
+    const size_t footer_len = vscf_recipient_cipher_message_info_footer_len(enc_cipher);
+    vsc_buffer_t *enc_footer = vsc_buffer_new_with_capacity(footer_len);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_pack_message_info_footer(enc_cipher, enc_footer));
+
+    //  Sanity: chunked identifier present in the header.
+    TEST_ASSERT_NOT_EQUAL(SIZE_MAX, find_chunked_oid_offset(vsc_buffer_data(enc_header)));
+
+    vscf_recipient_cipher_destroy(&enc_cipher);
+
+    //
+    //  Verified decryption through a fresh recipient cipher (no chunk knowledge).
+    //
+    vscf_recipient_cipher_t *dec_cipher = vscf_recipient_cipher_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_verified_decryption_with_key(dec_cipher,
+                                                   test_data_recipient_cipher_RECIPIENT_ID, private_key,
+                                                   vsc_buffer_data(enc_header), vsc_buffer_data(enc_footer)));
+
+    const size_t out_len = vscf_recipient_cipher_decryption_out_len(dec_cipher, vsc_buffer_len(enc_data)) +
+                           vscf_recipient_cipher_decryption_out_len(dec_cipher, 0);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(dec_cipher, vsc_buffer_data(enc_data), out));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(dec_cipher, out));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(chunk_envelope_plaintext(), out);
+
+    TEST_ASSERT_TRUE(vscf_recipient_cipher_is_data_signed(dec_cipher));
+    const vscf_signer_info_list_t *signer_infos = vscf_recipient_cipher_signer_infos(dec_cipher);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+    const vscf_signer_info_t *signer_info = vscf_signer_info_list_item(signer_infos);
+    TEST_ASSERT_TRUE(vscf_recipient_cipher_verify_signer_info(dec_cipher, signer_info, public_key));
+
+    vsc_buffer_destroy(&out);
+    vsc_buffer_destroy(&enc_footer);
+    vsc_buffer_destroy(&enc_data);
+    vsc_buffer_destroy(&enc_header);
+    vscf_recipient_cipher_destroy(&dec_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__chunk_cipher_envelope__oid_downgrade__fails_closed(void) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vsc_buffer_t *envelope = chunk_envelope_encrypt_unsigned(public_key);
+
+    //
+    //  Downgrade: flip the discriminating last byte of the chunked OID
+    //  (1.3.6.1.4.1.54811.1.4 -> ...1.3), so the CMS no longer identifies the
+    //  chunked algorithm.  Decryption must fail closed: either the cipher can
+    //  no longer be reconstructed, or the bound auth-data mismatches.
+    //
+    const size_t oid_offset = find_chunked_oid_offset(vsc_buffer_data(envelope));
+    TEST_ASSERT_NOT_EQUAL(SIZE_MAX, oid_offset);
+    vsc_buffer_begin(envelope)[oid_offset + 9] = 0x03;
+
+    vsc_buffer_t *out = NULL;
+    const vscf_status_t status = chunk_envelope_decrypt_unsigned(vsc_buffer_data(envelope), private_key, &out);
+    TEST_ASSERT_NOT_EQUAL(vscf_status_SUCCESS, status);
+    if (out != NULL) {
+        TEST_ASSERT_EQUAL(0, vsc_buffer_len(out));
+        vsc_buffer_destroy(&out);
+    }
+
+    vsc_buffer_destroy(&envelope);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__chunk_cipher_envelope__param_tamper__auth_fails(void) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vsc_buffer_t *envelope = chunk_envelope_encrypt_unsigned(public_key);
+
+    //
+    //  Param tamper: the alg_info parameters (version INTEGER, chunkSize
+    //  INTEGER, initialNonce OCTET STRING) follow the OID.  Flip a byte in the
+    //  initial nonce region (well past the OID + short version/chunkSize
+    //  encodings) so the OID stays valid and the cipher reconstructs, but the
+    //  bound auth-data differs from what the encryptor bound.  The AEAD tag
+    //  check must fail and no plaintext must be produced.
+    //
+    //  DER layout of the AlgorithmIdentifier parameters after the 10-byte OID
+    //  content: params SEQUENCE (0x30 len) | version INTEGER (02 01 01) |
+    //  chunkSize INTEGER (02 02 01 00 for 256) | initialNonce OCTET STRING
+    //  (04 0C <12 bytes>).  So the nonce content begins at oid_offset + 21.
+    //  Flip a byte inside the nonce so the OID and chunk_size stay valid (the
+    //  cipher reconstructs) but the bound metadata differs -> AEAD auth failure.
+    const size_t oid_offset = find_chunked_oid_offset(vsc_buffer_data(envelope));
+    TEST_ASSERT_NOT_EQUAL(SIZE_MAX, oid_offset);
+    const size_t nonce_content = oid_offset + 21;
+    TEST_ASSERT(nonce_content + 12 <= vsc_buffer_len(envelope));
+    vsc_buffer_begin(envelope)[nonce_content + 5] ^= 0xFF;
+
+    vsc_buffer_t *out = NULL;
+    const vscf_status_t status = chunk_envelope_decrypt_unsigned(vsc_buffer_data(envelope), private_key, &out);
+    //  Must fail closed via the AEAD tag check (the bound nonce metadata changed).
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_AUTH_FAILED, status);
+    if (out != NULL) {
+        TEST_ASSERT_EQUAL(0, vsc_buffer_len(out));
+        vsc_buffer_destroy(&out);
+    }
+
+    vsc_buffer_destroy(&envelope);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+// --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
 int
@@ -2006,6 +2326,11 @@ main(void) {
 
     RUN_TEST(test__decrypt__tampered_ciphertext__auth_fails_and_output_is_empty);
     RUN_TEST(test__decrypt_chunks__tampered_ciphertext__auth_fails_and_all_chunk_buffers_are_empty);
+
+    RUN_TEST(test__chunk_cipher_envelope__unsigned_round_trip__success);
+    RUN_TEST(test__chunk_cipher_envelope__signed_round_trip__success);
+    RUN_TEST(test__chunk_cipher_envelope__oid_downgrade__fails_closed);
+    RUN_TEST(test__chunk_cipher_envelope__param_tamper__auth_fails);
 
     RUN_TEST(test__encrypt_decrypt__with_aes256_kw_kek_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_aes256_kw_kek_recipient__wrong_kek_id__not_found);

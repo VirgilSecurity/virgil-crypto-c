@@ -411,6 +411,18 @@ VSCF_PUBLIC void
 vscf_chunk_cipher_set_key(vscf_chunk_cipher_t *self, vsc_data_t key);
 
 //
+//  Set associated data bound into the stream authentication.
+//  The generic encryptor/decryptor (recipient cipher) sets this to the
+//  serialized CMS 'data encryption alg info' so metadata tampering
+//  (OID swap, chunk_size/initial_nonce change) fails closed. Must be
+//  set before start_encryption/start_decryption (and before
+//  encrypt_at/decrypt_at). Empty auth_data preserves the shipped raw
+//  frame format.
+//
+VSCF_PUBLIC void
+vscf_chunk_cipher_set_auth_data(vscf_chunk_cipher_t *self, vsc_data_t auth_data);
+
+//
 //  Initiate encryption. Generates a random 12-byte initial nonce only if
 //  one was not already set (via set_nonce or restore_alg_info), so an
 //  injected nonce is honored. An RNG failure is captured and surfaced

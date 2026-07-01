@@ -123,6 +123,7 @@ vscf_chunk_cipher_cleanup_ctx(vscf_chunk_cipher_t *self) {
     vsc_buffer_destroy(&self->key);
     vsc_buffer_destroy(&self->nonce_buffer);
     vsc_buffer_destroy(&self->pending);
+    vsc_buffer_destroy(&self->auth_data);
 }
 
 VSCF_PUBLIC void
@@ -135,6 +136,18 @@ vscf_chunk_cipher_set_key(vscf_chunk_cipher_t *self, vsc_data_t key) {
     vsc_buffer_destroy(&self->key);
     self->key = vsc_buffer_new_with_data(key);
     vsc_buffer_make_secure(self->key);
+}
+
+VSCF_PUBLIC void
+vscf_chunk_cipher_set_auth_data(vscf_chunk_cipher_t *self, vsc_data_t auth_data) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(auth_data));
+
+    vsc_buffer_destroy(&self->auth_data);
+    if (auth_data.len > 0) {
+        self->auth_data = vsc_buffer_new_with_data(auth_data);
+    }
 }
 
 VSCF_PUBLIC void
@@ -464,6 +477,58 @@ vscf_chunk_cipher_decrypt_at(
     return status;
 }
 
+//
+//  Build the per-frame AEAD associated data. The layout is byte-identical on
+//  the encrypt and decrypt paths (both call this helper):
+//
+//      counter_le64[8]
+//      [|| chunk_size_le64[8]        if frame 0]
+//      [|| bound_auth_data[M]        if frame 0 and auth_data is set]
+//      [|| FIN_MARKER (0xFF x8)      if last frame]
+//
+//  The bound auth_data (the serialized CMS 'data encryption alg info' set by the
+//  recipient cipher) is authenticated but NOT written to the frame, so the
+//  on-wire frame format is unchanged. When auth_data is unset (the raw seek /
+//  stream API), the AAD is exactly the shipped layout.
+//
+static vsc_buffer_t *
+vscf_chunk_cipher_build_aad(const vscf_chunk_cipher_t *self, uint64_t chunk_index, bool is_last) {
+
+    VSCF_ASSERT_PTR(self);
+
+    const bool is_first = (chunk_index == 0);
+    const size_t auth_data_len = (is_first && self->auth_data != NULL) ? vsc_buffer_len(self->auth_data) : 0;
+
+    vsc_buffer_t *aad = vsc_buffer_new_with_capacity(8 + 8 + auth_data_len + 8);
+
+    byte counter_bytes[8];
+    for (int i = 0; i < 8; i++) {
+        counter_bytes[i] = (byte)((chunk_index >> (8 * i)) & 0xFF);
+    }
+    vsc_buffer_write_data(aad, vsc_data(counter_bytes, 8));
+
+    if (is_first) {
+        const uint64_t cs64 = (uint64_t)self->chunk_size;
+        byte chunk_size_bytes[8];
+        for (int i = 0; i < 8; i++) {
+            chunk_size_bytes[i] = (byte)((cs64 >> (8 * i)) & 0xFF);
+        }
+        vsc_buffer_write_data(aad, vsc_data(chunk_size_bytes, 8));
+
+        if (auth_data_len > 0) {
+            vsc_buffer_write_data(aad, vsc_buffer_data(self->auth_data));
+        }
+    }
+
+    if (is_last) {
+        byte fin_marker[8];
+        memset(fin_marker, 0xFF, sizeof(fin_marker));
+        vsc_buffer_write_data(aad, vsc_data(fin_marker, sizeof(fin_marker)));
+    }
+
+    return aad;
+}
+
 static vscf_status_t
 vscf_chunk_cipher_encrypt_chunk(
         vscf_chunk_cipher_t *self, vsc_data_t plaintext, uint64_t chunk_index, bool is_last, vsc_buffer_t *out) {
@@ -495,21 +560,8 @@ vscf_chunk_cipher_encrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_
         counter_bytes[i] = (byte)((idx64 >> (8 * i)) & 0xFF);
     }
 
-    // Build variable-length AAD: counter[8] [|| chunk_size[8] if frame 0] [|| FIN_MARKER[8] if last]
-    byte aad[24];
-    size_t aad_len = 8;
-    memcpy(aad, counter_bytes, 8);
-    if (idx64 == 0) {
-        const uint64_t cs64 = (uint64_t)self->chunk_size;
-        for (int i = 0; i < 8; i++) {
-            aad[aad_len + i] = (byte)((cs64 >> (8 * i)) & 0xFF);
-        }
-        aad_len += 8;
-    }
-    if (is_last) {
-        memset(aad + aad_len, 0xFF, 8);
-        aad_len += 8;
-    }
+    // Build variable-length AAD (shared, byte-identical with the decrypt path).
+    vsc_buffer_t *aad = vscf_chunk_cipher_build_aad(self, idx64, is_last);
 
     // Derive per-chunk nonce: initial_nonce XOR (0x00000000 || uint64_be(chunk_index))
     byte nonce_i[vscf_aes256_gcm_NONCE_LEN];
@@ -524,7 +576,9 @@ vscf_chunk_cipher_encrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_
 
     // Frame: counter_le64[8] | ciphertext[N] | tag[16]
     vsc_buffer_write_data(out, vsc_data(counter_bytes, 8));
-    return vscf_aes256_gcm_auth_encrypt(gcm, plaintext, vsc_data(aad, aad_len), out, NULL);
+    const vscf_status_t status = vscf_aes256_gcm_auth_encrypt(gcm, plaintext, vsc_buffer_data(aad), out, NULL);
+    vsc_buffer_destroy(&aad);
+    return status;
 }
 
 static vscf_status_t
@@ -569,21 +623,8 @@ vscf_chunk_cipher_decrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_
         return vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED;
     }
 
-    // Build variable-length AAD matching what encrypt_chunk produced
-    byte aad[24];
-    size_t aad_len = 8;
-    memcpy(aad, counter_bytes, 8);
-    if (frame_index64 == 0) {
-        const uint64_t cs64 = (uint64_t)self->chunk_size;
-        for (int i = 0; i < 8; i++) {
-            aad[aad_len + i] = (byte)((cs64 >> (8 * i)) & 0xFF);
-        }
-        aad_len += 8;
-    }
-    if (is_last) {
-        memset(aad + aad_len, 0xFF, 8);
-        aad_len += 8;
-    }
+    // Build variable-length AAD (shared, byte-identical with the encrypt path).
+    vsc_buffer_t *aad = vscf_chunk_cipher_build_aad(self, frame_index64, is_last);
 
     // Derive per-chunk nonce
     byte nonce_i[vscf_aes256_gcm_NONCE_LEN];
@@ -601,7 +642,9 @@ vscf_chunk_cipher_decrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_
     vsc_data_t ciphertext = vsc_data(frame.bytes + 8, ciphertext_len);
     vsc_data_t tag = vsc_data(frame.bytes + 8 + ciphertext_len, vscf_aes256_gcm_AUTH_TAG_LEN);
 
-    return vscf_aes256_gcm_auth_decrypt(gcm, ciphertext, vsc_data(aad, aad_len), tag, out);
+    const vscf_status_t status = vscf_aes256_gcm_auth_decrypt(gcm, ciphertext, vsc_buffer_data(aad), tag, out);
+    vsc_buffer_destroy(&aad);
+    return status;
 }
 
 //  Version stored in the produced 'chunked alg info'. Bump only on a framing
