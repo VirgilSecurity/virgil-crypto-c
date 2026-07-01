@@ -1880,6 +1880,20 @@ public class FoundationJNI {
 
     public native AlgId saltedKdfAlgInfo_algId(long cCtx);
 
+    public native long chunkedAlgInfo_new();
+
+    public native void chunkedAlgInfo_close(long cCtx);
+
+    public native long chunkedAlgInfo_new(AlgId algId, int version, int chunkSize, byte[] nonce);
+
+    public native int chunkedAlgInfo_version(long cCtx);
+
+    public native int chunkedAlgInfo_chunkSize(long cCtx);
+
+    public native byte[] chunkedAlgInfo_nonce(long cCtx);
+
+    public native AlgId chunkedAlgInfo_algId(long cCtx);
+
     public native long pbeAlgInfo_new();
 
     public native void pbeAlgInfo_close(long cCtx);

@@ -128,6 +128,7 @@ const initSimpleAlgInfo = require('./SimpleAlgInfo');
 const initHashBasedAlgInfo = require('./HashBasedAlgInfo');
 const initCipherAlgInfo = require('./CipherAlgInfo');
 const initSaltedKdfAlgInfo = require('./SaltedKdfAlgInfo');
+const initChunkedAlgInfo = require('./ChunkedAlgInfo');
 const initPbeAlgInfo = require('./PbeAlgInfo');
 const initEccAlgInfo = require('./EccAlgInfo');
 const initAlgInfoDerSerializer = require('./AlgInfoDerSerializer');
@@ -233,6 +234,7 @@ const initProject = options => {
             modules.HashBasedAlgInfo = initHashBasedAlgInfo(foundationModule, modules);
             modules.CipherAlgInfo = initCipherAlgInfo(foundationModule, modules);
             modules.SaltedKdfAlgInfo = initSaltedKdfAlgInfo(foundationModule, modules);
+            modules.ChunkedAlgInfo = initChunkedAlgInfo(foundationModule, modules);
             modules.PbeAlgInfo = initPbeAlgInfo(foundationModule, modules);
             modules.EccAlgInfo = initEccAlgInfo(foundationModule, modules);
             modules.AlgInfoDerSerializer = initAlgInfoDerSerializer(foundationModule, modules);

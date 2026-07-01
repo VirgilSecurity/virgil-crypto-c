@@ -58,6 +58,8 @@
 #include "vscf_oid.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_cipher_alg_info.h"
+#include "vscf_chunked_alg_info.h"
+#include "vscf_aes256_gcm.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
@@ -112,6 +114,19 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deser
 //
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
+
+//
+//  Parse ASN.1 structure "AlgorithmIdentifier" with the chunk cipher
+//  parameters and validate them.
+//
+//  ChunkedParams ::= SEQUENCE {
+//      version INTEGER,
+//      chunkSize INTEGER,
+//      initialNonce OCTET STRING
+//  }
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
@@ -176,6 +191,18 @@ vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(vscf_alg_info_der
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+//
+//  Validation bounds for the "chunked alg info" parameters.
+//
+enum {
+    //  Only version 1 of the chunked framing is currently defined.
+    vscf_alg_info_der_deserializer_CHUNKED_VERSION = 1,
+    //  Minimum accepted chunk size, in bytes.
+    vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MIN = 256,
+    //  Maximum accepted chunk size, in bytes (64 MiB).
+    vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX = 64 * 1024 * 1024
+};
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -427,6 +454,60 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
         VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
         return NULL;
     }
+}
+
+//
+//  Parse ASN.1 structure "AlgorithmIdentifier" with the chunk cipher
+//  parameters and validate them.
+//
+//  ChunkedParams ::= SEQUENCE {
+//      version INTEGER,
+//      chunkSize INTEGER,
+//      initialNonce OCTET STRING
+//  }
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
+
+    //  Read ChunkedParams.
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    uint64_t version = vscf_asn1_reader_read_uint64(self->asn1_reader);
+    uint64_t chunk_size = vscf_asn1_reader_read_uint64(self->asn1_reader);
+    vsc_data_t initial_nonce = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+
+    //  Any malformed / truncated DER surfaces here as a reader error.
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
+        return NULL;
+    }
+
+    //  Validate version.
+    if (version != vscf_alg_info_der_deserializer_CHUNKED_VERSION) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
+        return NULL;
+    }
+
+    //  Validate chunk size bounds.
+    if (chunk_size < vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MIN ||
+            chunk_size > vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
+        return NULL;
+    }
+
+    //  Validate the initial nonce length.
+    if (initial_nonce.len != vscf_aes256_gcm_NONCE_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
+        return NULL;
+    }
+
+    const vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(oid_id);
+    return vscf_chunked_alg_info_impl(
+            vscf_chunked_alg_info_new_with_members(alg_id, (size_t)version, (size_t)chunk_size, initial_nonce));
 }
 
 //
@@ -731,6 +812,9 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_oid_id_AES256_GCM:
     case vscf_oid_id_AES256_CBC:
         return vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(self, oid_id, error);
+
+    case vscf_oid_id_AES256_GCM_CHUNKED:
+        return vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(self, oid_id, error);
 
     case vscf_oid_id_AES128_KW:
     case vscf_oid_id_AES192_KW:

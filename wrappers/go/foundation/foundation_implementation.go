@@ -773,6 +773,8 @@ func FoundationImplementationWrapAlgInfo(ctx *C.vscf_impl_t) (AlgInfo, error) {
         return newCipherAlgInfoWithCtx((*C.vscf_cipher_alg_info_t)(ctx)), nil
     case C.vscf_impl_tag_SALTED_KDF_ALG_INFO:
         return newSaltedKdfAlgInfoWithCtx((*C.vscf_salted_kdf_alg_info_t)(ctx)), nil
+    case C.vscf_impl_tag_CHUNKED_ALG_INFO:
+        return newChunkedAlgInfoWithCtx((*C.vscf_chunked_alg_info_t)(ctx)), nil
     case C.vscf_impl_tag_PBE_ALG_INFO:
         return newPbeAlgInfoWithCtx((*C.vscf_pbe_alg_info_t)(ctx)), nil
     case C.vscf_impl_tag_ECC_ALG_INFO:

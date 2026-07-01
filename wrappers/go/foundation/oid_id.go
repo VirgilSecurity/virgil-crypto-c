@@ -38,4 +38,5 @@ const (
     OidIdRandomPadding OidId = 31
     OidIdMlKem768 OidId = 32
     OidIdMlDsa65 OidId = 33
+    OidIdAes256GcmChunked OidId = 34
 )

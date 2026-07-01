@@ -188,6 +188,7 @@ option(VSCF_SIMPLE_ALG_INFO "Enable implementation 'simple alg info'." ON)
 option(VSCF_HASH_BASED_ALG_INFO "Enable implementation 'hash based alg info'." ON)
 option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
 option(VSCF_SALTED_KDF_ALG_INFO "Enable implementation 'salted kdf alg info'." ON)
+option(VSCF_CHUNKED_ALG_INFO "Enable implementation 'chunked alg info'." ON)
 option(VSCF_PBE_ALG_INFO "Enable implementation 'pbe alg info'." ON)
 option(VSCF_ECC_ALG_INFO "Enable implementation 'ecc alg info'." ON)
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
@@ -338,6 +339,7 @@ mark_as_advanced(
         VSCF_HASH_BASED_ALG_INFO
         VSCF_CIPHER_ALG_INFO
         VSCF_SALTED_KDF_ALG_INFO
+        VSCF_CHUNKED_ALG_INFO
         VSCF_PBE_ALG_INFO
         VSCF_ECC_ALG_INFO
         VSCF_ALG_INFO_DER_SERIALIZER
@@ -2956,6 +2958,15 @@ if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_CIPHER_ALG_INFO)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_CHUNKED_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_CHUNKED_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_HASH_BASED_ALG_INFO)
     message("-- error --")
     message("--")
@@ -3051,6 +3062,15 @@ if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_CIPHER_ALG_INFO)
     message("--")
     message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
     message("     VSCF_CIPHER_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_CHUNKED_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_CHUNKED_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

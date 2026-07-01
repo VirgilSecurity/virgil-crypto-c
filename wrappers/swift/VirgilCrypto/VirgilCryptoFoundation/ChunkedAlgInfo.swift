@@ -32,67 +32,61 @@
 //
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+
 import Foundation
 import VSCFoundation
 
-/// Define implemented algorithm identificator.
-@objc public enum AlgId: Int {
-    case none
+@objc(VSCFChunkedAlgInfo) public class ChunkedAlgInfo: NSObject, AlgInfo {
 
-    case sha224
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
 
-    case sha256
-
-    case sha384
-
-    case sha512
-
-    case kdf1
-
-    case kdf2
-
-    case rsa
-
-    case ed25519
-
-    case curve25519
-
-    case secp256r1
-
-    case aes256Gcm
-
-    case aes256Cbc
-
-    case aes128Kw
-
-    case aes192Kw
-
-    case aes256Kw
-
-    case hmac
-
-    case hkdf
-
-    case pkcs5Pbkdf2
-
-    case pkcs5Pbes2
-
-    case compoundKey
-
-    case hybridKey
-
-    case falcon
-
-    case randomPadding
-
-    case mlKem768
-
-    case mlDsa65
-
-    case aes256GcmChunked
-
-    /// Create enumeration value from the correspond C enumeration value.
-    init(fromC algId: vscf_alg_id_t) {
-        self.init(rawValue: Int(algId.rawValue))!
+    public override init() {
+        self.c_ctx = vscf_chunked_alg_info_new()
+        super.init()
     }
+
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_chunked_alg_info_shallow_copy(c_ctx)
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_chunked_alg_info_delete(self.c_ctx)
+    }
+
+    /// Return chunk cipher alg info version.
+    @objc public func version() -> Int {
+        let proxyResult = vscf_chunked_alg_info_version(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return chunk size.
+    @objc public func chunkSize() -> Int {
+        let proxyResult = vscf_chunked_alg_info_chunk_size(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return the initial nonce.
+    @objc public func nonce() -> Data {
+        let proxyResult = vscf_chunked_alg_info_nonce(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_chunked_alg_info_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
 }

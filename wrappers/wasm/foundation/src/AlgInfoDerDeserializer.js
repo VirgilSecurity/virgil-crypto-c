@@ -226,6 +226,28 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             }
         }
 
+        deserializeChunkedAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(this.ctxPtr, oidId, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
         deserializePbkdf2AlgInfo(oidId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             

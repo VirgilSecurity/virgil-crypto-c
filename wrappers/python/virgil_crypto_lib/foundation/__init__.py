@@ -123,6 +123,7 @@ from .simple_alg_info import SimpleAlgInfo
 from .hash_based_alg_info import HashBasedAlgInfo
 from .cipher_alg_info import CipherAlgInfo
 from .salted_kdf_alg_info import SaltedKdfAlgInfo
+from .chunked_alg_info import ChunkedAlgInfo
 from .pbe_alg_info import PbeAlgInfo
 from .ecc_alg_info import EccAlgInfo
 from .alg_info_der_serializer import AlgInfoDerSerializer

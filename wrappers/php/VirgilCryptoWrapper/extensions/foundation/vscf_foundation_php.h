@@ -110,6 +110,9 @@ VSCF_PHP_PUBLIC const char*
 vscf_chunk_cipher_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
+vscf_chunked_alg_info_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
 vscf_cipher_alg_info_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -366,6 +369,9 @@ le_vscf_brainkey_server_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_chunk_cipher_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_chunked_alg_info_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_cipher_alg_info_t(void);

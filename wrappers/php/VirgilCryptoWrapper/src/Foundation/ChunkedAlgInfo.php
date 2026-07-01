@@ -37,43 +37,77 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-class OidId extends Enum
+class ChunkedAlgInfo implements AlgInfo
 {
 
-    private const NONE = 0;
-    private const RSA = 1;
-    private const ED25519 = 2;
-    private const CURVE25519 = 3;
-    private const SHA224 = 4;
-    private const SHA256 = 5;
-    private const SHA384 = 6;
-    private const SHA512 = 7;
-    private const KDF1 = 8;
-    private const KDF2 = 9;
-    private const AES256_GCM = 10;
-    private const AES256_CBC = 11;
-    private const AES128_KW = 12;
-    private const AES192_KW = 13;
-    private const AES256_KW = 14;
-    private const PKCS5_PBKDF2 = 15;
-    private const PKCS5_PBES2 = 16;
-    private const CMS_DATA = 17;
-    private const CMS_ENVELOPED_DATA = 18;
-    private const HKDF_WITH_SHA256 = 19;
-    private const HKDF_WITH_SHA384 = 20;
-    private const HKDF_WITH_SHA512 = 21;
-    private const HMAC_WITH_SHA224 = 22;
-    private const HMAC_WITH_SHA256 = 23;
-    private const HMAC_WITH_SHA384 = 24;
-    private const HMAC_WITH_SHA512 = 25;
-    private const EC_GENERIC_KEY = 26;
-    private const EC_DOMAIN_SECP256R1 = 27;
-    private const COMPOUND_KEY = 28;
-    private const HYBRID_KEY = 29;
-    private const FALCON = 30;
-    private const RANDOM_PADDING = 31;
-    private const ML_KEM_768 = 32;
-    private const ML_DSA_65 = 33;
-    private const AES256_GCM_CHUNKED = 34;
+    /**
+    * @var
+    */
+    private $ctx;
 
+    /**
+    * Create underlying C context.
+    * @param null $ctx
+    * @return void
+    */
+    public function __construct($ctx = null)
+    {
+        $this->ctx = is_null($ctx) ? vscf_chunked_alg_info_new_php() : $ctx;
+    }
+
+    /**
+    * Destroy underlying C context.
+    * @return void
+    */
+    public function __destructor()
+    {
+        vscf_chunked_alg_info_delete_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_chunked_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
+    *
+    * @return int
+    */
+    public function version(): int
+    {
+        return vscf_chunked_alg_info_version_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return int
+    */
+    public function chunkSize(): int
+    {
+        return vscf_chunked_alg_info_chunk_size_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return string
+    */
+    public function nonce(): string
+    {
+        return vscf_chunked_alg_info_nonce_php($this->ctx);
+    }
+
+    /**
+    * Get C context.
+    *
+    * @return resource
+    */
+    public function getCtx()
+    {
+        return $this->ctx;
+    }
 }

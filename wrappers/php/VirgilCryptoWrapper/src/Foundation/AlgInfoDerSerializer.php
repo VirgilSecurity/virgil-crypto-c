@@ -218,6 +218,26 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
     * @param AlgInfo $$algInfo
     * @return int
     */
+    public function serializedChunkedAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_chunked_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeChunkedAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_chunked_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
     public function serializedPbkdf2AlgInfoLen(AlgInfo $$algInfo): int
     {
         return vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len_php($this->ctx, $$algInfo->getCtx());

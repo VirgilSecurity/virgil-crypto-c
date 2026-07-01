@@ -43,8 +43,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_OID_ID_H_INCLUDED
-#define VSCF_OID_ID_H_INCLUDED
+//  @description
+// --------------------------------------------------------------------------
+//  //
+//  //  This module contains logic for interface/implementation architecture.
+//  //  Do not use this module in any part of the code.
+//  //
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_CHUNKED_ALG_INFO_INTERNAL_H_INCLUDED
+#define VSCF_CHUNKED_ALG_INFO_INTERNAL_H_INCLUDED
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -56,6 +72,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
+#include "vscf_chunked_alg_info.h"
+#include "vscf_alg_id.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -74,44 +92,28 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vscf_oid_id_t {
-    vscf_oid_id_NONE,
-    vscf_oid_id_RSA,
-    vscf_oid_id_ED25519,
-    vscf_oid_id_CURVE25519,
-    vscf_oid_id_SHA224,
-    vscf_oid_id_SHA256,
-    vscf_oid_id_SHA384,
-    vscf_oid_id_SHA512,
-    vscf_oid_id_KDF1,
-    vscf_oid_id_KDF2,
-    vscf_oid_id_AES256_GCM,
-    vscf_oid_id_AES256_CBC,
-    vscf_oid_id_AES128_KW,
-    vscf_oid_id_AES192_KW,
-    vscf_oid_id_AES256_KW,
-    vscf_oid_id_PKCS5_PBKDF2,
-    vscf_oid_id_PKCS5_PBES2,
-    vscf_oid_id_CMS_DATA,
-    vscf_oid_id_CMS_ENVELOPED_DATA,
-    vscf_oid_id_HKDF_WITH_SHA256,
-    vscf_oid_id_HKDF_WITH_SHA384,
-    vscf_oid_id_HKDF_WITH_SHA512,
-    vscf_oid_id_HMAC_WITH_SHA224,
-    vscf_oid_id_HMAC_WITH_SHA256,
-    vscf_oid_id_HMAC_WITH_SHA384,
-    vscf_oid_id_HMAC_WITH_SHA512,
-    vscf_oid_id_EC_GENERIC_KEY,
-    vscf_oid_id_EC_DOMAIN_SECP256R1,
-    vscf_oid_id_COMPOUND_KEY,
-    vscf_oid_id_HYBRID_KEY,
-    vscf_oid_id_FALCON,
-    vscf_oid_id_RANDOM_PADDING,
-    vscf_oid_id_ML_KEM_768,
-    vscf_oid_id_ML_DSA_65,
-    vscf_oid_id_AES256_GCM_CHUNKED
-};
-typedef enum vscf_oid_id_t vscf_oid_id_t;
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_chunked_alg_info_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_chunked_alg_info_init_ctx(vscf_chunked_alg_info_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_chunked_alg_info_cleanup_ctx(vscf_chunked_alg_info_t *self);
+
+//
+//  Create chunk cipher algorithm info with identificator, version,
+//  chunk size and the initial nonce.
+//
+VSCF_PUBLIC void
+vscf_chunked_alg_info_init_ctx_with_members(vscf_chunked_alg_info_t *self, vscf_alg_id_t alg_id, size_t version, size_t chunk_size, vsc_data_t nonce);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -124,5 +126,5 @@ typedef enum vscf_oid_id_t vscf_oid_id_t;
 #endif
 
 //  @footer
-#endif // VSCF_OID_ID_H_INCLUDED
+#endif // VSCF_CHUNKED_ALG_INFO_INTERNAL_H_INCLUDED
 //  @end

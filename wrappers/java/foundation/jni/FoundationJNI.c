@@ -1403,6 +1403,9 @@ char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_SALTED_KDF_ALG_INFO:
         strcat (classFullName, "SaltedKdfAlgInfo");
         break;
+    case vscf_impl_tag_CHUNKED_ALG_INFO:
+        strcat (classFullName, "ChunkedAlgInfo");
+        break;
     case vscf_impl_tag_PBE_ALG_INFO:
         strcat (classFullName, "PbeAlgInfo");
         break;
@@ -16102,6 +16105,80 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     vscf_salted_kdf_alg_info_t /*9*/* salted_kdf_alg_info_ctx = *(vscf_salted_kdf_alg_info_t /*9*/**) &c_ctx;
     
     jint ret = (jint) vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_chunked_alg_info_t **)&c_ctx = vscf_chunked_alg_info_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_chunked_alg_info_delete(*(vscf_chunked_alg_info_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2II_3B (JNIEnv *jenv, jobject jobj, jobject jalgId, jint jversion, jint jchunkSize, jbyteArray jnonce) {
+    // Wrap enums
+    jclass algId_cls = (*jenv)->GetObjectClass(jenv, jalgId);
+    jmethodID algId_methodID = (*jenv)->GetMethodID(jenv, algId_cls, "getCode", "()I");
+    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, algId_methodID);
+    
+    // Wrap input data
+    byte* nonce_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jnonce, NULL);
+    vsc_data_t nonce = vsc_data(nonce_arr, (*jenv)->GetArrayLength(jenv, jnonce));
+    
+    jlong proxyResult = (jlong) vscf_chunked_alg_info_new_with_members(alg_id, jversion, jchunkSize, nonce);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jnonce, (jbyte*) nonce_arr, 0);
+    
+    return proxyResult;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_chunked_alg_info_t /*9*/* chunked_alg_info_ctx = *(vscf_chunked_alg_info_t /*9*/**) &c_ctx;
+    
+    const vscf_alg_id_t proxyResult = vscf_chunked_alg_info_alg_id(chunked_alg_info_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+    
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1version (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_chunked_alg_info_t /*9*/* chunked_alg_info_ctx = *(vscf_chunked_alg_info_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_chunked_alg_info_version(chunked_alg_info_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1chunkSize (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_chunked_alg_info_t /*9*/* chunked_alg_info_ctx = *(vscf_chunked_alg_info_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_chunked_alg_info_chunk_size(chunked_alg_info_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkedAlgInfo_1nonce (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_chunked_alg_info_t /*9*/* chunked_alg_info_ctx = *(vscf_chunked_alg_info_t /*9*/**) &c_ctx;
+    
+    const vsc_data_t /*3*/ proxyResult = vscf_chunked_alg_info_nonce(chunked_alg_info_ctx /*a1*/);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
     return ret;
 }
 

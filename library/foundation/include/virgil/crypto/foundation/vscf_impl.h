@@ -94,6 +94,7 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
     vscf_impl_tag_ASN1RD,
     vscf_impl_tag_ASN1WR,
+    vscf_impl_tag_CHUNKED_ALG_INFO,
     vscf_impl_tag_CIPHER_ALG_INFO,
     vscf_impl_tag_COMPOUND_KEY_ALG,
     vscf_impl_tag_COMPOUND_KEY_ALG_INFO,

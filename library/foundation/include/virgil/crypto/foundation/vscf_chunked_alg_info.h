@@ -45,11 +45,21 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
+//  //
+//  //  This module contains 'chunked alg info' implementation.
+//  //
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#ifndef VSCF_CHUNKED_ALG_INFO_H_INCLUDED
+#define VSCF_CHUNKED_ALG_INFO_H_INCLUDED
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -61,6 +71,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -80,38 +92,108 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Define implemented algorithm identificator.
+//  Handles implementation details.
 //
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_AES128_KW,
-    vscf_alg_id_AES192_KW,
-    vscf_alg_id_AES256_KW,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_COMPOUND_KEY,
-    vscf_alg_id_HYBRID_KEY,
-    vscf_alg_id_FALCON,
-    vscf_alg_id_RANDOM_PADDING,
-    vscf_alg_id_ML_KEM_768,
-    vscf_alg_id_ML_DSA_65,
-    vscf_alg_id_AES256_GCM_CHUNKED
-};
-typedef enum vscf_alg_id_t vscf_alg_id_t;
+typedef struct vscf_chunked_alg_info_t vscf_chunked_alg_info_t;
+
+//
+//  Return size of 'vscf_chunked_alg_info_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_chunked_alg_info_impl_size(void);
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_chunked_alg_info_impl(vscf_chunked_alg_info_t *self);
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_chunked_alg_info_impl_const(const vscf_chunked_alg_info_t *self);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_chunked_alg_info_init(vscf_chunked_alg_info_t *self);
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_chunked_alg_info_init()'.
+//
+VSCF_PUBLIC void
+vscf_chunked_alg_info_cleanup(vscf_chunked_alg_info_t *self);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_chunked_alg_info_t *
+vscf_chunked_alg_info_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_chunked_alg_info_new()'.
+//
+VSCF_PUBLIC void
+vscf_chunked_alg_info_delete(vscf_chunked_alg_info_t *self);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_chunked_alg_info_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_chunked_alg_info_destroy(vscf_chunked_alg_info_t **self_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_chunked_alg_info_t *
+vscf_chunked_alg_info_shallow_copy(vscf_chunked_alg_info_t *self);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create chunk cipher algorithm info with identificator, version,
+//  chunk size and the initial nonce.
+//
+VSCF_PUBLIC void
+vscf_chunked_alg_info_init_with_members(vscf_chunked_alg_info_t *self, vscf_alg_id_t alg_id, size_t version, size_t chunk_size, vsc_data_t nonce);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create chunk cipher algorithm info with identificator, version,
+//  chunk size and the initial nonce.
+//
+VSCF_PUBLIC vscf_chunked_alg_info_t *
+vscf_chunked_alg_info_new_with_members(vscf_alg_id_t alg_id, size_t version, size_t chunk_size, vsc_data_t nonce);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_chunked_alg_info_alg_id(const vscf_chunked_alg_info_t *self);
+
+//
+//  Return chunk cipher alg info version.
+//
+VSCF_PUBLIC size_t
+vscf_chunked_alg_info_version(const vscf_chunked_alg_info_t *self);
+
+//
+//  Return chunk size.
+//
+VSCF_PUBLIC size_t
+vscf_chunked_alg_info_chunk_size(const vscf_chunked_alg_info_t *self);
+
+//
+//  Return the initial nonce.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_chunked_alg_info_nonce(const vscf_chunked_alg_info_t *self);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -124,5 +206,5 @@ typedef enum vscf_alg_id_t vscf_alg_id_t;
 #endif
 
 //  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
+#endif // VSCF_CHUNKED_ALG_INFO_H_INCLUDED
 //  @end

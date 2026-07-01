@@ -33,4 +33,5 @@ const (
     AlgIdRandomPadding AlgId = 23
     AlgIdMlKem768 AlgId = 24
     AlgIdMlDsa65 AlgId = 25
+    AlgIdAes256GcmChunked AlgId = 26
 )

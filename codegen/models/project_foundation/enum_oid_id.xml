@@ -34,4 +34,6 @@
     <constant name="random padding"/>
     <constant name="ml kem 768"/>
     <constant name="ml dsa 65"/>
+    <!-- Appended at end: serialized values must not shift. OID 1.3.6.1.4.1.54811.1.4 (aes256-gcm-chunked). -->
+    <constant name="aes256 gcm chunked"/>
 </enum>

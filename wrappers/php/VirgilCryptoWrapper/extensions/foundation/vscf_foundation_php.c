@@ -52,6 +52,7 @@
 #include "vscf_brainkey_client.h"
 #include "vscf_brainkey_server.h"
 #include "vscf_chunk_cipher.h"
+#include "vscf_chunked_alg_info.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_compound_key_alg.h"
 #include "vscf_compound_key_alg_info.h"
@@ -392,6 +393,7 @@ static const char VSCF_ASN1WR_T_PHP_RES_NAME[] = "vscf_asn1wr_t";
 static const char VSCF_BRAINKEY_CLIENT_T_PHP_RES_NAME[] = "vscf_brainkey_client_t";
 static const char VSCF_BRAINKEY_SERVER_T_PHP_RES_NAME[] = "vscf_brainkey_server_t";
 static const char VSCF_CHUNK_CIPHER_T_PHP_RES_NAME[] = "vscf_chunk_cipher_t";
+static const char VSCF_CHUNKED_ALG_INFO_T_PHP_RES_NAME[] = "vscf_chunked_alg_info_t";
 static const char VSCF_CIPHER_ALG_INFO_T_PHP_RES_NAME[] = "vscf_cipher_alg_info_t";
 static const char VSCF_COMPOUND_KEY_ALG_T_PHP_RES_NAME[] = "vscf_compound_key_alg_t";
 static const char VSCF_COMPOUND_KEY_ALG_INFO_T_PHP_RES_NAME[] = "vscf_compound_key_alg_info_t";
@@ -515,6 +517,10 @@ VSCF_PHP_PUBLIC const char* vscf_brainkey_server_t_php_res_name(void) {
 
 VSCF_PHP_PUBLIC const char* vscf_chunk_cipher_t_php_res_name(void) {
     return VSCF_CHUNK_CIPHER_T_PHP_RES_NAME;
+}
+
+VSCF_PHP_PUBLIC const char* vscf_chunked_alg_info_t_php_res_name(void) {
+    return VSCF_CHUNKED_ALG_INFO_T_PHP_RES_NAME;
 }
 
 VSCF_PHP_PUBLIC const char* vscf_cipher_alg_info_t_php_res_name(void) {
@@ -824,6 +830,7 @@ int LE_VSCF_ASN1WR_T;
 int LE_VSCF_BRAINKEY_CLIENT_T;
 int LE_VSCF_BRAINKEY_SERVER_T;
 int LE_VSCF_CHUNK_CIPHER_T;
+int LE_VSCF_CHUNKED_ALG_INFO_T;
 int LE_VSCF_CIPHER_ALG_INFO_T;
 int LE_VSCF_COMPOUND_KEY_ALG_T;
 int LE_VSCF_COMPOUND_KEY_ALG_INFO_T;
@@ -947,6 +954,10 @@ VSCF_PHP_PUBLIC int le_vscf_brainkey_server_t(void) {
 
 VSCF_PHP_PUBLIC int le_vscf_chunk_cipher_t(void) {
     return LE_VSCF_CHUNK_CIPHER_T;
+}
+
+VSCF_PHP_PUBLIC int le_vscf_chunked_alg_info_t(void) {
+    return LE_VSCF_CHUNKED_ALG_INFO_T;
 }
 
 VSCF_PHP_PUBLIC int le_vscf_cipher_alg_info_t(void) {
@@ -42852,6 +42863,229 @@ PHP_FUNCTION(vscf_salted_kdf_alg_info_iteration_count_php) {
 }
 
 //
+// Wrap method: vscf_chunked_alg_info_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_chunked_alg_info_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunked_alg_info_new_php) {
+    vscf_impl_t *chunked_alg_info = vscf_chunked_alg_info_new();
+    zend_resource *chunked_alg_info_res = zend_register_resource(chunked_alg_info, le_vscf_impl_t());
+    RETVAL_RES(chunked_alg_info_res);
+}
+
+//
+// Wrap method: vscf_chunked_alg_info_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_chunked_alg_info_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunked_alg_info_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_impl_t *chunked_alg_info = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_chunked_alg_info_alg_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunked_alg_info_alg_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunked_alg_info_alg_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *chunked_alg_info = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    int res =vscf_chunked_alg_info_alg_id(chunked_alg_info);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_chunked_alg_info_version
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunked_alg_info_version_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunked_alg_info_version_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *chunked_alg_info = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_chunked_alg_info_version(chunked_alg_info);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_chunked_alg_info_chunk_size
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunked_alg_info_chunk_size_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunked_alg_info_chunk_size_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *chunked_alg_info = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_chunked_alg_info_chunk_size(chunked_alg_info);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_chunked_alg_info_nonce
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunked_alg_info_nonce_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunked_alg_info_nonce_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *chunked_alg_info = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vsc_data_t res =vscf_chunked_alg_info_nonce(chunked_alg_info);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STRINGL((const char *)res.bytes, res.len);
+}
+
+//
 // Wrap method: vscf_pbe_alg_info_new
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -45977,6 +46211,12 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_salted_kdf_alg_info_hash_alg_info_php, arginfo_vscf_salted_kdf_alg_info_hash_alg_info_php)
     PHP_FE(vscf_salted_kdf_alg_info_salt_php, arginfo_vscf_salted_kdf_alg_info_salt_php)
     PHP_FE(vscf_salted_kdf_alg_info_iteration_count_php, arginfo_vscf_salted_kdf_alg_info_iteration_count_php)
+    PHP_FE(vscf_chunked_alg_info_new_php, arginfo_vscf_chunked_alg_info_new_php)
+    PHP_FE(vscf_chunked_alg_info_delete_php, arginfo_vscf_chunked_alg_info_delete_php)
+    PHP_FE(vscf_chunked_alg_info_alg_id_php, arginfo_vscf_chunked_alg_info_alg_id_php)
+    PHP_FE(vscf_chunked_alg_info_version_php, arginfo_vscf_chunked_alg_info_version_php)
+    PHP_FE(vscf_chunked_alg_info_chunk_size_php, arginfo_vscf_chunked_alg_info_chunk_size_php)
+    PHP_FE(vscf_chunked_alg_info_nonce_php, arginfo_vscf_chunked_alg_info_nonce_php)
     PHP_FE(vscf_pbe_alg_info_new_php, arginfo_vscf_pbe_alg_info_new_php)
     PHP_FE(vscf_pbe_alg_info_delete_php, arginfo_vscf_pbe_alg_info_delete_php)
     PHP_FE(vscf_pbe_alg_info_alg_id_php, arginfo_vscf_pbe_alg_info_alg_id_php)

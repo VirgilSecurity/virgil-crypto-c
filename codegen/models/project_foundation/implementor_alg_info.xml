@@ -103,6 +103,48 @@
     </implementation>
 
 
+    <implementation name="chunked alg info">
+        Handle chunk cipher algorithm information, i.e. AES-256-GCM in
+        the chunked framing mode. Carries the framing parameters directly:
+        a version, the chunk size, and the initial nonce.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="version" type="size"/>
+        <property name="chunk size" type="size"/>
+        <property name="nonce" class="buffer"/>
+
+        <constructor name="with members">
+            Create chunk cipher algorithm info with identificator, version,
+            chunk size and the initial nonce.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="version" type="size"/>
+            <argument name="chunk size" type="size"/>
+            <argument name="nonce" class="data"/>
+        </constructor>
+
+        <method name="version" is_const="1" declaration="public">
+            Return chunk cipher alg info version.
+
+            <return type="size"/>
+        </method>
+
+        <method name="chunk size" is_const="1" declaration="public">
+            Return chunk size.
+
+            <return type="size"/>
+        </method>
+
+        <method name="nonce" is_const="1" declaration="public">
+            Return the initial nonce.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+
     <implementation name="pbe alg info">
         Handle information about password-based encryption algorithm.
 

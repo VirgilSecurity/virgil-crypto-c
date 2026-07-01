@@ -747,6 +747,8 @@ import VSCFoundation
             return CipherAlgInfo(take: c_ctx)
         case vscf_impl_tag_SALTED_KDF_ALG_INFO:
             return SaltedKdfAlgInfo(take: c_ctx)
+        case vscf_impl_tag_CHUNKED_ALG_INFO:
+            return ChunkedAlgInfo(take: c_ctx)
         case vscf_impl_tag_PBE_ALG_INFO:
             return PbeAlgInfo(take: c_ctx)
         case vscf_impl_tag_ECC_ALG_INFO:

@@ -1,5 +1,4 @@
-<?php
-/**
+/*
 * Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
@@ -35,45 +34,61 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace Virgil\CryptoWrapper\Foundation;
+package com.virgilsecurity.crypto.foundation;
 
-class OidId extends Enum
-{
+public class ChunkedAlgInfo implements AutoCloseable, AlgInfo {
 
-    private const NONE = 0;
-    private const RSA = 1;
-    private const ED25519 = 2;
-    private const CURVE25519 = 3;
-    private const SHA224 = 4;
-    private const SHA256 = 5;
-    private const SHA384 = 6;
-    private const SHA512 = 7;
-    private const KDF1 = 8;
-    private const KDF2 = 9;
-    private const AES256_GCM = 10;
-    private const AES256_CBC = 11;
-    private const AES128_KW = 12;
-    private const AES192_KW = 13;
-    private const AES256_KW = 14;
-    private const PKCS5_PBKDF2 = 15;
-    private const PKCS5_PBES2 = 16;
-    private const CMS_DATA = 17;
-    private const CMS_ENVELOPED_DATA = 18;
-    private const HKDF_WITH_SHA256 = 19;
-    private const HKDF_WITH_SHA384 = 20;
-    private const HKDF_WITH_SHA512 = 21;
-    private const HMAC_WITH_SHA224 = 22;
-    private const HMAC_WITH_SHA256 = 23;
-    private const HMAC_WITH_SHA384 = 24;
-    private const HMAC_WITH_SHA512 = 25;
-    private const EC_GENERIC_KEY = 26;
-    private const EC_DOMAIN_SECP256R1 = 27;
-    private const COMPOUND_KEY = 28;
-    private const HYBRID_KEY = 29;
-    private const FALCON = 30;
-    private const RANDOM_PADDING = 31;
-    private const ML_KEM_768 = 32;
-    private const ML_DSA_65 = 33;
-    private const AES256_GCM_CHUNKED = 34;
+    public long cCtx;
+
+    public ChunkedAlgInfo() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.chunkedAlgInfo_new();
+    }
+
+    public ChunkedAlgInfo(AlgId algId, int version, int chunkSize, byte[] nonce) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.chunkedAlgInfo_new(algId, version, chunkSize, nonce);
+    }
+
+    ChunkedAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public static ChunkedAlgInfo getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new ChunkedAlgInfo(ctxHolder);
+    }
+
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.chunkedAlgInfo_close(ctx);
+        }
+    }
+
+    public void close() {
+        clearResources();
+    }
+
+    protected void finalize() throws Throwable {
+        clearResources();
+    }
+
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.chunkedAlgInfo_algId(this.cCtx);
+    }
+
+    public int version() {
+        return FoundationJNI.INSTANCE.chunkedAlgInfo_version(this.cCtx);
+    }
+
+    public int chunkSize() {
+        return FoundationJNI.INSTANCE.chunkedAlgInfo_chunkSize(this.cCtx);
+    }
+
+    public byte[] nonce() {
+        return FoundationJNI.INSTANCE.chunkedAlgInfo_nonce(this.cCtx);
+    }
 
 }

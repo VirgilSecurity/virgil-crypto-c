@@ -11,6 +11,7 @@
         <require class="asn1wr"/>
         <require class="oid"/>
         <require impl="cipher alg info"/>
+        <require impl="chunked alg info"/>
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
@@ -121,6 +122,36 @@
         <method name="serialize cipher alg info">
             Serialize class "cipher alg info" to the ASN.1 structure
             "AlgorithmIdentifier" with AES parameters defined in the RFC 5084.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized chunked alg info len" is_const="1">
+            Return buffer size enough to hold ASN.1 structure
+            "AlgorithmIdentifier" with the chunk cipher parameters:
+
+            ChunkedParams ::= SEQUENCE {
+                version INTEGER,
+                chunkSize INTEGER,
+                initialNonce OCTET STRING
+            }
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize chunked alg info">
+            Serialize class "chunked alg info" to the ASN.1 structure
+            "AlgorithmIdentifier" with the chunk cipher parameters.
+
+            ChunkedParams ::= SEQUENCE {
+                version INTEGER,
+                chunkSize INTEGER,
+                initialNonce OCTET STRING
+            }
 
             <argument name="alg info" interface="alg info"/>
 
@@ -282,6 +313,7 @@
         <require class="oid"/>
         <require enum="asn1 tag"/>
         <require impl="cipher alg info"/>
+        <require impl="chunked alg info"/>
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
@@ -337,6 +369,22 @@
             Parse ASN.1 structure "AlgorithmIdentifier" with AES parameters:
                 - defined in the RFC 3565;
                 - defined in the RFC 5084.
+
+            <argument name="oid id" enum="oid id"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize chunked alg info">
+            Parse ASN.1 structure "AlgorithmIdentifier" with the chunk cipher
+            parameters and validate them.
+
+            ChunkedParams ::= SEQUENCE {
+                version INTEGER,
+                chunkSize INTEGER,
+                initialNonce OCTET STRING
+            }
 
             <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>

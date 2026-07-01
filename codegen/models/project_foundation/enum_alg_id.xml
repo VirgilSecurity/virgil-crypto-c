@@ -27,4 +27,6 @@
     <constant name="random padding"/>
     <constant name="ml kem 768"/>
     <constant name="ml dsa 65"/>
+    <!-- Appended at end: serialized values must not shift. Chunked AES-256-GCM AEAD (framed per-chunk); self-describing CMS identifier for vscf_chunk_cipher. -->
+    <constant name="aes256 gcm chunked"/>
 </enum>

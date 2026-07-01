@@ -167,6 +167,34 @@ AlgorithmIdentifier with no parameters."""
         vscf_alg_info_der_serializer_serialize_cipher_alg_info.restype = c_size_t
         return vscf_alg_info_der_serializer_serialize_cipher_alg_info(ctx, alg_info)
 
+    def vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(self, ctx, alg_info):
+        """Return buffer size enough to hold ASN.1 structure
+"AlgorithmIdentifier" with the chunk cipher parameters:
+
+ChunkedParams ::= SEQUENCE {
+    version INTEGER,
+    chunkSize INTEGER,
+    initialNonce OCTET STRING
+}"""
+        vscf_alg_info_der_serializer_serialized_chunked_alg_info_len = self._lib.vscf_alg_info_der_serializer_serialized_chunked_alg_info_len
+        vscf_alg_info_der_serializer_serialized_chunked_alg_info_len.argtypes = [POINTER(vscf_alg_info_der_serializer_t), POINTER(vscf_impl_t)]
+        vscf_alg_info_der_serializer_serialized_chunked_alg_info_len.restype = c_size_t
+        return vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(ctx, alg_info)
+
+    def vscf_alg_info_der_serializer_serialize_chunked_alg_info(self, ctx, alg_info):
+        """Serialize class "chunked alg info" to the ASN.1 structure
+"AlgorithmIdentifier" with the chunk cipher parameters.
+
+ChunkedParams ::= SEQUENCE {
+    version INTEGER,
+    chunkSize INTEGER,
+    initialNonce OCTET STRING
+}"""
+        vscf_alg_info_der_serializer_serialize_chunked_alg_info = self._lib.vscf_alg_info_der_serializer_serialize_chunked_alg_info
+        vscf_alg_info_der_serializer_serialize_chunked_alg_info.argtypes = [POINTER(vscf_alg_info_der_serializer_t), POINTER(vscf_impl_t)]
+        vscf_alg_info_der_serializer_serialize_chunked_alg_info.restype = c_size_t
+        return vscf_alg_info_der_serializer_serialize_chunked_alg_info(ctx, alg_info)
+
     def vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(self, ctx, alg_info):
         """Return buffer size enough to hold ASN.1 structure
 "PBKDF2Algorithm" from the RFC 8018."""

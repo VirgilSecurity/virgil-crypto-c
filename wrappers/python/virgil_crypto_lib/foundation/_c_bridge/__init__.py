@@ -215,6 +215,8 @@ from ._vscf_cipher_alg_info import vscf_cipher_alg_info_t
 from ._vscf_cipher_alg_info import VscfCipherAlgInfo
 from ._vscf_salted_kdf_alg_info import vscf_salted_kdf_alg_info_t
 from ._vscf_salted_kdf_alg_info import VscfSaltedKdfAlgInfo
+from ._vscf_chunked_alg_info import vscf_chunked_alg_info_t
+from ._vscf_chunked_alg_info import VscfChunkedAlgInfo
 from ._vscf_pbe_alg_info import vscf_pbe_alg_info_t
 from ._vscf_pbe_alg_info import VscfPbeAlgInfo
 from ._vscf_ecc_alg_info import vscf_ecc_alg_info_t

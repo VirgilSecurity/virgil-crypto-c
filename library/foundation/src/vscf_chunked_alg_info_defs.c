@@ -36,6 +36,18 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  //
+//  //  Types of the 'chunked alg info' implementation.
+//  //  This types SHOULD NOT be used directly.
+//  //  The only purpose of including this module is to place implementation
+//  //  object in the stack memory.
+//  //
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,30 +55,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_OID_ID_H_INCLUDED
-#define VSCF_OID_ID_H_INCLUDED
+#include "vscf_chunked_alg_info_defs.h"
 
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -74,55 +67,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vscf_oid_id_t {
-    vscf_oid_id_NONE,
-    vscf_oid_id_RSA,
-    vscf_oid_id_ED25519,
-    vscf_oid_id_CURVE25519,
-    vscf_oid_id_SHA224,
-    vscf_oid_id_SHA256,
-    vscf_oid_id_SHA384,
-    vscf_oid_id_SHA512,
-    vscf_oid_id_KDF1,
-    vscf_oid_id_KDF2,
-    vscf_oid_id_AES256_GCM,
-    vscf_oid_id_AES256_CBC,
-    vscf_oid_id_AES128_KW,
-    vscf_oid_id_AES192_KW,
-    vscf_oid_id_AES256_KW,
-    vscf_oid_id_PKCS5_PBKDF2,
-    vscf_oid_id_PKCS5_PBES2,
-    vscf_oid_id_CMS_DATA,
-    vscf_oid_id_CMS_ENVELOPED_DATA,
-    vscf_oid_id_HKDF_WITH_SHA256,
-    vscf_oid_id_HKDF_WITH_SHA384,
-    vscf_oid_id_HKDF_WITH_SHA512,
-    vscf_oid_id_HMAC_WITH_SHA224,
-    vscf_oid_id_HMAC_WITH_SHA256,
-    vscf_oid_id_HMAC_WITH_SHA384,
-    vscf_oid_id_HMAC_WITH_SHA512,
-    vscf_oid_id_EC_GENERIC_KEY,
-    vscf_oid_id_EC_DOMAIN_SECP256R1,
-    vscf_oid_id_COMPOUND_KEY,
-    vscf_oid_id_HYBRID_KEY,
-    vscf_oid_id_FALCON,
-    vscf_oid_id_RANDOM_PADDING,
-    vscf_oid_id_ML_KEM_768,
-    vscf_oid_id_ML_DSA_65,
-    vscf_oid_id_AES256_GCM_CHUNKED
-};
-typedef enum vscf_oid_id_t vscf_oid_id_t;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-#ifdef __cplusplus
-}
-#endif
-
-//  @footer
-#endif // VSCF_OID_ID_H_INCLUDED
 //  @end
