@@ -24,6 +24,33 @@ python3 -m tools.codegen.common_bootstrap --project foundation --apply
 
 Output goes to the repo root (same paths as the checked-in files). License text is read from the repo root `LICENSE` file automatically.
 
+### Adding a new class/algorithm — the skeleton is generated, not hand-written
+
+Do **not** hand-author the C class files. Every new foundation class/algorithm (cipher, hash, MAC, etc.)
+is declared in the IR models under `codegen/models/project_foundation/` and the **entire skeleton** is
+produced by `tools/codegen`:
+
+- **public header** `library/foundation/include/.../vscf_<name>.h`
+- **generated defs** `vscf_<name>_defs.{c,h}` (struct layout, constants, vtable)
+- **internal** `vscf_<name>_internal.{c,h}`
+- **implementation stub** `library/foundation/src/vscf_<name>.c` with empty method bodies
+- **factory/registry wiring** (`vscf_alg_factory.c`, `vscf_alg_id.h`, etc.) and **all language wrappers**
+
+Workflow to add one:
+
+1. Declare the class in `codegen/models/project_foundation/` — typically an `<implementation>` block in
+   `implementor_<backend>.xml` (e.g. `implementor_mbedtls.xml`), an entry in `enum_alg_id.xml`, and any
+   needed interface references (`interface_cipher_auth.xml`, etc.).
+2. Run `python3 -m tools.codegen.common_bootstrap --project foundation --apply` to generate the skeleton.
+3. **Fill only the algorithm logic** into the generated `vscf_<name>.c` (and `_internal.c`) method bodies.
+   The headers/defs/factory wiring are generated — re-running codegen regenerates them, so never edit
+   generated regions by hand.
+
+Reference patterns in-repo: `vscf_aes256_gcm*` (AEAD / `cipher_auth`), `vscf_hmac*` (stateful keyed MAC),
+`codegen/models/project_foundation/class_shamir.xml` (a recently added class with a dependency). Gotchas
+for new classes (MSVC has no VLAs; `context="public"` + const-length helper methods) are documented in
+`docs/solutions/best-practices/codegen-class-context-and-const-length-methods-2026-06-18.md`.
+
 ## Build
 
 ```bash
