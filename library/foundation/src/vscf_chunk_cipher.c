@@ -49,6 +49,7 @@
 #include "vscf_assert.h"
 #include "vscf_chunk_cipher_defs.h"
 #include "vscf_aes256_gcm.h"
+#include "vscf_aes256_gcm_defs.h"
 #include "vscf_random.h"
 #include "vscf_status.h"
 #include "vscf_cipher_state.h"
@@ -90,9 +91,10 @@ vscf_chunk_cipher_encrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t plaintext,
 
 //
 //  Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
+//  The frame's embedded counter is validated against expected_index.
 //
 static vscf_status_t
-vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, bool is_last, vsc_buffer_t *out);
+vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, uint64_t expected_index, bool is_last, vsc_buffer_t *out);
 
 //
 //  Return size of 'vscf_chunk_cipher_t'.
@@ -515,8 +517,8 @@ vscf_chunk_cipher_process_decryption(vscf_chunk_cipher_t *self, vsc_data_t data,
             src += fill;
             src_len -= fill;
 
-            const vscf_status_t status =
-                    vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), false, out);
+            const vscf_status_t status = vscf_chunk_cipher_decrypt_chunk(
+                    self, vsc_buffer_data(self->pending), self->chunk_index, false, out);
             if (status != vscf_status_SUCCESS) {
                 vsc_buffer_reset(self->pending);
                 self->state = vscf_cipher_state_INITIAL;
@@ -546,10 +548,93 @@ vscf_chunk_cipher_finish_decryption(vscf_chunk_cipher_t *self, vsc_buffer_t *out
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
-    const vscf_status_t status = vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), true, out);
+    const vscf_status_t status =
+            vscf_chunk_cipher_decrypt_chunk(self, vsc_buffer_data(self->pending), self->chunk_index, true, out);
     vsc_buffer_reset(self->pending);
 
     self->state = vscf_cipher_state_INITIAL;
+    return status;
+}
+
+//
+//  Core per-chunk crypto, parameterized by the AES-GCM instance. Sequential callers pass the shared
+//  self->aes256_gcm (single-threaded per cipher instance); the seek/parallel methods pass a per-call
+//  local instance so concurrent calls on one cipher never touch shared mutable cipher state. Reads of
+//  self->key / self->nonce_buffer / self->chunk_size are the only shared access and are read-only here.
+//
+static vscf_status_t
+vscf_chunk_cipher_encrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_t *gcm, vsc_data_t plaintext,
+        uint64_t chunk_index, bool is_last, vsc_buffer_t *out);
+
+static vscf_status_t
+vscf_chunk_cipher_decrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_t *gcm, vsc_data_t frame,
+        uint64_t expected_index, bool is_last, vsc_buffer_t *out);
+
+VSCF_PUBLIC size_t
+vscf_chunk_cipher_chunk_count(const vscf_chunk_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    // Matches the sequential path: full chunks plus one always-emitted trailing frame
+    // (empty when data_len is an exact multiple of chunk_size).
+    const size_t chunk_size = self->chunk_size > 0 ? self->chunk_size : VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE;
+    return (data_len / chunk_size) + 1;
+}
+
+VSCF_PUBLIC vscf_status_t
+vscf_chunk_cipher_encrypt_at(
+        vscf_chunk_cipher_t *self, uint64_t chunk_index, bool is_last, vsc_data_t plaintext, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(plaintext));
+    VSCF_ASSERT_PTR(out);
+
+    // Seek/parallel methods run outside the start/process/finish state machine. The delegated helper
+    // asserts (aborts) on missing key/nonce, so every precondition is soft-checked here first.
+    if (self->state != vscf_cipher_state_INITIAL) {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
+    if (NULL == self->key || NULL == self->nonce_buffer ||
+            vsc_buffer_len(self->nonce_buffer) != vscf_aes256_gcm_NONCE_LEN || self->chunk_size == 0) {
+        return vscf_status_ERROR_UNINITIALIZED;
+    }
+
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_chunk_cipher_encryption_out_len(self, plaintext.len));
+
+    // Thread-safe by construction: use a per-call, stack-allocated AES-GCM context, never the shared
+    // self->aes256_gcm, so concurrent calls on one instance don't race. self->key/nonce/chunk_size
+    // are only read here. No lock and no heap allocation of the context.
+    vscf_aes256_gcm_t gcm;
+    vscf_aes256_gcm_init(&gcm);
+    const vscf_status_t status = vscf_chunk_cipher_encrypt_chunk_with(self, &gcm, plaintext, chunk_index, is_last, out);
+    vscf_aes256_gcm_cleanup(&gcm);
+    return status;
+}
+
+VSCF_PUBLIC vscf_status_t
+vscf_chunk_cipher_decrypt_at(
+        vscf_chunk_cipher_t *self, uint64_t chunk_index, bool is_last, vsc_data_t frame, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(frame));
+    VSCF_ASSERT_PTR(out);
+
+    if (self->state != vscf_cipher_state_INITIAL) {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
+    if (NULL == self->key || NULL == self->nonce_buffer ||
+            vsc_buffer_len(self->nonce_buffer) != vscf_aes256_gcm_NONCE_LEN || self->chunk_size == 0) {
+        return vscf_status_ERROR_UNINITIALIZED;
+    }
+
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_chunk_cipher_decryption_out_len(self, frame.len));
+
+    // Thread-safe by construction: per-call, stack-allocated AES-GCM context (see encrypt_at).
+    // expected_index is the caller's positional index; the frame's own counter is validated against it.
+    vscf_aes256_gcm_t gcm;
+    vscf_aes256_gcm_init(&gcm);
+    const vscf_status_t status = vscf_chunk_cipher_decrypt_chunk_with(self, &gcm, frame, chunk_index, is_last, out);
+    vscf_aes256_gcm_cleanup(&gcm);
     return status;
 }
 
@@ -557,8 +642,16 @@ static vscf_status_t
 vscf_chunk_cipher_encrypt_chunk(
         vscf_chunk_cipher_t *self, vsc_data_t plaintext, uint64_t chunk_index, bool is_last, vsc_buffer_t *out) {
 
+    // Sequential path: reuse the shared per-instance context (single-threaded per cipher instance).
+    return vscf_chunk_cipher_encrypt_chunk_with(self, self->aes256_gcm, plaintext, chunk_index, is_last, out);
+}
+
+static vscf_status_t
+vscf_chunk_cipher_encrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_t *gcm, vsc_data_t plaintext,
+        uint64_t chunk_index, bool is_last, vsc_buffer_t *out) {
+
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
+    VSCF_ASSERT_PTR(gcm);
     VSCF_ASSERT_PTR(self->key);
     VSCF_ASSERT_PTR(self->nonce_buffer);
     VSCF_ASSERT(vsc_data_is_valid(plaintext));
@@ -599,20 +692,29 @@ vscf_chunk_cipher_encrypt_chunk(
         nonce_i[4 + i] ^= (byte)((idx64 >> (8 * (7 - i))) & 0xFF);
     }
 
-    vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_buffer_data(self->key));
-    vscf_aes256_gcm_set_nonce(self->aes256_gcm, vsc_data(nonce_i, vscf_aes256_gcm_NONCE_LEN));
+    vscf_aes256_gcm_set_key(gcm, vsc_buffer_data(self->key));
+    vscf_aes256_gcm_set_nonce(gcm, vsc_data(nonce_i, vscf_aes256_gcm_NONCE_LEN));
     vscf_erase(nonce_i, sizeof(nonce_i));
 
     // Frame: counter_le64[8] | ciphertext[N] | tag[16]
     vsc_buffer_write_data(out, vsc_data(counter_bytes, 8));
-    return vscf_aes256_gcm_auth_encrypt(self->aes256_gcm, plaintext, vsc_data(aad, aad_len), out, NULL);
+    return vscf_aes256_gcm_auth_encrypt(gcm, plaintext, vsc_data(aad, aad_len), out, NULL);
 }
 
 static vscf_status_t
-vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, bool is_last, vsc_buffer_t *out) {
+vscf_chunk_cipher_decrypt_chunk(
+        vscf_chunk_cipher_t *self, vsc_data_t frame, uint64_t expected_index, bool is_last, vsc_buffer_t *out) {
+
+    // Sequential path: reuse the shared per-instance context (single-threaded per cipher instance).
+    return vscf_chunk_cipher_decrypt_chunk_with(self, self->aes256_gcm, frame, expected_index, is_last, out);
+}
+
+static vscf_status_t
+vscf_chunk_cipher_decrypt_chunk_with(vscf_chunk_cipher_t *self, vscf_aes256_gcm_t *gcm, vsc_data_t frame,
+        uint64_t expected_index, bool is_last, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
+    VSCF_ASSERT_PTR(gcm);
     VSCF_ASSERT_PTR(self->key);
     VSCF_ASSERT_PTR(self->nonce_buffer);
     VSCF_ASSERT(vsc_data_is_valid(frame));
@@ -632,7 +734,7 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, boo
         frame_index64 |= ((uint64_t)counter_bytes[i]) << (8 * i);
     }
 
-    if (frame_index64 != self->chunk_index) {
+    if (frame_index64 != expected_index) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
@@ -664,8 +766,8 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, boo
         nonce_i[4 + i] ^= (byte)((frame_index64 >> (8 * (7 - i))) & 0xFF);
     }
 
-    vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_buffer_data(self->key));
-    vscf_aes256_gcm_set_nonce(self->aes256_gcm, vsc_data(nonce_i, vscf_aes256_gcm_NONCE_LEN));
+    vscf_aes256_gcm_set_key(gcm, vsc_buffer_data(self->key));
+    vscf_aes256_gcm_set_nonce(gcm, vsc_data(nonce_i, vscf_aes256_gcm_NONCE_LEN));
     vscf_erase(nonce_i, sizeof(nonce_i));
 
     // Frame: counter[8] | ciphertext[N] | tag[16]
@@ -673,5 +775,5 @@ vscf_chunk_cipher_decrypt_chunk(vscf_chunk_cipher_t *self, vsc_data_t frame, boo
     vsc_data_t ciphertext = vsc_data(frame.bytes + 8, ciphertext_len);
     vsc_data_t tag = vsc_data(frame.bytes + 8 + ciphertext_len, vscf_aes256_gcm_AUTH_TAG_LEN);
 
-    return vscf_aes256_gcm_auth_decrypt(self->aes256_gcm, ciphertext, vsc_data(aad, aad_len), tag, out);
+    return vscf_aes256_gcm_auth_decrypt(gcm, ciphertext, vsc_data(aad, aad_len), tag, out);
 }

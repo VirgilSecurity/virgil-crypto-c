@@ -335,6 +335,12 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1finishDecryption (JNIEnv *, jobject, jlong);
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1chunkCount (JNIEnv *, jobject, jlong, jint);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1encryptAt (JNIEnv *, jobject, jlong, jint, jboolean, jbyteArray);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1decryptAt (JNIEnv *, jobject, jlong, jint, jboolean, jbyteArray);
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1close (JNIEnv *, jobject, jlong);

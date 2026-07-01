@@ -126,4 +126,16 @@ public class ChunkCipher implements AutoCloseable {
         return FoundationJNI.INSTANCE.chunkCipher_finishDecryption(this.cCtx);
     }
 
+    public int chunkCount(int dataLen) {
+        return FoundationJNI.INSTANCE.chunkCipher_chunkCount(this.cCtx, dataLen);
+    }
+
+    public byte[] encryptAt(long chunkIndex, boolean isLast, byte[] plaintext) throws FoundationException {
+        return FoundationJNI.INSTANCE.chunkCipher_encryptAt(this.cCtx, chunkIndex, isLast, plaintext);
+    }
+
+    public byte[] decryptAt(long chunkIndex, boolean isLast, byte[] frame) throws FoundationException {
+        return FoundationJNI.INSTANCE.chunkCipher_decryptAt(this.cCtx, chunkIndex, isLast, frame);
+    }
+
 }

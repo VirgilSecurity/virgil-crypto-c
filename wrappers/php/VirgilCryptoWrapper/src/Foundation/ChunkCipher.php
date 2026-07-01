@@ -205,6 +205,42 @@ class ChunkCipher
     }
 
     /**
+    *
+    * @param int $$dataLen
+    * @return int
+    */
+    public function chunkCount(int $$dataLen): int
+    {
+        return vscf_chunk_cipher_chunk_count_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @param int $$chunkIndex
+    * @param bool $$isLast
+    * @param string $$plaintext
+    * @return string
+    * @throws \Exception
+    */
+    public function encryptAt(int $$chunkIndex, bool $$isLast, string $$plaintext): string
+    {
+        return vscf_chunk_cipher_encrypt_at_php($this->ctx, $$chunkIndex, $$isLast, $$plaintext);
+    }
+
+    /**
+    *
+    * @param int $$chunkIndex
+    * @param bool $$isLast
+    * @param string $$frame
+    * @return string
+    * @throws \Exception
+    */
+    public function decryptAt(int $$chunkIndex, bool $$isLast, string $$frame): string
+    {
+        return vscf_chunk_cipher_decrypt_at_php($this->ctx, $$chunkIndex, $$isLast, $$frame);
+    }
+
+    /**
     * Get C context.
     *
     * @return resource

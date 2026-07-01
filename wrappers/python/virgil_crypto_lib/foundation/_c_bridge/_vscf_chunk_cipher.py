@@ -174,6 +174,53 @@ Valid after calling start_encryption; store in CMS custom params for decryption.
         vscf_chunk_cipher_finish_decryption.restype = c_int
         return vscf_chunk_cipher_finish_decryption(ctx, out)
 
+    def vscf_chunk_cipher_chunk_count(self, ctx, data_len):
+        """Return the number of frames the sequential encryption path emits for a plaintext of the
+given length: floor(data_len / chunk_size) + 1. The trailing frame (the one with is_last=true)
+is empty when data_len is an exact multiple of chunk_size. Use this to drive random-access /
+parallel encryption via encrypt_at over indices 0 .. chunk_count-1, placing is_last on the
+highest index. Requires chunk_size to be set (> 0)."""
+        vscf_chunk_cipher_chunk_count = self._lib.vscf_chunk_cipher_chunk_count
+        vscf_chunk_cipher_chunk_count.argtypes = [POINTER(vscf_chunk_cipher_t), c_size_t]
+        vscf_chunk_cipher_chunk_count.restype = c_size_t
+        return vscf_chunk_cipher_chunk_count(ctx, data_len)
+
+    def vscf_chunk_cipher_encrypt_at(self, ctx, chunk_index, is_last, plaintext, out):
+        """Encrypt a single chunk at an explicit index for random-access / parallel encryption, writing
+the frame counter_le64[8] | ciphertext | tag[16]. Independent of the start/process/finish
+state machine; requires key, initial nonce, and chunk_size to be set, and the instance to be
+in the INITIAL state (call before, or instead of, start_encryption).
+
+WARNING (nonce safety): each chunk_index must be encrypted at most ONCE per (key, initial_nonce);
+AES-GCM nonce reuse is catastrophic. This API is per-call and does NOT track or enforce
+uniqueness — the caller owns it. Thread-safe: each call uses a per-call local cipher context and
+only reads the instance's key/nonce/chunk_size, so a single configured instance may be used
+concurrently from multiple threads for parallel encryption (no shared mutable cipher state, no
+lock). Whole-file only: the caller must know the total chunk count (see chunk_count) to place
+exactly one is_last frame."""
+        vscf_chunk_cipher_encrypt_at = self._lib.vscf_chunk_cipher_encrypt_at
+        vscf_chunk_cipher_encrypt_at.argtypes = [POINTER(vscf_chunk_cipher_t), c_uint, c_bool, vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_chunk_cipher_encrypt_at.restype = c_int
+        return vscf_chunk_cipher_encrypt_at(ctx, chunk_index, is_last, plaintext, out)
+
+    def vscf_chunk_cipher_decrypt_at(self, ctx, chunk_index, is_last, frame, out):
+        """Authenticate and decrypt a single frame as an explicit chunk index for random-access reads.
+The frame's embedded counter is validated against the passed-in chunk_index (a mismatch returns
+ERROR_BAD_ENCRYPTED_DATA), so callers must pass the true positional index and never trust the
+frame's own counter. Independent of the streaming state machine; requires key, initial nonce,
+and chunk_size to be set, and the instance to be in the INITIAL state.
+
+Thread-safe: uses a per-call local cipher context and only reads the instance's
+key/nonce/chunk_size, so a single configured instance may be used concurrently from multiple
+threads for parallel/random-access decryption (no shared mutable cipher state, no lock). Note:
+this authenticates which frame is last (is_last) and each frame's position, but not the total
+number of frames — protect against truncation by authenticating the chunk count out of band
+(or deriving it from the ciphertext length)."""
+        vscf_chunk_cipher_decrypt_at = self._lib.vscf_chunk_cipher_decrypt_at
+        vscf_chunk_cipher_decrypt_at.argtypes = [POINTER(vscf_chunk_cipher_t), c_uint, c_bool, vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_chunk_cipher_decrypt_at.restype = c_int
+        return vscf_chunk_cipher_decrypt_at(ctx, chunk_index, is_last, frame, out)
+
     def vscf_chunk_cipher_shallow_copy(self, ctx):
         vscf_chunk_cipher_shallow_copy = self._lib.vscf_chunk_cipher_shallow_copy
         vscf_chunk_cipher_shallow_copy.argtypes = [POINTER(vscf_chunk_cipher_t)]

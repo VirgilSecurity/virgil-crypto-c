@@ -344,6 +344,12 @@ public class FoundationJNI {
 
     public native byte[] chunkCipher_finishDecryption(long cCtx) throws FoundationException;
 
+    public native int chunkCipher_chunkCount(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_encryptAt(long cCtx, long chunkIndex, boolean isLast, byte[] plaintext) throws FoundationException;
+
+    public native byte[] chunkCipher_decryptAt(long cCtx, long chunkIndex, boolean isLast, byte[] frame) throws FoundationException;
+
     public native long messageInfoCustomParams_new();
 
     public native void messageInfoCustomParams_close(long cCtx);

@@ -682,6 +682,233 @@ test__decrypt__frame_counter_at_limit__fails_with_limit_error(void) {
 }
 
 
+// ==========================================================================
+// Seek API: encrypt_at / decrypt_at / chunk_count (random-access + parallel)
+// ==========================================================================
+
+// Build a seek-mode cipher: key + explicit nonce + chunk_size, left in INITIAL state
+// (no start_encryption/start_decryption — the seek methods run outside the state machine).
+static vscf_chunk_cipher_t *
+make_seek_cipher(size_t chunk_size, vsc_data_t nonce) {
+    vscf_chunk_cipher_t *c = vscf_chunk_cipher_new();
+    vscf_chunk_cipher_set_key(c, vsc_data(k_key, sizeof(k_key)));
+    vscf_chunk_cipher_set_nonce(c, nonce);
+    vscf_chunk_cipher_set_chunk_size(c, chunk_size);
+    return c;
+}
+
+// Encrypt `plaintext` via the sequential path; return the ciphertext buffer and copy out the nonce.
+static vsc_buffer_t *
+seq_encrypt(size_t chunk_size, vsc_data_t plaintext, byte nonce_out[vscf_aes256_gcm_NONCE_LEN]) {
+    vscf_chunk_cipher_t *enc = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(enc, chunk_size);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(enc));
+    memcpy(nonce_out, vscf_chunk_cipher_nonce(enc).bytes, vscf_aes256_gcm_NONCE_LEN);
+    vsc_buffer_t *ct = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(enc, plaintext.len));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_process_encryption(enc, plaintext, ct));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_finish_encryption(enc, ct));
+    vscf_chunk_cipher_destroy(&enc);
+    return ct;
+}
+
+void
+test__chunk_count__various_lengths__matches_floor_plus_one(void) {
+    const size_t C = 32;
+    vscf_chunk_cipher_t *c = make_cipher_with_fake_random();
+    vscf_chunk_cipher_set_chunk_size(c, C);
+    TEST_ASSERT_EQUAL(1, vscf_chunk_cipher_chunk_count(c, 0));
+    TEST_ASSERT_EQUAL(1, vscf_chunk_cipher_chunk_count(c, C - 1));
+    TEST_ASSERT_EQUAL(2, vscf_chunk_cipher_chunk_count(c, C)); // exact multiple -> trailing empty FIN frame
+    TEST_ASSERT_EQUAL(3, vscf_chunk_cipher_chunk_count(c, 2 * C + 1));
+    vscf_chunk_cipher_destroy(&c);
+}
+
+// encrypt every index via encrypt_at (reusing one INITIAL-state instance) and assert the
+// concatenated frames are byte-identical to the sequential process/finish output.
+static void
+check_parallel_equivalence(size_t C, size_t N) {
+    byte *pt = (byte *)vscf_alloc(N > 0 ? N : 1);
+    for (size_t i = 0; i < N; i++) {
+        pt[i] = (byte)(i & 0xFF);
+    }
+    vsc_data_t plaintext = vsc_data(pt, N);
+
+    byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    vsc_buffer_t *seq_ct = seq_encrypt(C, plaintext, nonce);
+
+    vscf_chunk_cipher_t *seek = make_seek_cipher(C, vsc_data(nonce, sizeof(nonce)));
+    const size_t n = vscf_chunk_cipher_chunk_count(seek, N);
+    vsc_buffer_t *par_ct = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(seek, N));
+
+    for (size_t i = 0; i < n; i++) {
+        const size_t off = i * C;
+        const size_t len = (off >= N) ? 0 : ((off + C <= N) ? C : (N - off));
+        vsc_data_t slice = vsc_data(pt + (off < N ? off : N), len);
+        const bool is_last = (i == n - 1);
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_encrypt_at(seek, (uint64_t)i, is_last, slice, par_ct));
+    }
+
+    TEST_ASSERT_EQUAL(vsc_buffer_len(seq_ct), vsc_buffer_len(par_ct));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(seq_ct), vsc_buffer_bytes(par_ct), vsc_buffer_len(seq_ct));
+
+    vscf_chunk_cipher_destroy(&seek);
+    vsc_buffer_destroy(&seq_ct);
+    vsc_buffer_destroy(&par_ct);
+    vscf_dealloc(pt);
+}
+
+void
+test__encrypt_at__parallel_non_multiple__matches_sequential(void) {
+    check_parallel_equivalence(16, 2 * 16 + 5);
+}
+
+void
+test__encrypt_at__parallel_exact_multiple__matches_sequential(void) {
+    // The break point: sequential emits 3 frames (2 full + empty FIN); a naive caller marking
+    // index 1 as last would NOT match. encrypt_at must include the empty index-2 is_last frame.
+    check_parallel_equivalence(16, 2 * 16);
+}
+
+void
+test__decrypt_at__random_access__recovers_any_chunk(void) {
+    const size_t C = 16;
+    const size_t N = 2 * C; // 3 frames: idx0/idx1 full, idx2 empty FIN
+    byte pt[2 * 16];
+    for (size_t i = 0; i < N; i++) {
+        pt[i] = (byte)(i & 0xFF);
+    }
+    byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    vsc_buffer_t *ct = seq_encrypt(C, vsc_data(pt, N), nonce);
+
+    const size_t full_frame = C + 8 + vscf_aes256_gcm_AUTH_TAG_LEN;
+    const byte *ctb = vsc_buffer_bytes(ct);
+    vscf_chunk_cipher_t *dec = make_seek_cipher(C, vsc_data(nonce, sizeof(nonce)));
+
+    // Middle chunk first, without decrypting chunk 0.
+    vsc_buffer_t *out1 = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, full_frame));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_chunk_cipher_decrypt_at(dec, 1, false, vsc_data(ctb + full_frame, full_frame), out1));
+    TEST_ASSERT_EQUAL_MEMORY(pt + C, vsc_buffer_bytes(out1), C);
+
+    // Chunk 0.
+    vsc_buffer_t *out0 = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, full_frame));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_chunk_cipher_decrypt_at(dec, 0, false, vsc_data(ctb, full_frame), out0));
+    TEST_ASSERT_EQUAL_MEMORY(pt, vsc_buffer_bytes(out0), C);
+
+    // Trailing empty FIN frame at index 2.
+    const size_t last_off = 2 * full_frame;
+    const size_t last_len = vsc_buffer_len(ct) - last_off;
+    vsc_buffer_t *out2 = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, last_len));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_chunk_cipher_decrypt_at(dec, 2, true, vsc_data(ctb + last_off, last_len), out2));
+    TEST_ASSERT_EQUAL(0, vsc_buffer_len(out2));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&ct);
+    vsc_buffer_destroy(&out0);
+    vsc_buffer_destroy(&out1);
+    vsc_buffer_destroy(&out2);
+}
+
+void
+test__decrypt_at__wrong_index__fails_closed(void) {
+    const size_t C = 16;
+    const size_t N = 2 * C;
+    byte pt[2 * 16];
+    memset(pt, 0x11, sizeof(pt));
+    byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    vsc_buffer_t *ct = seq_encrypt(C, vsc_data(pt, N), nonce);
+
+    const size_t full_frame = C + 8 + vscf_aes256_gcm_AUTH_TAG_LEN;
+    const byte *ctb = vsc_buffer_bytes(ct);
+    vscf_chunk_cipher_t *dec = make_seek_cipher(C, vsc_data(nonce, sizeof(nonce)));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, full_frame));
+
+    // Present frame-of-index-1 to decrypt_at(expected_index=0): counter mismatch, never wrong plaintext.
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ENCRYPTED_DATA,
+            vscf_chunk_cipher_decrypt_at(dec, 0, false, vsc_data(ctb + full_frame, full_frame), out));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&ct);
+    vsc_buffer_destroy(&out);
+}
+
+void
+test__decrypt_at__wrong_is_last__auth_fails(void) {
+    const size_t C = 16;
+    const size_t N = 2 * C;
+    byte pt[2 * 16];
+    memset(pt, 0x22, sizeof(pt));
+    byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    vsc_buffer_t *ct = seq_encrypt(C, vsc_data(pt, N), nonce);
+
+    const size_t full_frame = C + 8 + vscf_aes256_gcm_AUTH_TAG_LEN;
+    const byte *ctb = vsc_buffer_bytes(ct);
+    vscf_chunk_cipher_t *dec = make_seek_cipher(C, vsc_data(nonce, sizeof(nonce)));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, full_frame));
+
+    // Frame 0 is NOT last; passing is_last=true flips the FIN AAD -> tag mismatch.
+    TEST_ASSERT_EQUAL(
+            vscf_status_ERROR_AUTH_FAILED, vscf_chunk_cipher_decrypt_at(dec, 0, true, vsc_data(ctb, full_frame), out));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&ct);
+    vsc_buffer_destroy(&out);
+}
+
+void
+test__encrypt_at__index_at_limit__fails_with_limit_error(void) {
+    const byte nonce[vscf_aes256_gcm_NONCE_LEN] = {0};
+    vscf_chunk_cipher_t *c = make_seek_cipher(16, vsc_data(nonce, sizeof(nonce)));
+    vsc_data_t pt = vsc_data(k_short_plaintext, sizeof(k_short_plaintext));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_encryption_out_len(c, pt.len));
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_CHUNK_COUNTER_LIMIT_REACHED,
+            vscf_chunk_cipher_encrypt_at(c, k_max_chunk_index, false, pt, out));
+    vscf_chunk_cipher_destroy(&c);
+    vsc_buffer_destroy(&out);
+}
+
+void
+test__encrypt_at__missing_preconditions__return_status_not_crash(void) {
+    const byte nonce[vscf_aes256_gcm_NONCE_LEN] = {0};
+    vsc_data_t pt = vsc_data(k_short_plaintext, sizeof(k_short_plaintext));
+
+    // No key set.
+    {
+        vscf_chunk_cipher_t *c = vscf_chunk_cipher_new();
+        vscf_chunk_cipher_set_nonce(c, vsc_data(nonce, sizeof(nonce)));
+        vscf_chunk_cipher_set_chunk_size(c, 16);
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(1024);
+        TEST_ASSERT_EQUAL(vscf_status_ERROR_UNINITIALIZED, vscf_chunk_cipher_encrypt_at(c, 0, true, pt, out));
+        vscf_chunk_cipher_destroy(&c);
+        vsc_buffer_destroy(&out);
+    }
+
+    // No nonce set (chunk_size is always defaulted by init_ctx, so it can't be the missing one).
+    {
+        vscf_chunk_cipher_t *c = vscf_chunk_cipher_new();
+        vscf_chunk_cipher_set_key(c, vsc_data(k_key, sizeof(k_key)));
+        vscf_chunk_cipher_set_chunk_size(c, 16);
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(1024);
+        TEST_ASSERT_EQUAL(vscf_status_ERROR_UNINITIALIZED, vscf_chunk_cipher_encrypt_at(c, 0, true, pt, out));
+        vscf_chunk_cipher_destroy(&c);
+        vsc_buffer_destroy(&out);
+    }
+
+    // Sequential session active (state != INITIAL): must reject, not corrupt the session.
+    {
+        vscf_chunk_cipher_t *c = make_cipher_with_fake_random();
+        vscf_chunk_cipher_set_chunk_size(c, 16);
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chunk_cipher_start_encryption(c));
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(1024);
+        TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_ARGUMENTS, vscf_chunk_cipher_encrypt_at(c, 0, true, pt, out));
+        vscf_chunk_cipher_destroy(&c);
+        vsc_buffer_destroy(&out);
+    }
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -708,6 +935,14 @@ main(void) {
     RUN_TEST(test__chunk_index__type__is_64_bit);
     RUN_TEST(test__encrypt__chunk_counter_at_limit__fails_with_limit_error);
     RUN_TEST(test__decrypt__frame_counter_at_limit__fails_with_limit_error);
+    RUN_TEST(test__chunk_count__various_lengths__matches_floor_plus_one);
+    RUN_TEST(test__encrypt_at__parallel_non_multiple__matches_sequential);
+    RUN_TEST(test__encrypt_at__parallel_exact_multiple__matches_sequential);
+    RUN_TEST(test__decrypt_at__random_access__recovers_any_chunk);
+    RUN_TEST(test__decrypt_at__wrong_index__fails_closed);
+    RUN_TEST(test__decrypt_at__wrong_is_last__auth_fails);
+    RUN_TEST(test__encrypt_at__index_at_limit__fails_with_limit_error);
+    RUN_TEST(test__encrypt_at__missing_preconditions__return_status_not_crash);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -7706,6 +7706,211 @@ PHP_FUNCTION(vscf_chunk_cipher_finish_decryption_php) {
 }
 
 //
+// Wrap method: vscf_chunk_cipher_chunk_count
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunk_cipher_chunk_count_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunk_cipher_chunk_count_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_chunk_cipher_t *chunk_cipher = zend_fetch_resource_ex(in_ctx, vscf_chunk_cipher_t_php_res_name(), le_vscf_chunk_cipher_t());
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_chunk_cipher_chunk_count(chunk_cipher, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_chunk_cipher_encrypt_at
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunk_cipher_encrypt_at_php,
+    0 /*return_reference*/,
+    4 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_chunk_index, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, in_is_last, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(0, in_plaintext, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunk_cipher_encrypt_at_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_chunk_index = 0;
+    zend_bool in_is_last = 0;
+    char *in_plaintext = NULL;
+    size_t in_plaintext_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_chunk_index)
+        Z_PARAM_BOOL(in_is_last)
+        Z_PARAM_STRING_EX(in_plaintext, in_plaintext_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_chunk_cipher_t *chunk_cipher = zend_fetch_resource_ex(in_ctx, vscf_chunk_cipher_t_php_res_name(), le_vscf_chunk_cipher_t());
+    size_t chunk_index = in_chunk_index;
+    bool is_last = in_is_last;
+    vsc_data_t plaintext = vsc_data((const byte*)in_plaintext, in_plaintext_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_chunk_cipher_encryption_out_len(chunk_cipher, plaintext.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_chunk_cipher_encrypt_at(chunk_cipher, chunk_index, is_last, plaintext, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_chunk_cipher_decrypt_at
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunk_cipher_decrypt_at_php,
+    0 /*return_reference*/,
+    4 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_chunk_index, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, in_is_last, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(0, in_frame, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunk_cipher_decrypt_at_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_chunk_index = 0;
+    zend_bool in_is_last = 0;
+    char *in_frame = NULL;
+    size_t in_frame_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_chunk_index)
+        Z_PARAM_BOOL(in_is_last)
+        Z_PARAM_STRING_EX(in_frame, in_frame_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_chunk_cipher_t *chunk_cipher = zend_fetch_resource_ex(in_ctx, vscf_chunk_cipher_t_php_res_name(), le_vscf_chunk_cipher_t());
+    size_t chunk_index = in_chunk_index;
+    bool is_last = in_is_last;
+    vsc_data_t frame = vsc_data((const byte*)in_frame, in_frame_blen);
+
+    //
+    // Allocate output buffer for output 'out'
+    //
+    zend_string *out_out = zend_string_alloc(vscf_chunk_cipher_decryption_out_len(chunk_cipher, frame.len), 0);
+    vsc_buffer_t *out = vsc_buffer_new();
+    vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_chunk_cipher_decrypt_at(chunk_cipher, chunk_index, is_last, frame, out);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_out) = vsc_buffer_len(out);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_out);
+        vsc_buffer_destroy(&out);
+    }
+    else {
+        zend_string_free(out_out);
+    }
+}
+
+//
 // Wrap method: vscf_chunk_cipher_use_random
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -45007,6 +45212,9 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_chunk_cipher_start_decryption_php, arginfo_vscf_chunk_cipher_start_decryption_php)
     PHP_FE(vscf_chunk_cipher_process_decryption_php, arginfo_vscf_chunk_cipher_process_decryption_php)
     PHP_FE(vscf_chunk_cipher_finish_decryption_php, arginfo_vscf_chunk_cipher_finish_decryption_php)
+    PHP_FE(vscf_chunk_cipher_chunk_count_php, arginfo_vscf_chunk_cipher_chunk_count_php)
+    PHP_FE(vscf_chunk_cipher_encrypt_at_php, arginfo_vscf_chunk_cipher_encrypt_at_php)
+    PHP_FE(vscf_chunk_cipher_decrypt_at_php, arginfo_vscf_chunk_cipher_decrypt_at_php)
     PHP_FE(vscf_chunk_cipher_use_random_php, arginfo_vscf_chunk_cipher_use_random_php)
     PHP_FE(vscf_message_info_custom_params_new_php, arginfo_vscf_message_info_custom_params_new_php)
     PHP_FE(vscf_message_info_custom_params_delete_php, arginfo_vscf_message_info_custom_params_delete_php)
