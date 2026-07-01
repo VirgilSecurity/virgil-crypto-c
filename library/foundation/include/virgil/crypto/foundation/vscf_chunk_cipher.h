@@ -306,16 +306,12 @@ vscf_chunk_cipher_set_chunk_size(vscf_chunk_cipher_t *self, size_t chunk_size);
 
 //
 //  Return the 12-byte initial nonce.
-//  Valid after calling start_encryption; store in CMS custom params for decryption.
+//  Valid after calling start_encryption. On the generic CMS path the
+//  nonce is carried in the produced 'chunked alg info' (self-describing),
+//  so no out-of-band custom params are needed.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_chunk_cipher_nonce(const vscf_chunk_cipher_t *self);
-
-//
-//  Return nonce length in bytes (always 12).
-//
-VSCF_PUBLIC size_t
-vscf_chunk_cipher_nonce_len(const vscf_chunk_cipher_t *self);
 
 //
 //  Return buffer length required to hold output of process_encryption and finish_encryption.
@@ -398,19 +394,6 @@ VSCF_PUBLIC vscf_status_t
 vscf_chunk_cipher_decrypt_at(vscf_chunk_cipher_t *self, uint64_t chunk_index, bool is_last, vsc_data_t frame, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
-//  Set the 12-byte initial nonce. On encryption this is honored (not
-//  regenerated) by start_encryption; on decryption it is required.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_set_nonce(vscf_chunk_cipher_t *self, vsc_data_t nonce);
-
-//
-//  Set the 32-byte AES-256 encryption key.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_set_key(vscf_chunk_cipher_t *self, vsc_data_t key);
-
-//
 //  Set associated data bound into the stream authentication.
 //  The generic encryptor/decryptor (recipient cipher) sets this to the
 //  serialized CMS 'data encryption alg info' so metadata tampering
@@ -421,62 +404,6 @@ vscf_chunk_cipher_set_key(vscf_chunk_cipher_t *self, vsc_data_t key);
 //
 VSCF_PUBLIC void
 vscf_chunk_cipher_set_auth_data(vscf_chunk_cipher_t *self, vsc_data_t auth_data);
-
-//
-//  Initiate encryption. Generates a random 12-byte initial nonce only if
-//  one was not already set (via set_nonce or restore_alg_info), so an
-//  injected nonce is honored. An RNG failure is captured and surfaced
-//  from the first process_encryption/update/finish call.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_start_encryption(vscf_chunk_cipher_t *self);
-
-//
-//  Initiate decryption. Caller must set the initial nonce (via set_nonce
-//  or restore_alg_info) before this.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_start_decryption(vscf_chunk_cipher_t *self);
-
-//
-//  Process encryption or decryption of the given data chunk.
-//  Dispatches to the framed encryption or decryption path depending on
-//  the current state.
-//
-VSCF_PUBLIC void
-vscf_chunk_cipher_update(vscf_chunk_cipher_t *self, vsc_data_t data, vsc_buffer_t *out);
-
-//
-//  Return buffer length required to hold an output of the methods
-//  "update" or "finish" in an current mode.
-//  Pass zero length to define buffer length of the method "finish".
-//
-VSCF_PUBLIC size_t
-vscf_chunk_cipher_out_len(vscf_chunk_cipher_t *self, size_t data_len);
-
-//
-//  Return buffer length required to hold an output of the methods
-//  "update" or "finish" in an encryption mode.
-//  Pass zero length to define buffer length of the method "finish".
-//
-VSCF_PUBLIC size_t
-vscf_chunk_cipher_encrypted_out_len(const vscf_chunk_cipher_t *self, size_t data_len);
-
-//
-//  Return buffer length required to hold an output of the methods
-//  "update" or "finish" in an decryption mode.
-//  Pass zero length to define buffer length of the method "finish".
-//
-VSCF_PUBLIC size_t
-vscf_chunk_cipher_decrypted_out_len(const vscf_chunk_cipher_t *self, size_t data_len);
-
-//
-//  Accomplish encryption or decryption process.
-//  Dispatches to finish_encryption or finish_decryption depending on
-//  the current state.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_chunk_cipher_finish(vscf_chunk_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.

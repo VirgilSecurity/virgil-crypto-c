@@ -60,16 +60,21 @@
 
         <method name="nonce" is_const="1" declaration="public">
             Return the 12-byte initial nonce.
-            Valid after calling start_encryption; store in CMS custom params for decryption.
+            Valid after calling start_encryption. On the generic CMS path the
+            nonce is carried in the produced 'chunked alg info' (self-describing),
+            so no out-of-band custom params are needed.
 
             <return class="data"/>
         </method>
 
-        <method name="nonce len" is_const="1" declaration="public">
-            Return nonce length in bytes (always 12).
-
-            <return type="size"/>
-        </method>
+<!--
+            'nonce len' is NOT declared as a method: the inherited 'cipher info'
+            interface already exposes the nonce length via its <constant name="nonce len"
+            value="12"/> (rendered as the vscf_chunk_cipher_NONCE_LEN constant and wired
+            into the cipher_info API), mirroring aes256_gcm. A redundant getter method
+            collides with that constant in wrappers (Swift: 'let nonceLen' vs 'func
+            nonceLen()' invalid redeclaration).
+        -->
 
         <method name="encryption out len" is_const="1" declaration="public">
             Return buffer length required to hold output of process_encryption and finish_encryption.
@@ -224,20 +229,15 @@
             <return enum="status"/>
         </method>
 
-        <!-- start: duplicate interface cipher -->
-        <method name="set nonce" declaration="public">
-            Set the 12-byte initial nonce. On encryption this is honored (not
-            regenerated) by start_encryption; on decryption it is required.
-
-            <argument name="nonce" class="data"/>
-        </method>
-
-        <method name="set key" declaration="public">
-            Set the 32-byte AES-256 encryption key.
-
-            <argument name="key" class="data"/>
-        </method>
-
+        <!--
+            set_nonce, set_key, start_encryption, start_decryption, update,
+            out_len, encrypted_out_len, decrypted_out_len, and finish are
+            provided by the inherited 'cipher' interface (see interface_cipher.xml)
+            and must NOT be redeclared here: a direct redeclaration emits the
+            method twice in wrappers that key on the C symbol (e.g. Go: "method
+            already declared"). aes256_gcm follows the same rule. Only chunk_cipher-
+            specific methods not covered by an interface are declared below.
+        -->
         <method name="set auth data" declaration="public">
             Set associated data bound into the stream authentication.
             The generic encryptor/decryptor (recipient cipher) sets this to the
@@ -249,73 +249,6 @@
 
             <argument name="auth data" class="data"/>
         </method>
-
-        <method name="start encryption" declaration="public">
-            Initiate encryption. Generates a random 12-byte initial nonce only if
-            one was not already set (via set_nonce or restore_alg_info), so an
-            injected nonce is honored. An RNG failure is captured and surfaced
-            from the first process_encryption/update/finish call.
-        </method>
-
-        <method name="start decryption" declaration="public">
-            Initiate decryption. Caller must set the initial nonce (via set_nonce
-            or restore_alg_info) before this.
-        </method>
-
-        <method name="update" declaration="public">
-            Process encryption or decryption of the given data chunk.
-            Dispatches to the framed encryption or decryption path depending on
-            the current state.
-
-            <argument name="data" class="data"/>
-            <argument name="out" class="buffer">
-                <length method="out len">
-                    <proxy argument="data" to="data len" cast="data_length"/>
-                </length>
-            </argument>
-        </method>
-
-        <method name="out len" declaration="public">
-            Return buffer length required to hold an output of the methods
-            "update" or "finish" in an current mode.
-            Pass zero length to define buffer length of the method "finish".
-
-            <argument name="data len" type="size"/>
-            <return type="size"/>
-        </method>
-
-        <method name="encrypted out len" is_const="1" declaration="public">
-            Return buffer length required to hold an output of the methods
-            "update" or "finish" in an encryption mode.
-            Pass zero length to define buffer length of the method "finish".
-
-            <argument name="data len" type="size"/>
-            <return type="size"/>
-        </method>
-
-        <method name="decrypted out len" is_const="1" declaration="public">
-            Return buffer length required to hold an output of the methods
-            "update" or "finish" in an decryption mode.
-            Pass zero length to define buffer length of the method "finish".
-
-            <argument name="data len" type="size"/>
-            <return type="size"/>
-        </method>
-
-        <method name="finish" declaration="public">
-            Accomplish encryption or decryption process.
-            Dispatches to finish_encryption or finish_decryption depending on
-            the current state.
-
-            <argument name="out" class="buffer">
-                <length method="out len">
-                    <proxy constant="0" to="data len"/>
-                </length>
-            </argument>
-
-            <return enum="status"/>
-        </method>
-        <!-- end: duplicate interface cipher -->
 
     </implementation>
 </implementor>

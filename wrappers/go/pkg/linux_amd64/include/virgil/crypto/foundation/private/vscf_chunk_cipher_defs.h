@@ -66,6 +66,8 @@
 #include "vscf_atomic.h"
 #include "vscf_cipher_state.h"
 #include "vscf_impl.h"
+#include "vscf_impl_private.h"
+#include "vscf_chunk_cipher.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -95,28 +97,57 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'chunk cipher' context.
+//  Handles implementation details.
 //
 struct vscf_chunk_cipher_t {
     //
-    //  Function do deallocate self context.
+    //  Compile-time known information about this implementation.
     //
-    vscf_dealloc_fn self_dealloc_cb;
+    const vscf_impl_info_t *info;
     //
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
     //
+    //  Implementation specific context.
+    //
+    vscf_aes256_gcm_t *aes256_gcm;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *key;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *nonce_buffer;
+    //
+    //  Implementation specific context.
+    //
+    size_t chunk_size;
+    //
+    //  Implementation specific context.
+    //
+    uint64_t chunk_index;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *pending;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *auth_data;
+    //
+    //  Implementation specific context.
+    //
+    vscf_cipher_state_t state;
+    //
+    //  Implementation specific context.
+    //
+    vscf_status_t cipher_error;
+    //
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
-    vscf_aes256_gcm_t *aes256_gcm;
-    vsc_buffer_t *key;
-    vsc_buffer_t *nonce_buffer;
-    size_t chunk_size;
-    uint64_t chunk_index;
-    vsc_buffer_t *pending;
-    vscf_cipher_state_t state;
 };
 
 // --------------------------------------------------------------------------

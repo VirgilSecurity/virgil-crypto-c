@@ -84,18 +84,13 @@ import VSCFoundation
     }
 
     /// Return the 12-byte initial nonce.
-    /// Valid after calling start_encryption; store in CMS custom params for decryption.
+    /// Valid after calling start_encryption. On the generic CMS path the
+    /// nonce is carried in the produced 'chunked alg info' (self-describing),
+    /// so no out-of-band custom params are needed.
     @objc public func nonce() -> Data {
         let proxyResult = vscf_chunk_cipher_nonce(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Return nonce length in bytes (always 12).
-    @objc public func nonceLen() -> Int {
-        let proxyResult = vscf_chunk_cipher_nonce_len(self.c_ctx)
-
-        return proxyResult
     }
 
     /// Return buffer length required to hold output of process_encryption and finish_encryption.
@@ -279,106 +274,17 @@ import VSCFoundation
         return out
     }
 
-    /// Set the 12-byte initial nonce. On encryption this is honored (not
-    /// regenerated) by start_encryption; on decryption it is required.
-    @objc public func setNonce(nonce: Data) {
-        nonce.withUnsafeBytes({ (noncePointer: UnsafeRawBufferPointer) in
-            vscf_chunk_cipher_set_nonce(self.c_ctx, vsc_data(noncePointer.bindMemory(to: byte.self).baseAddress, nonce.count))
+    /// Set associated data bound into the stream authentication.
+    /// The generic encryptor/decryptor (recipient cipher) sets this to the
+    /// serialized CMS 'data encryption alg info' so metadata tampering
+    /// (OID swap, chunk_size/initial_nonce change) fails closed. Must be
+    /// set before start_encryption/start_decryption (and before
+    /// encrypt_at/decrypt_at). Empty auth_data preserves the shipped raw
+    /// frame format.
+    @objc public func setAuthData(authData: Data) {
+        authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) in
+            vscf_chunk_cipher_set_auth_data(self.c_ctx, vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count))
         })
-    }
-
-    /// Set the 32-byte AES-256 encryption key.
-    @objc public func setKey(key: Data) {
-        key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) in
-            vscf_chunk_cipher_set_key(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count))
-        })
-    }
-
-    /// Initiate encryption. Generates a random 12-byte initial nonce only if
-    /// one was not already set (via set_nonce or restore_alg_info), so an
-    /// injected nonce is honored. An RNG failure is captured and surfaced
-    /// from the first process_encryption/update/finish call.
-    @objc public func startEncryption() {
-        vscf_chunk_cipher_start_encryption(self.c_ctx)
-    }
-
-    /// Initiate decryption. Caller must set the initial nonce (via set_nonce
-    /// or restore_alg_info) before this.
-    @objc public func startDecryption() {
-        vscf_chunk_cipher_start_decryption(self.c_ctx)
-    }
-
-    /// Process encryption or decryption of the given data chunk.
-    /// Dispatches to the framed encryption or decryption path depending on
-    /// the current state.
-    @objc public func update(data: Data) -> Data {
-        let outCount = self.outLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        let outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) in
-                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
-
-                vscf_chunk_cipher_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        return out
-    }
-
-    /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish" in an current mode.
-    /// Pass zero length to define buffer length of the method "finish".
-    @objc public func outLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_chunk_cipher_out_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish" in an encryption mode.
-    /// Pass zero length to define buffer length of the method "finish".
-    @objc public func encryptedOutLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_chunk_cipher_encrypted_out_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish" in an decryption mode.
-    /// Pass zero length to define buffer length of the method "finish".
-    @objc public func decryptedOutLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_chunk_cipher_decrypted_out_len(self.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Accomplish encryption or decryption process.
-    /// Dispatches to finish_encryption or finish_decryption depending on
-    /// the current state.
-    @objc public func finish() throws -> Data {
-        let outCount = self.outLen(dataLen: 0)
-        var out = Data(count: outCount)
-        let outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
-
-            return vscf_chunk_cipher_finish(self.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-
-        return out
     }
 
     /// Provide algorithm identificator.

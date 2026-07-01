@@ -87,7 +87,7 @@ void
 test__nonce_len__always__equals_12(void) {
 
     vscf_chunk_cipher_t *cipher = vscf_chunk_cipher_new();
-    TEST_ASSERT_EQUAL(12, vscf_chunk_cipher_nonce_len(cipher));
+    TEST_ASSERT_EQUAL(12, vscf_chunk_cipher_NONCE_LEN);
     vscf_chunk_cipher_destroy(&cipher);
 }
 

@@ -25,16 +25,16 @@ class FoundationFileCountTests(unittest.TestCase):
         cls.paths = [p for p, _ in cls.files]
 
     def test_total_file_count(self) -> None:
-        # 109 bridge + 129 high-level = 238
-        self.assertEqual(len(self.files), 240)
+        # 111 bridge + 131 high-level = 242
+        self.assertEqual(len(self.files), 242)
 
     def test_bridge_file_count(self) -> None:
         bridge = [p for p in self.paths if "_c_bridge" in p]
-        self.assertEqual(len(bridge), 110)
+        self.assertEqual(len(bridge), 111)
 
     def test_highlevel_file_count(self) -> None:
         hl = [p for p in self.paths if "_c_bridge" not in p]
-        self.assertEqual(len(hl), 130)
+        self.assertEqual(len(hl), 131)
 
 
 class PheFileCountTests(unittest.TestCase):

@@ -46,12 +46,23 @@
 //  @description
 // --------------------------------------------------------------------------
 //  //
-//  //  Class 'chunk cipher' types definition.
+//  //  Types of the 'chunked alg info' implementation.
+//  //  This types SHOULD NOT be used directly.
+//  //  The only purpose of including this module is to place implementation
+//  //  object in the stack memory.
 //  //
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_CHUNK_CIPHER_DEFS_H_INCLUDED
-#define VSCF_CHUNK_CIPHER_DEFS_H_INCLUDED
+#ifndef VSCF_CHUNKED_ALG_INFO_DEFS_H_INCLUDED
+#define VSCF_CHUNKED_ALG_INFO_DEFS_H_INCLUDED
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -63,11 +74,10 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_cipher_state.h"
-#include "vscf_impl.h"
 #include "vscf_impl_private.h"
-#include "vscf_chunk_cipher.h"
+#include "vscf_chunked_alg_info.h"
+#include "vscf_atomic.h"
+#include "vscf_alg_id.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -75,16 +85,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
-#include "vscf_aes256_gcm.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#include <VSCCommon/vsc_buffer.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,7 +99,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_chunk_cipher_t {
+struct vscf_chunked_alg_info_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -111,15 +111,11 @@ struct vscf_chunk_cipher_t {
     //
     //  Implementation specific context.
     //
-    vscf_aes256_gcm_t *aes256_gcm;
+    vscf_alg_id_t alg_id;
     //
     //  Implementation specific context.
     //
-    vsc_buffer_t *key;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *nonce_buffer;
+    size_t version;
     //
     //  Implementation specific context.
     //
@@ -127,27 +123,7 @@ struct vscf_chunk_cipher_t {
     //
     //  Implementation specific context.
     //
-    uint64_t chunk_index;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *pending;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *auth_data;
-    //
-    //  Implementation specific context.
-    //
-    vscf_cipher_state_t state;
-    //
-    //  Implementation specific context.
-    //
-    vscf_status_t cipher_error;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
+    vsc_buffer_t *nonce;
 };
 
 // --------------------------------------------------------------------------
@@ -161,5 +137,5 @@ struct vscf_chunk_cipher_t {
 #endif
 
 //  @footer
-#endif // VSCF_CHUNK_CIPHER_DEFS_H_INCLUDED
+#endif // VSCF_CHUNKED_ALG_INFO_DEFS_H_INCLUDED
 //  @end

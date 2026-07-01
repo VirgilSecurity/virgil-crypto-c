@@ -47,7 +47,9 @@ func (obj *ChunkCipher) SetChunkSize(chunkSize uint) {
 
 /*
 * Return the 12-byte initial nonce.
-* Valid after calling start_encryption; store in CMS custom params for decryption.
+* Valid after calling start_encryption. On the generic CMS path the
+* nonce is carried in the produced 'chunked alg info' (self-describing),
+* so no out-of-band custom params are needed.
 */
 func (obj *ChunkCipher) Nonce() []byte {
     proxyResult := C.vscf_chunk_cipher_nonce(obj.cCtx)
@@ -55,17 +57,6 @@ func (obj *ChunkCipher) Nonce() []byte {
     runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult)
-}
-
-/*
-* Return nonce length in bytes (always 12).
-*/
-func (obj *ChunkCipher) NonceLen() uint {
-    proxyResult := C.vscf_chunk_cipher_nonce_len(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return uint(proxyResult)
 }
 
 /*
@@ -266,140 +257,22 @@ func (obj *ChunkCipher) DecryptAt(chunkIndex uint64, isLast bool, frame []byte) 
 }
 
 /*
-* Set the 12-byte initial nonce. On encryption this is honored (not
-* regenerated) by start_encryption; on decryption it is required.
+* Set associated data bound into the stream authentication.
+* The generic encryptor/decryptor (recipient cipher) sets this to the
+* serialized CMS 'data encryption alg info' so metadata tampering
+* (OID swap, chunk_size/initial_nonce change) fails closed. Must be
+* set before start_encryption/start_decryption (and before
+* encrypt_at/decrypt_at). Empty auth_data preserves the shipped raw
+* frame format.
 */
-func (obj *ChunkCipher) SetNonce(nonce []byte) {
-    nonceData := helperWrapData (nonce)
+func (obj *ChunkCipher) SetAuthData(authData []byte) {
+    authDataData := helperWrapData (authData)
 
-    C.vscf_chunk_cipher_set_nonce(obj.cCtx, nonceData)
+    C.vscf_chunk_cipher_set_auth_data(obj.cCtx, authDataData)
 
     runtime.KeepAlive(obj)
 
     return
-}
-
-/*
-* Set the 32-byte AES-256 encryption key.
-*/
-func (obj *ChunkCipher) SetKey(key []byte) {
-    keyData := helperWrapData (key)
-
-    C.vscf_chunk_cipher_set_key(obj.cCtx, keyData)
-
-    runtime.KeepAlive(obj)
-
-    return
-}
-
-/*
-* Initiate encryption. Generates a random 12-byte initial nonce only if
-* one was not already set (via set_nonce or restore_alg_info), so an
-* injected nonce is honored. An RNG failure is captured and surfaced
-* from the first process_encryption/update/finish call.
-*/
-func (obj *ChunkCipher) StartEncryption() {
-    C.vscf_chunk_cipher_start_encryption(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return
-}
-
-/*
-* Initiate decryption. Caller must set the initial nonce (via set_nonce
-* or restore_alg_info) before this.
-*/
-func (obj *ChunkCipher) StartDecryption() {
-    C.vscf_chunk_cipher_start_decryption(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return
-}
-
-/*
-* Process encryption or decryption of the given data chunk.
-* Dispatches to the framed encryption or decryption path depending on
-* the current state.
-*/
-func (obj *ChunkCipher) Update(data []byte) []byte {
-    outBuf, outBufErr := newBuffer(int(obj.OutLen(uint(len(data)))))
-    if outBufErr != nil {
-        return nil
-    }
-    defer outBuf.delete()
-    dataData := helperWrapData (data)
-
-    C.vscf_chunk_cipher_update(obj.cCtx, dataData, outBuf.ctx)
-
-    runtime.KeepAlive(obj)
-
-    return outBuf.getData()
-}
-
-/*
-* Return buffer length required to hold an output of the methods
-* "update" or "finish" in an current mode.
-* Pass zero length to define buffer length of the method "finish".
-*/
-func (obj *ChunkCipher) OutLen(dataLen uint) uint {
-    proxyResult := C.vscf_chunk_cipher_out_len(obj.cCtx, (C.size_t)(dataLen))
-
-    runtime.KeepAlive(obj)
-
-    return uint(proxyResult)
-}
-
-/*
-* Return buffer length required to hold an output of the methods
-* "update" or "finish" in an encryption mode.
-* Pass zero length to define buffer length of the method "finish".
-*/
-func (obj *ChunkCipher) EncryptedOutLen(dataLen uint) uint {
-    proxyResult := C.vscf_chunk_cipher_encrypted_out_len(obj.cCtx, (C.size_t)(dataLen))
-
-    runtime.KeepAlive(obj)
-
-    return uint(proxyResult)
-}
-
-/*
-* Return buffer length required to hold an output of the methods
-* "update" or "finish" in an decryption mode.
-* Pass zero length to define buffer length of the method "finish".
-*/
-func (obj *ChunkCipher) DecryptedOutLen(dataLen uint) uint {
-    proxyResult := C.vscf_chunk_cipher_decrypted_out_len(obj.cCtx, (C.size_t)(dataLen))
-
-    runtime.KeepAlive(obj)
-
-    return uint(proxyResult)
-}
-
-/*
-* Accomplish encryption or decryption process.
-* Dispatches to finish_encryption or finish_decryption depending on
-* the current state.
-*/
-func (obj *ChunkCipher) Finish() ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.OutLen(0)))
-    if outBufErr != nil {
-        return nil, outBufErr
-    }
-    defer outBuf.delete()
-
-
-    proxyResult := C.vscf_chunk_cipher_finish(obj.cCtx, outBuf.ctx)
-
-    err := FoundationErrorHandleStatus(proxyResult)
-    if err != nil {
-        return nil, err
-    }
-
-    runtime.KeepAlive(obj)
-
-    return outBuf.getData(), nil
 }
 
 /* Handle underlying C context. */

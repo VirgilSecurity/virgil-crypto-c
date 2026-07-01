@@ -122,8 +122,9 @@ class FoundationFileCountTests(unittest.TestCase):
         cls.files = generate_swift_files(cls.ir, repo_root=str(REPO_ROOT))
 
     def test_foundation_total_file_count(self) -> None:
-        # Foundation has 130 Swift files total (enums + protocols + classes + infrastructure)
-        self.assertEqual(len(self.files), 131)
+        # Foundation has 131 Swift files total (enums + protocols + classes + infrastructure);
+        # +1 vs the prior baseline for the new ChunkedAlgInfo.swift.
+        self.assertEqual(len(self.files), 132)
 
     def test_foundation_enum_count(self) -> None:
         # 5 public non-infrastructure enum files

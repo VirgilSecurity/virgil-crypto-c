@@ -45318,49 +45318,6 @@ PHP_FUNCTION(vscf_chunk_cipher_nonce_php) {
 }
 
 //
-// Wrap method: vscf_chunk_cipher_nonce_len
-//
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-    arginfo_vscf_chunk_cipher_nonce_len_php,
-    0 /*return_reference*/,
-    1 /*required_num_args*/,
-    IS_LONG /*type*/,
-    0 /*allow_null*/)
-
-    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
-ZEND_END_ARG_INFO()
-
-PHP_FUNCTION(vscf_chunk_cipher_nonce_len_php) {
-
-    //
-    // Declare input argument
-    //
-    zval *in_ctx = NULL;
-
-    //
-    // Parse arguments
-    //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
-        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
-    //
-    // Proxy call
-    //
-    vscf_impl_t *chunk_cipher = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
-
-    //
-    // Call main function
-    //
-    size_t res =vscf_chunk_cipher_nonce_len(chunk_cipher);
-
-    //
-    // Write returned result
-    //
-    RETVAL_LONG(res);
-}
-
-//
 // Wrap method: vscf_chunk_cipher_encryption_out_len
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -45931,6 +45888,50 @@ PHP_FUNCTION(vscf_chunk_cipher_decrypt_at_php) {
     else {
         zend_string_free(out_out);
     }
+}
+
+//
+// Wrap method: vscf_chunk_cipher_set_auth_data
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_chunk_cipher_set_auth_data_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_auth_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_chunk_cipher_set_auth_data_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_auth_data = NULL;
+    size_t in_auth_data_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_auth_data, in_auth_data_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *chunk_cipher = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+    vsc_data_t auth_data = vsc_data((const byte*)in_auth_data, in_auth_data_blen);
+
+    //
+    // Call main function
+    //
+    vscf_chunk_cipher_set_auth_data(chunk_cipher, auth_data);
+
 }
 
 //
@@ -46946,7 +46947,6 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_chunk_cipher_finish_php, arginfo_vscf_chunk_cipher_finish_php)
     PHP_FE(vscf_chunk_cipher_set_chunk_size_php, arginfo_vscf_chunk_cipher_set_chunk_size_php)
     PHP_FE(vscf_chunk_cipher_nonce_php, arginfo_vscf_chunk_cipher_nonce_php)
-    PHP_FE(vscf_chunk_cipher_nonce_len_php, arginfo_vscf_chunk_cipher_nonce_len_php)
     PHP_FE(vscf_chunk_cipher_encryption_out_len_php, arginfo_vscf_chunk_cipher_encryption_out_len_php)
     PHP_FE(vscf_chunk_cipher_process_encryption_php, arginfo_vscf_chunk_cipher_process_encryption_php)
     PHP_FE(vscf_chunk_cipher_finish_encryption_php, arginfo_vscf_chunk_cipher_finish_encryption_php)
@@ -46956,6 +46956,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_chunk_cipher_chunk_count_php, arginfo_vscf_chunk_cipher_chunk_count_php)
     PHP_FE(vscf_chunk_cipher_encrypt_at_php, arginfo_vscf_chunk_cipher_encrypt_at_php)
     PHP_FE(vscf_chunk_cipher_decrypt_at_php, arginfo_vscf_chunk_cipher_decrypt_at_php)
+    PHP_FE(vscf_chunk_cipher_set_auth_data_php, arginfo_vscf_chunk_cipher_set_auth_data_php)
     PHP_FE(vscf_chunk_cipher_use_random_php, arginfo_vscf_chunk_cipher_use_random_php)
     PHP_FE_END
 };

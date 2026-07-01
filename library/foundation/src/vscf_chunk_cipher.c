@@ -182,14 +182,6 @@ vscf_chunk_cipher_nonce(const vscf_chunk_cipher_t *self) {
 }
 
 VSCF_PUBLIC size_t
-vscf_chunk_cipher_nonce_len(const vscf_chunk_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return vscf_aes256_gcm_NONCE_LEN;
-}
-
-VSCF_PUBLIC size_t
 vscf_chunk_cipher_encryption_out_len(const vscf_chunk_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);

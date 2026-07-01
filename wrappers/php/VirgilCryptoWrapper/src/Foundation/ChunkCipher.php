@@ -266,15 +266,6 @@ class ChunkCipher implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
 
     /**
     *
-    * @return int
-    */
-    public function nonceLen(): int
-    {
-        return vscf_chunk_cipher_nonce_len_php($this->ctx);
-    }
-
-    /**
-    *
     * @param int $$dataLen
     * @return int
     */
@@ -369,6 +360,16 @@ class ChunkCipher implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     public function decryptAt(int $$chunkIndex, bool $$isLast, string $$frame): string
     {
         return vscf_chunk_cipher_decrypt_at_php($this->ctx, $$chunkIndex, $$isLast, $$frame);
+    }
+
+    /**
+    *
+    * @param string $$authData
+    * @return void
+    */
+    public function setAuthData(string $$authData): void
+    {
+        vscf_chunk_cipher_set_auth_data_php($this->ctx, $$authData);
     }
 
     /**

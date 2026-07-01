@@ -16955,14 +16955,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    jint ret = (jint) vscf_chunk_cipher_nonce_len(chunk_cipher_ctx /*a1*/);
-    return ret;
-}
-
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1encryptionOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
     // Cast class context
     vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
@@ -17123,107 +17115,16 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1setNonce (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jnonce) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1setAuthData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jauthData) {
     // Wrap input data
-    byte* nonce_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jnonce, NULL);
-    vsc_data_t nonce = vsc_data(nonce_arr, (*jenv)->GetArrayLength(jenv, jnonce));
+    byte* auth_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jauthData, NULL);
+    vsc_data_t auth_data = vsc_data(auth_data_arr, (*jenv)->GetArrayLength(jenv, jauthData));
     
     // Cast class context
     vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
     
-    vscf_chunk_cipher_set_nonce(chunk_cipher_ctx /*a1*/, nonce /*a3*/);
+    vscf_chunk_cipher_set_auth_data(chunk_cipher_ctx /*a1*/, auth_data /*a3*/);
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jnonce, (jbyte*) nonce_arr, 0);
+    (*jenv)->ReleaseByteArrayElements(jenv, jauthData, (jbyte*) auth_data_arr, 0);
     
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1setKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkey) {
-    // Wrap input data
-    byte* key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkey, NULL);
-    vsc_data_t key = vsc_data(key_arr, (*jenv)->GetArrayLength(jenv, jkey));
-    
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    vscf_chunk_cipher_set_key(chunk_cipher_ctx /*a1*/, key /*a3*/);
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
-    
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1startEncryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    vscf_chunk_cipher_start_encryption(chunk_cipher_ctx /*a1*/);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1startDecryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    vscf_chunk_cipher_start_decryption(chunk_cipher_ctx /*a1*/);
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1update (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
-    // Wrap input data
-    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
-    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
-    
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_out_len(chunk_cipher_ctx, data.len/*a*/));
-    
-    vscf_chunk_cipher_update(chunk_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
-    
-    vsc_buffer_delete(out);
-    
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1outLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    jint ret = (jint) vscf_chunk_cipher_out_len(chunk_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1encryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    jint ret = (jint) vscf_chunk_cipher_encrypted_out_len(chunk_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1decryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    jint ret = (jint) vscf_chunk_cipher_decrypted_out_len(chunk_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chunkCipher_1finish (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_chunk_cipher_t /*9*/* chunk_cipher_ctx = *(vscf_chunk_cipher_t /*9*/**) &c_ctx;
-    
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_out_len(chunk_cipher_ctx, 0));
-    
-    vscf_status_t status = vscf_chunk_cipher_finish(chunk_cipher_ctx /*a1*/, out /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    vsc_buffer_delete(out);
-    
-    return ret;
 }

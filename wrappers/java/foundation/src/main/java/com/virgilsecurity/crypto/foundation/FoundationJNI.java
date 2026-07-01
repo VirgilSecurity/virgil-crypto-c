@@ -1972,8 +1972,6 @@ public class FoundationJNI {
 
     public native byte[] chunkCipher_nonce(long cCtx);
 
-    public native int chunkCipher_nonceLen(long cCtx);
-
     public native int chunkCipher_encryptionOutLen(long cCtx, int dataLen);
 
     public native byte[] chunkCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
@@ -1992,6 +1990,24 @@ public class FoundationJNI {
 
     public native byte[] chunkCipher_decryptAt(long cCtx, long chunkIndex, boolean isLast, byte[] frame) throws FoundationException;
 
+    public native void chunkCipher_setAuthData(long cCtx, byte[] authData);
+
+    public native AlgId chunkCipher_algId(long cCtx);
+
+    public native AlgInfo chunkCipher_produceAlgInfo(long cCtx);
+
+    public native void chunkCipher_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] chunkCipher_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int chunkCipher_encryptedLen(long cCtx, int dataLen);
+
+    public native int chunkCipher_preciseEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int chunkCipher_decryptedLen(long cCtx, int dataLen);
+
     public native void chunkCipher_setNonce(long cCtx, byte[] nonce);
 
     public native void chunkCipher_setKey(long cCtx, byte[] key);
@@ -2009,21 +2025,5 @@ public class FoundationJNI {
     public native int chunkCipher_decryptedOutLen(long cCtx, int dataLen);
 
     public native byte[] chunkCipher_finish(long cCtx) throws FoundationException;
-
-    public native AlgId chunkCipher_algId(long cCtx);
-
-    public native AlgInfo chunkCipher_produceAlgInfo(long cCtx);
-
-    public native void chunkCipher_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
-
-    public native byte[] chunkCipher_encrypt(long cCtx, byte[] data) throws FoundationException;
-
-    public native int chunkCipher_encryptedLen(long cCtx, int dataLen);
-
-    public native int chunkCipher_preciseEncryptedLen(long cCtx, int dataLen);
-
-    public native byte[] chunkCipher_decrypt(long cCtx, byte[] data) throws FoundationException;
-
-    public native int chunkCipher_decryptedLen(long cCtx, int dataLen);
 
 }
