@@ -1,7 +1,7 @@
 ---
 title: "feat: Self-describing CMS AlgorithmIdentifier for chunk_cipher (aes256-gcm-chunked)"
 type: feat
-status: active
+status: complete
 date: 2026-07-01
 origin: docs/brainstorms/chunk-cipher-cms-agility-requirements.md
 ---
@@ -160,7 +160,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ## Implementation Units
 
-- [ ] **Unit 1: alg_id + OID registration**
+- [x] **Unit 1: alg_id + OID registration**
 
 **Goal:** Register the `aes256-gcm-chunked` algorithm identifier.
 
@@ -187,7 +187,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ---
 
-- [ ] **Unit 2: `chunked_alg_info` + DER serialize/deserialize + validation**
+- [x] **Unit 2: `chunked_alg_info` + DER serialize/deserialize + validation**
 
 **Goal:** A params-carrying alg_info (version + chunk_size + initial_nonce) that round-trips through DER with input validation.
 
@@ -219,7 +219,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ---
 
-- [ ] **Unit 3: chunk_cipher implements `alg` + `cipher` + `cipher_info` (interface adaptation + nonce ownership)**
+- [x] **Unit 3: chunk_cipher implements `alg` + `cipher` + `cipher_info` (interface adaptation + nonce ownership)**
 
 **Goal:** Make chunk_cipher drivable by the generic path and able to produce/restore its alg_info.
 
@@ -254,7 +254,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ---
 
-- [ ] **Unit 4: `vscf_alg_factory` routing**
+- [x] **Unit 4: `vscf_alg_factory` routing**
 
 **Goal:** Reconstruct chunk_cipher from a `chunked_alg_info` so the generic decryptor auto-routes.
 
@@ -279,7 +279,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ---
 
-- [ ] **Unit 5: Authenticated metadata binding (R8)**
+- [x] **Unit 5: Authenticated metadata binding (R8)**
 
 **Goal:** Bind CMS metadata into the data AEAD so OID/param tampering fails closed, incl. the unsigned path.
 
@@ -310,7 +310,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ---
 
-- [ ] **Unit 6: Encryption-side selection + end-to-end generic round-trip**
+- [x] **Unit 6: Encryption-side selection + end-to-end generic round-trip**
 
 **Goal:** A caller selects chunked mode via the envelope API and the whole path round-trips generically.
 
@@ -334,7 +334,7 @@ chunked_alg_info (DER):  AlgorithmIdentifier {
 
 ---
 
-- [ ] **Unit 7: Wrapper propagation + docstring + Go/Swift verification**
+- [x] **Unit 7: Wrapper propagation + docstring + Go/Swift verification**
 
 **Goal:** Propagate to all wrappers consistently and update the stale docstring.
 
