@@ -644,6 +644,10 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vscf_message_info_footer_destroy(&self->message_info_footer);
     vscf_padding_cipher_destroy(&self->padding_cipher);
     vsc_buffer_destroy(&self->decryption_staging);
+    //  message_info_buffer is normally consumed and freed during
+    //  process_decryption, but an early error return (e.g. a fail-closed
+    //  data-encryption-alg-info) can leave it allocated; free it on teardown.
+    vsc_buffer_destroy(&self->message_info_buffer);
 }
 
 //
