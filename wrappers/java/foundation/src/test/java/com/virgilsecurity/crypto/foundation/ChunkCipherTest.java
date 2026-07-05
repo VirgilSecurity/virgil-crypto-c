@@ -58,7 +58,7 @@ public class ChunkCipherTest {
 	@Test
 	public void nonceLen() {
 		try (ChunkCipher cipher = new ChunkCipher()) {
-			assertEquals(12, cipher.nonceLen());
+			assertEquals(12, cipher.getNonceLen());
 		}
 	}
 
