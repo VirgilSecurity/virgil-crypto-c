@@ -137,11 +137,59 @@ test__deserialize__chunk_size_zero__rejected(void) {
 
 void
 test__deserialize__chunk_size_over_max__rejected(void) {
-    //  MAX is 64 MiB; one byte over.
+    //  MAX is 4 GiB; one byte over. (size_t on the 64-bit test hosts.)
+    const size_t over_max = (size_t)(UINT64_C(4) * 1024 * 1024 * 1024 + 1);
     vscf_impl_t *alg_info =
             vscf_chunked_alg_info_impl(vscf_chunked_alg_info_new_with_members(vscf_alg_id_AES256_GCM_CHUNKED, 1,
-                    64 * 1024 * 1024 + 1, vsc_data(test_chunked_nonce_12, sizeof(test_chunked_nonce_12))));
+                    over_max, vsc_data(test_chunked_nonce_12, sizeof(test_chunked_nonce_12))));
     assert_deserialize_rejected(alg_info);
+}
+
+//
+//  Deserialize a chunked_alg_info and assert it round-trips with the expected
+//  chunk_size (caller passes the alg_info; this consumes it).
+//
+static void
+assert_deserialize_ok(vscf_impl_t *alg_info, size_t expected_chunk_size) {
+    vsc_buffer_t *der = serialize_chunked(alg_info);
+
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *restored = vscf_alg_info_der_deserializer_deserialize(deserializer, vsc_buffer_data(der), &error);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(restored);
+    TEST_ASSERT_EQUAL(expected_chunk_size, vscf_chunked_alg_info_chunk_size((vscf_chunked_alg_info_t *)restored));
+
+    vscf_impl_destroy(&restored);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+    vsc_buffer_destroy(&der);
+    vscf_impl_destroy(&alg_info);
+}
+
+void
+test__deserialize__chunk_size_below_legacy_min__accepted(void) {
+    //  Regression (#1): 200 bytes is below the old hard-coded 256 floor, which
+    //  made a self-produced envelope undecryptable. chunk_size is a carried,
+    //  authenticated parameter now, so it must round-trip.
+    vscf_impl_t *alg_info = vscf_chunked_alg_info_impl(vscf_chunked_alg_info_new_with_members(
+            vscf_alg_id_AES256_GCM_CHUNKED, 1, 200, vsc_data(test_chunked_nonce_12, sizeof(test_chunked_nonce_12))));
+    assert_deserialize_ok(alg_info, 200);
+}
+
+void
+test__deserialize__chunk_size_above_legacy_max__accepted(void) {
+    //  Regression (#1): 128 MiB is above the old 64 MiB ceiling but within the
+    //  4 GiB overflow-safe cap, so it must round-trip.
+    const size_t chunk_size = 128 * 1024 * 1024;
+    vscf_impl_t *alg_info =
+            vscf_chunked_alg_info_impl(vscf_chunked_alg_info_new_with_members(vscf_alg_id_AES256_GCM_CHUNKED, 1,
+                    chunk_size, vsc_data(test_chunked_nonce_12, sizeof(test_chunked_nonce_12))));
+    assert_deserialize_ok(alg_info, chunk_size);
 }
 
 void
@@ -235,6 +283,8 @@ main(void) {
     RUN_TEST(test__serialize_deserialize__chunked_alg_info__fields_equal);
     RUN_TEST(test__deserialize__chunk_size_zero__rejected);
     RUN_TEST(test__deserialize__chunk_size_over_max__rejected);
+    RUN_TEST(test__deserialize__chunk_size_below_legacy_min__accepted);
+    RUN_TEST(test__deserialize__chunk_size_above_legacy_max__accepted);
     RUN_TEST(test__deserialize__nonce_len_8__rejected);
     RUN_TEST(test__deserialize__nonce_len_16__rejected);
     RUN_TEST(test__deserialize__version_2__rejected);

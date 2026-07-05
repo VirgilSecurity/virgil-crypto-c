@@ -718,6 +718,9 @@ vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
 
+    //  The 8-byte INTEGER content reservation is sufficient because chunk_size
+    //  is capped at 4 GiB (VSCF_CHUNK_CIPHER_CHUNK_SIZE_MAX -> <=5 content bytes,
+    //  even with a DER sign byte) and version is a small constant.
     size_t params_len = 1 + 1 +     //  ChunkedParams ::= SEQUENCE {
                         1 + 1 + 8 + //      version INTEGER,
                         1 + 1 + 8 + //      chunkSize INTEGER,

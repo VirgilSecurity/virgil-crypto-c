@@ -84,6 +84,18 @@
 #define VSCF_CHUNK_CIPHER_DEFAULT_CHUNK_SIZE 65536
 
 //
+//  Overflow-safe upper bound on chunk_size, in bytes (4 GiB). chunk_size is a
+//  carried, AEAD-authenticated parameter (see vscf_chunk_cipher_build_aad), so
+//  no narrower policy window is imposed -- this is purely a cap that keeps the
+//  frame/out-length arithmetic (chunk_size * num_frames) from overflowing.
+//  The SAME bound is enforced on the encrypt side (set_chunk_size), on restore
+//  (restore_alg_info), and on the DER read path
+//  (vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX), so a value that
+//  encrypts always decrypts.
+//
+#define VSCF_CHUNK_CIPHER_CHUNK_SIZE_MAX (UINT64_C(4) * 1024 * 1024 * 1024)
+
+//
 //  Hard cap on the frame counter: nonce_i is derived from the counter, so the
 //  counter must never repeat under the same key and initial nonce.
 //  2^48 frames matches STREAM-style constructions (Tink, libsodium secretstream).
@@ -166,7 +178,7 @@ VSCF_PUBLIC void
 vscf_chunk_cipher_set_chunk_size(vscf_chunk_cipher_t *self, size_t chunk_size) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(chunk_size > 0);
+    VSCF_ASSERT(chunk_size > 0 && (uint64_t)chunk_size <= VSCF_CHUNK_CIPHER_CHUNK_SIZE_MAX);
     VSCF_ASSERT(self->state == vscf_cipher_state_INITIAL);
 
     self->chunk_size = chunk_size;
@@ -474,14 +486,19 @@ vscf_chunk_cipher_decrypt_at(
 //  the encrypt and decrypt paths (both call this helper):
 //
 //      counter_le64[8]
-//      [|| chunk_size_le64[8]        if frame 0]
+//      || chunk_size_le64[8]
 //      [|| bound_auth_data[M]        if frame 0 and auth_data is set]
 //      [|| FIN_MARKER (0xFF x8)      if last frame]
 //
+//  chunk_size is bound into EVERY frame's AAD (not just frame 0) so a
+//  random-access decrypt_at() of any chunk authenticates the framing parameter
+//  without first having to process chunk 0.
+//
 //  The bound auth_data (the serialized CMS 'data encryption alg info' set by the
-//  recipient cipher) is authenticated but NOT written to the frame, so the
-//  on-wire frame format is unchanged. When auth_data is unset (the raw seek /
-//  stream API), the AAD is exactly the shipped layout.
+//  recipient cipher) is large and identical for every frame, so it is bound once
+//  on frame 0. It is authenticated but NOT written to the frame, so the on-wire
+//  frame format is unchanged. When auth_data is unset (the raw seek / stream
+//  API), the AAD is counter || chunk_size [|| FIN].
 //
 static vsc_buffer_t *
 vscf_chunk_cipher_build_aad(const vscf_chunk_cipher_t *self, uint64_t chunk_index, bool is_last) {
@@ -499,17 +516,18 @@ vscf_chunk_cipher_build_aad(const vscf_chunk_cipher_t *self, uint64_t chunk_inde
     }
     vsc_buffer_write_data(aad, vsc_data(counter_bytes, 8));
 
-    if (is_first) {
-        const uint64_t cs64 = (uint64_t)self->chunk_size;
-        byte chunk_size_bytes[8];
-        for (int i = 0; i < 8; i++) {
-            chunk_size_bytes[i] = (byte)((cs64 >> (8 * i)) & 0xFF);
-        }
-        vsc_buffer_write_data(aad, vsc_data(chunk_size_bytes, 8));
+    //  Bind chunk_size into every frame (see header comment) so seek-mode
+    //  decrypt_at() of a non-zero chunk still authenticates the framing.
+    const uint64_t cs64 = (uint64_t)self->chunk_size;
+    byte chunk_size_bytes[8];
+    for (int i = 0; i < 8; i++) {
+        chunk_size_bytes[i] = (byte)((cs64 >> (8 * i)) & 0xFF);
+    }
+    vsc_buffer_write_data(aad, vsc_data(chunk_size_bytes, 8));
 
-        if (auth_data_len > 0) {
-            vsc_buffer_write_data(aad, vsc_buffer_data(self->auth_data));
-        }
+    //  The large, per-message-constant CMS metadata is bound once, on frame 0.
+    if (is_first && auth_data_len > 0) {
+        vsc_buffer_write_data(aad, vsc_buffer_data(self->auth_data));
     }
 
     if (is_last) {
@@ -687,7 +705,8 @@ vscf_chunk_cipher_restore_alg_info(vscf_chunk_cipher_t *self, const vscf_impl_t 
     const size_t chunk_size = vscf_chunked_alg_info_chunk_size(chunked_alg_info);
     const vsc_data_t nonce = vscf_chunked_alg_info_nonce(chunked_alg_info);
 
-    if (chunk_size == 0 || nonce.len != vscf_aes256_gcm_NONCE_LEN) {
+    if (chunk_size == 0 || (uint64_t)chunk_size > VSCF_CHUNK_CIPHER_CHUNK_SIZE_MAX ||
+            nonce.len != vscf_aes256_gcm_NONCE_LEN) {
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }
 

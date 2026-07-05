@@ -865,6 +865,36 @@ test__decrypt_at__wrong_is_last__auth_fails(void) {
 }
 
 void
+test__decrypt_at__nonzero_chunk_wrong_chunk_size__auth_fails(void) {
+    //  Regression (#2): chunk_size must be bound into EVERY frame's AAD, not just
+    //  frame 0, so a random-access decrypt_at() of a non-zero chunk authenticates
+    //  the framing parameter. Before this binding, decrypting chunk 1 with a
+    //  mismatched chunk_size succeeded (fail-open on the seek path).
+    const size_t ENC_C = 16;
+    const size_t DEC_C = 32;    // different framing on the decrypt side
+    const size_t N = 2 * ENC_C; // frames: idx0/idx1 full, idx2 empty FIN
+    byte pt[2 * 16];
+    memset(pt, 0x77, sizeof(pt));
+    byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    vsc_buffer_t *ct = seq_encrypt(ENC_C, vsc_data(pt, N), nonce);
+
+    const size_t full_frame = ENC_C + 8 + vscf_aes256_gcm_AUTH_TAG_LEN;
+    const byte *ctb = vsc_buffer_bytes(ct);
+
+    //  Decryptor with a DIFFERENT chunk_size, same key/nonce.
+    vscf_chunk_cipher_t *dec = make_seek_cipher(DEC_C, vsc_data(nonce, sizeof(nonce)));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_chunk_cipher_decryption_out_len(dec, full_frame));
+
+    //  Non-zero chunk (index 1) must fail closed on the chunk_size mismatch.
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_AUTH_FAILED,
+            vscf_chunk_cipher_decrypt_at(dec, 1, false, vsc_data(ctb + full_frame, full_frame), out));
+
+    vscf_chunk_cipher_destroy(&dec);
+    vsc_buffer_destroy(&ct);
+    vsc_buffer_destroy(&out);
+}
+
+void
 test__encrypt_at__index_at_limit__fails_with_limit_error(void) {
     const byte nonce[vscf_aes256_gcm_NONCE_LEN] = {0};
     vscf_chunk_cipher_t *c = make_seek_cipher(16, vsc_data(nonce, sizeof(nonce)));
@@ -1222,6 +1252,7 @@ main(void) {
     RUN_TEST(test__decrypt_at__random_access__recovers_any_chunk);
     RUN_TEST(test__decrypt_at__wrong_index__fails_closed);
     RUN_TEST(test__decrypt_at__wrong_is_last__auth_fails);
+    RUN_TEST(test__decrypt_at__nonzero_chunk_wrong_chunk_size__auth_fails);
     RUN_TEST(test__encrypt_at__index_at_limit__fails_with_limit_error);
     RUN_TEST(test__encrypt_at__missing_preconditions__return_status_not_crash);
     RUN_TEST(test__produce_restore_alg_info__fresh_instance__reproduces_params_and_decrypts);

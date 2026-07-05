@@ -197,12 +197,19 @@ vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(vscf_alg_info_der
 //
 enum {
     //  Only version 1 of the chunked framing is currently defined.
-    vscf_alg_info_der_deserializer_CHUNKED_VERSION = 1,
-    //  Minimum accepted chunk size, in bytes.
-    vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MIN = 256,
-    //  Maximum accepted chunk size, in bytes (64 MiB).
-    vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX = 64 * 1024 * 1024
+    vscf_alg_info_der_deserializer_CHUNKED_VERSION = 1
 };
+
+//
+//  chunk_size bounds applied on the DER read path. This is a pre-authentication
+//  safety gate (the value is later AEAD-authenticated), NOT a policy window:
+//  chunk_size is a carried parameter, so any value that encrypts must decrypt.
+//  The upper bound mirrors vscf_chunk_cipher's VSCF_CHUNK_CIPHER_CHUNK_SIZE_MAX
+//  (4 GiB) and keeps the value within the frame/out-length arithmetic. Kept as
+//  a uint64 #define because 4 GiB does not fit the (int) enum above.
+//
+#define vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MIN (UINT64_C(1))
+#define vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX (UINT64_C(4) * 1024 * 1024 * 1024)
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -492,9 +499,11 @@ vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(
         return NULL;
     }
 
-    //  Validate chunk size bounds.
+    //  Validate chunk size bounds. chunk_size is cast to size_t below; the
+    //  (size_t)-1 guard rejects values that would not fit on platforms where
+    //  SIZE_MAX < 4 GiB (32-bit). On 64-bit the guard is a no-op.
     if (chunk_size < vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MIN ||
-            chunk_size > vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX) {
+            chunk_size > vscf_alg_info_der_deserializer_CHUNKED_CHUNK_SIZE_MAX || chunk_size > (uint64_t)(size_t)-1) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ENCRYPTED_DATA);
         return NULL;
     }
