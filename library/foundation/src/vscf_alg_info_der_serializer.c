@@ -58,6 +58,7 @@
 #include "vscf_asn1wr.h"
 #include "vscf_oid.h"
 #include "vscf_cipher_alg_info.h"
+#include "vscf_chunked_alg_info.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
@@ -160,6 +161,32 @@ vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(const vscf_alg_info_
 //
 static size_t
 vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with the chunk cipher parameters:
+//
+//  ChunkedParams ::= SEQUENCE {
+//      version INTEGER,
+//      chunkSize INTEGER,
+//      initialNonce OCTET STRING
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "chunked alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with the chunk cipher parameters.
+//
+//  ChunkedParams ::= SEQUENCE {
+//      version INTEGER,
+//      chunkSize INTEGER,
+//      initialNonce OCTET STRING
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_chunked_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Return buffer size enough to hold ASN.1 structure
@@ -676,6 +703,86 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(
 
 //
 //  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with the chunk cipher parameters:
+//
+//  ChunkedParams ::= SEQUENCE {
+//      version INTEGER,
+//      chunkSize INTEGER,
+//      initialNonce OCTET STRING
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    //  The 8-byte INTEGER content reservation is sufficient because chunk_size
+    //  is capped at 4 GiB (VSCF_CHUNK_CIPHER_CHUNK_SIZE_MAX -> <=5 content bytes,
+    //  even with a DER sign byte) and version is a small constant.
+    size_t params_len = 1 + 1 +     //  ChunkedParams ::= SEQUENCE {
+                        1 + 1 + 8 + //      version INTEGER,
+                        1 + 1 + 8 + //      chunkSize INTEGER,
+                        1 + 1 + 16; //      initialNonce OCTET STRING }
+
+    size_t len = 1 + 1 +      //  AlgorithmIdentifier ::= SEQUENCE {
+                 1 + 1 + 10 + //      algorithm OBJECT IDENTIFIER, -- id-aes256-GCM-chunked
+                 params_len;  //      parameters ChunkedParams }
+
+    return len;
+}
+
+//
+//  Serialize class "chunked alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with the chunk cipher parameters.
+//
+//  ChunkedParams ::= SEQUENCE {
+//      version INTEGER,
+//      chunkSize INTEGER,
+//      initialNonce OCTET STRING
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_chunked_alg_info(
+        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(self->asn1_writer);
+
+    vscf_impl_t *asn1_writer = self->asn1_writer;
+
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(asn1_writer) >=
+                vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(self, alg_info));
+
+    const vscf_chunked_alg_info_t *chunked_alg_info = (const vscf_chunked_alg_info_t *)alg_info;
+
+    size_t len = 0;
+    vscf_alg_id_t alg_id = vscf_chunked_alg_info_alg_id(chunked_alg_info);
+
+    //  Write ChunkedParams.
+    //  ASN.1 writer emits back-to-front, so write fields in reverse order:
+    //  initialNonce, chunkSize, version.
+    len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_chunked_alg_info_nonce(chunked_alg_info));
+    len += vscf_asn1_writer_write_uint64(asn1_writer, vscf_chunked_alg_info_chunk_size(chunked_alg_info));
+    len += vscf_asn1_writer_write_uint64(asn1_writer, vscf_chunked_alg_info_version(chunked_alg_info));
+    len += vscf_asn1_writer_write_sequence(asn1_writer, len);
+
+    //  Write OID.
+    vsc_data_t cipher_oid = vscf_oid_from_alg_id(alg_id);
+    len += vscf_asn1_writer_write_oid(asn1_writer, cipher_oid);
+
+    //  Write AlgorithmIdentifier SEQUENCE.
+    len += vscf_asn1_writer_write_sequence(asn1_writer, len);
+
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(asn1_writer));
+
+    return len;
+}
+
+//
+//  Return buffer size enough to hold ASN.1 structure
 //  "PBKDF2Algorithm" from the RFC 8018.
 //
 static size_t
@@ -1149,6 +1256,9 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_serializer_serialize_cipher_alg_info(self, alg_info);
 
+    case vscf_alg_id_AES256_GCM_CHUNKED:
+        return vscf_alg_info_der_serializer_serialize_chunked_alg_info(self, alg_info);
+
     case vscf_alg_id_AES128_KW:
     case vscf_alg_id_AES192_KW:
     case vscf_alg_id_AES256_KW:
@@ -1219,6 +1329,9 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_AES256_GCM:
     case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(self, alg_info);
+
+    case vscf_alg_id_AES256_GCM_CHUNKED:
+        return vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(self, alg_info);
 
     case vscf_alg_id_AES128_KW:
     case vscf_alg_id_AES192_KW:

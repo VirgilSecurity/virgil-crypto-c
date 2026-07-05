@@ -210,6 +210,24 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             return proxyResult;
         }
 
+        serializedChunkedAlgInfoLen(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(this.ctxPtr, algInfo.ctxPtr);
+            return proxyResult;
+        }
+
+        serializeChunkedAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_alg_info_der_serializer_serialize_chunked_alg_info(this.ctxPtr, algInfo.ctxPtr);
+            return proxyResult;
+        }
+
         serializedPbkdf2AlgInfoLen(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);

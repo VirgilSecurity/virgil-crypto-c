@@ -161,6 +161,18 @@ class AlgInfoDerDeserializer implements AlgInfoDeserializer
     * @return AlgInfo
     * @throws \Exception
     */
+    public function deserializeChunkedAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_chunked_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
     public function deserializePbkdf2AlgInfo(OidId $$oidId): AlgInfo
     {
         $ctx = vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info_php($this->ctx, $$oidId);

@@ -74,5 +74,6 @@ class OidId extends Enum
     private const RANDOM_PADDING = 31;
     private const ML_KEM_768 = 32;
     private const ML_DSA_65 = 33;
+    private const AES256_GCM_CHUNKED = 34;
 
 }

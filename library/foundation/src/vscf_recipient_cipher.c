@@ -84,6 +84,8 @@
 #include "vscf_hkdf.h"
 #include "vscf_random_padding.h"
 #include "vscf_message_info_der_serializer_internal.h"
+#include "vscf_chunk_cipher.h"
+#include "vscf_alg_info_der_serializer.h"
 
 // clang-format on
 //  @end
@@ -642,6 +644,10 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vscf_message_info_footer_destroy(&self->message_info_footer);
     vscf_padding_cipher_destroy(&self->padding_cipher);
     vsc_buffer_destroy(&self->decryption_staging);
+    //  message_info_buffer is normally consumed and freed during
+    //  process_decryption, but an early error return (e.g. a fail-closed
+    //  data-encryption-alg-info) can leave it allocated; free it on teardown.
+    vsc_buffer_destroy(&self->message_info_buffer);
 }
 
 //
@@ -1417,6 +1423,15 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
     self->decryption_cipher = vscf_alg_factory_create_cipher_from_info(cipher_alg_info);
 
     //
+    //  Fail closed if the data encryption algorithm cannot be reconstructed
+    //  (unsupported or tampered 'data encryption alg info', e.g. a downgraded
+    //  OID).  Without this guard the NULL cipher would be dereferenced below.
+    //
+    if (NULL == self->decryption_cipher) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
+    //
     //  Cipher KDF.
     //
     if (vscf_message_info_has_cipher_kdf_alg_info(self->message_info)) {
@@ -1835,19 +1850,28 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
 }
 
 //
-//  For signed encryption set serialized footer info as
-//  cipher additional data for AEAD ciphers.
+//  Return true if the given data cipher is the chunked AES-256-GCM cipher,
+//  which binds the serialized CMS metadata into its AEAD via a dedicated
+//  'set auth data' method (it does not implement the 'cipher auth' interface).
+//
+static bool
+vscf_recipient_cipher_cipher_is_chunked(const vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(cipher);
+
+    return vscf_alg_is_implemented(cipher) && vscf_alg_alg_id(cipher) == vscf_alg_id_AES256_GCM_CHUNKED;
+}
+
+//
+//  Serialize the signed data info (if any) into the given buffer.
+//  This is the auth-data portion already bound on the signed path today.
 //
 static void
-vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher) {
+vscf_recipient_cipher_append_signed_data_info(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info);
-    VSCF_ASSERT_PTR(cipher);
-
-    if (!vscf_cipher_auth_is_implemented(cipher)) {
-        return;
-    }
+    VSCF_ASSERT_PTR(out);
 
     if (!vscf_message_info_has_footer_info(self->message_info)) {
         return;
@@ -1863,14 +1887,126 @@ vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_i
     const size_t serialized_signed_data_info_len = vscf_message_info_der_serializer_serialized_signed_data_info_len(
             self->message_info_der_serializer, signed_data_info);
 
-    vsc_buffer_t *serialized_signed_data_info = vsc_buffer_new_with_capacity(serialized_signed_data_info_len);
-
+    vsc_buffer_t *serialized = vsc_buffer_new_with_capacity(serialized_signed_data_info_len);
     vscf_message_info_der_serializer_serialize_signed_data_info(
-            self->message_info_der_serializer, signed_data_info, serialized_signed_data_info);
+            self->message_info_der_serializer, signed_data_info, serialized);
 
-    vscf_cipher_auth_set_auth_data(cipher, vsc_buffer_data(serialized_signed_data_info));
+    vsc_buffer_append_data(out, vsc_buffer_data(serialized));
+    vsc_buffer_destroy(&serialized);
+}
 
-    vsc_buffer_destroy(&serialized_signed_data_info);
+//
+//  Append the DER-serialized 'data encryption alg info' to the given buffer.
+//  For the chunked cipher this is the AlgorithmIdentifier carrying the chunked
+//  OID + chunk_size + initial_nonce, whose integrity is the P0 property.
+//
+static void
+vscf_recipient_cipher_append_data_encryption_alg_info(vsc_buffer_t *out, const vscf_impl_t *data_encryption_alg_info) {
+
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT_PTR(data_encryption_alg_info);
+
+    vscf_alg_info_der_serializer_t *alg_info_serializer = vscf_alg_info_der_serializer_new();
+    vscf_alg_info_der_serializer_setup_defaults(alg_info_serializer);
+
+    const size_t serialized_len =
+            vscf_alg_info_der_serializer_serialized_len(alg_info_serializer, data_encryption_alg_info);
+
+    vsc_buffer_t *serialized = vsc_buffer_new_with_capacity(serialized_len);
+    vscf_alg_info_der_serializer_serialize(alg_info_serializer, data_encryption_alg_info, serialized);
+
+    vsc_buffer_append_data(out, vsc_buffer_data(serialized));
+
+    vsc_buffer_destroy(&serialized);
+    vscf_alg_info_der_serializer_destroy(&alg_info_serializer);
+}
+
+//
+//  For signed encryption set serialized footer info as cipher additional data
+//  for AEAD ciphers.  Additionally, for the chunked cipher, bind the serialized
+//  'data encryption alg info' (CMS metadata: OID + chunk_size + initial_nonce)
+//  so an OID swap or a chunk_size/initial_nonce tamper fails closed, on both
+//  the signed and unsigned paths.  The composed auth-data is:
+//
+//      [signed_data_info]  ||  [serialized data_encryption_alg_info (chunked only)]
+//
+//  Plain AES-256-GCM keeps its existing behavior unchanged (empty on the
+//  unsigned path, signed_data_info on the signed path).
+//
+//  This variant reads 'data encryption alg info' from the message info, so it is
+//  valid on the decrypt path (message info fully deserialized) and on the signed
+//  encrypt path only after the alg info has been produced.  The unsigned/signed
+//  encrypt paths use 'set_encryption_cipher_auth_data' instead, which produces
+//  the alg info directly from the cipher before 'start encryption'.
+//
+static void
+vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+    VSCF_ASSERT_PTR(cipher);
+
+    const bool is_chunked = vscf_recipient_cipher_cipher_is_chunked(cipher);
+
+    if (!is_chunked && !vscf_cipher_auth_is_implemented(cipher)) {
+        return;
+    }
+
+    vsc_buffer_t *auth_data = vsc_buffer_new_with_capacity(64);
+
+    vscf_recipient_cipher_append_signed_data_info(self, auth_data);
+
+    if (is_chunked) {
+        const vscf_impl_t *data_encryption_alg_info = vscf_message_info_data_encryption_alg_info(self->message_info);
+        VSCF_ASSERT_PTR(data_encryption_alg_info);
+        vscf_recipient_cipher_append_data_encryption_alg_info(auth_data, data_encryption_alg_info);
+    }
+
+    if (is_chunked) {
+        vscf_chunk_cipher_set_auth_data((vscf_chunk_cipher_t *)cipher, vsc_buffer_data(auth_data));
+    } else {
+        vscf_cipher_auth_set_auth_data(cipher, vsc_buffer_data(auth_data));
+    }
+
+    vsc_buffer_destroy(&auth_data);
+}
+
+//
+//  Set the encryption cipher's AEAD auth-data before 'start encryption'.
+//  Mirrors 'set_cipher_auth_data' but, for the chunked cipher, produces the
+//  'data encryption alg info' directly from the cipher (the message info copy
+//  is not populated until after 'start encryption').  The produced alg info is
+//  byte-identical to the one later stored into the message info, so encrypt and
+//  decrypt bind the same bytes.
+//
+static void
+vscf_recipient_cipher_set_encryption_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+    VSCF_ASSERT_PTR(cipher);
+
+    const bool is_chunked = vscf_recipient_cipher_cipher_is_chunked(cipher);
+
+    if (!is_chunked && !vscf_cipher_auth_is_implemented(cipher)) {
+        return;
+    }
+
+    vsc_buffer_t *auth_data = vsc_buffer_new_with_capacity(64);
+
+    vscf_recipient_cipher_append_signed_data_info(self, auth_data);
+
+    if (is_chunked) {
+        vscf_impl_t *data_encryption_alg_info = vscf_alg_produce_alg_info(cipher);
+        vscf_recipient_cipher_append_data_encryption_alg_info(auth_data, data_encryption_alg_info);
+        vscf_impl_destroy(&data_encryption_alg_info);
+
+        vscf_chunk_cipher_set_auth_data((vscf_chunk_cipher_t *)cipher, vsc_buffer_data(auth_data));
+    } else {
+        vscf_cipher_auth_set_auth_data(cipher, vsc_buffer_data(auth_data));
+    }
+
+    vsc_buffer_destroy(&auth_data);
 }
 
 //
@@ -2184,9 +2320,13 @@ vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self)
     vscf_cipher_set_nonce(self->encryption_cipher, vsc_buffer_data(cipher_nonce));
     vsc_buffer_destroy(&cipher_nonce);
 
-    if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
-        vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
-    }
+    //
+    //  Configure AEAD auth-data before "start encryption".  For plain AES-256-GCM
+    //  this binds the (empty, on the unsigned path) signed data info exactly as
+    //  before; for the chunked cipher it additionally binds the serialized
+    //  data_encryption_alg_info so metadata tampering fails closed.
+    //
+    vscf_recipient_cipher_set_encryption_cipher_auth_data(self, self->encryption_cipher);
 
     return vscf_status_SUCCESS;
 }
@@ -2236,7 +2376,7 @@ vscf_recipient_cipher_configure_kdf_feeded_encryption_cipher(vscf_recipient_ciph
     vsc_data_t nonce = vscf_recipient_cipher_data_derived_nonce(self, self->encryption_cipher);
     vscf_cipher_set_nonce(self->encryption_cipher, nonce);
 
-    vscf_recipient_cipher_set_cipher_auth_data(self, self->encryption_cipher);
+    vscf_recipient_cipher_set_encryption_cipher_auth_data(self, self->encryption_cipher);
 
     //
     //  Pass KDF alg to the message info.

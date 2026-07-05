@@ -72,3 +72,4 @@ class OidId(object):
     RANDOM_PADDING = 31
     ML_KEM_768 = 32
     ML_DSA_65 = 33
+    AES256_GCM_CHUNKED = 34

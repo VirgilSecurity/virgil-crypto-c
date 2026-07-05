@@ -65,3 +65,4 @@ class VscfAlgId(object):
     RANDOM_PADDING = 23
     ML_KEM_768 = 24
     ML_DSA_65 = 25
+    AES256_GCM_CHUNKED = 26

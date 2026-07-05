@@ -83,6 +83,8 @@ import VSCFoundation
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_RANDOM_PADDING:
             return RandomPadding(take: c_ctx)
+        case vscf_impl_tag_CHUNK_CIPHER:
+            return ChunkCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -131,6 +133,8 @@ import VSCFoundation
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
+        case vscf_impl_tag_CHUNK_CIPHER:
+            return ChunkCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -154,6 +158,8 @@ import VSCFoundation
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
+        case vscf_impl_tag_CHUNK_CIPHER:
+            return ChunkCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -175,6 +181,8 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
+        case vscf_impl_tag_CHUNK_CIPHER:
+            return ChunkCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -196,6 +204,8 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
+        case vscf_impl_tag_CHUNK_CIPHER:
+            return ChunkCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -747,6 +757,8 @@ import VSCFoundation
             return CipherAlgInfo(take: c_ctx)
         case vscf_impl_tag_SALTED_KDF_ALG_INFO:
             return SaltedKdfAlgInfo(take: c_ctx)
+        case vscf_impl_tag_CHUNKED_ALG_INFO:
+            return ChunkedAlgInfo(take: c_ctx)
         case vscf_impl_tag_PBE_ALG_INFO:
             return PbeAlgInfo(take: c_ctx)
         case vscf_impl_tag_ECC_ALG_INFO:

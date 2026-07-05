@@ -116,6 +116,20 @@ https://tools.ietf.org/html/draft-housley-hkdf-oids-00."""
         vscf_alg_info_der_deserializer_deserialize_cipher_alg_info.restype = POINTER(vscf_impl_t)
         return vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(ctx, oid_id, error)
 
+    def vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with the chunk cipher
+parameters and validate them.
+
+ChunkedParams ::= SEQUENCE {
+    version INTEGER,
+    chunkSize INTEGER,
+    initialNonce OCTET STRING
+}"""
+        vscf_alg_info_der_deserializer_deserialize_chunked_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_chunked_alg_info
+        vscf_alg_info_der_deserializer_deserialize_chunked_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_chunked_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(ctx, oid_id, error)
+
     def vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(self, ctx, oid_id, error):
         """Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
 defined in the RFC 8018."""

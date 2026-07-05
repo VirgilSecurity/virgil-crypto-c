@@ -312,38 +312,6 @@ public class FoundationJNI {
 
     public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
 
-    public native long chunkCipher_new();
-
-    public native void chunkCipher_close(long cCtx);
-
-    public native void chunkCipher_setRandom(long cCtx, Random random);
-
-    public native void chunkCipher_setKey(long cCtx, byte[] key);
-
-    public native void chunkCipher_setNonce(long cCtx, byte[] nonce);
-
-    public native void chunkCipher_setChunkSize(long cCtx, int chunkSize);
-
-    public native byte[] chunkCipher_nonce(long cCtx);
-
-    public native int chunkCipher_nonceLen(long cCtx);
-
-    public native int chunkCipher_encryptionOutLen(long cCtx, int dataLen);
-
-    public native void chunkCipher_startEncryption(long cCtx) throws FoundationException;
-
-    public native byte[] chunkCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
-
-    public native byte[] chunkCipher_finishEncryption(long cCtx) throws FoundationException;
-
-    public native int chunkCipher_decryptionOutLen(long cCtx, int dataLen);
-
-    public native void chunkCipher_startDecryption(long cCtx) throws FoundationException;
-
-    public native byte[] chunkCipher_processDecryption(long cCtx, byte[] data) throws FoundationException;
-
-    public native byte[] chunkCipher_finishDecryption(long cCtx) throws FoundationException;
-
     public native long messageInfoCustomParams_new();
 
     public native void messageInfoCustomParams_close(long cCtx);
@@ -1874,6 +1842,20 @@ public class FoundationJNI {
 
     public native AlgId saltedKdfAlgInfo_algId(long cCtx);
 
+    public native long chunkedAlgInfo_new();
+
+    public native void chunkedAlgInfo_close(long cCtx);
+
+    public native long chunkedAlgInfo_new(AlgId algId, int version, int chunkSize, byte[] nonce);
+
+    public native int chunkedAlgInfo_version(long cCtx);
+
+    public native int chunkedAlgInfo_chunkSize(long cCtx);
+
+    public native byte[] chunkedAlgInfo_nonce(long cCtx);
+
+    public native AlgId chunkedAlgInfo_algId(long cCtx);
+
     public native long pbeAlgInfo_new();
 
     public native void pbeAlgInfo_close(long cCtx);
@@ -1979,5 +1961,69 @@ public class FoundationJNI {
     public native int randomPadding_finishPaddedDataProcessingOutLen(long cCtx);
 
     public native byte[] randomPadding_finishPaddedDataProcessing(long cCtx) throws FoundationException;
+
+    public native long chunkCipher_new();
+
+    public native void chunkCipher_close(long cCtx);
+
+    public native void chunkCipher_setRandom(long cCtx, Random random);
+
+    public native void chunkCipher_setChunkSize(long cCtx, int chunkSize);
+
+    public native byte[] chunkCipher_nonce(long cCtx);
+
+    public native int chunkCipher_encryptionOutLen(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] chunkCipher_finishEncryption(long cCtx) throws FoundationException;
+
+    public native int chunkCipher_decryptionOutLen(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_processDecryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] chunkCipher_finishDecryption(long cCtx) throws FoundationException;
+
+    public native int chunkCipher_chunkCount(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_encryptAt(long cCtx, long chunkIndex, boolean isLast, byte[] plaintext) throws FoundationException;
+
+    public native byte[] chunkCipher_decryptAt(long cCtx, long chunkIndex, boolean isLast, byte[] frame) throws FoundationException;
+
+    public native void chunkCipher_setAuthData(long cCtx, byte[] authData);
+
+    public native AlgId chunkCipher_algId(long cCtx);
+
+    public native AlgInfo chunkCipher_produceAlgInfo(long cCtx);
+
+    public native void chunkCipher_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] chunkCipher_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int chunkCipher_encryptedLen(long cCtx, int dataLen);
+
+    public native int chunkCipher_preciseEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int chunkCipher_decryptedLen(long cCtx, int dataLen);
+
+    public native void chunkCipher_setNonce(long cCtx, byte[] nonce);
+
+    public native void chunkCipher_setKey(long cCtx, byte[] key);
+
+    public native void chunkCipher_startEncryption(long cCtx);
+
+    public native void chunkCipher_startDecryption(long cCtx);
+
+    public native byte[] chunkCipher_update(long cCtx, byte[] data);
+
+    public native int chunkCipher_outLen(long cCtx, int dataLen);
+
+    public native int chunkCipher_encryptedOutLen(long cCtx, int dataLen);
+
+    public native int chunkCipher_decryptedOutLen(long cCtx, int dataLen);
+
+    public native byte[] chunkCipher_finish(long cCtx) throws FoundationException;
 
 }

@@ -15,10 +15,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 class TestImplementorSourceParsing(unittest.TestCase):
     """Test that ImplementorSource is correctly parsed from XML models."""
 
-    def test_foundation_has_13_implementors(self) -> None:
+    def test_foundation_has_14_implementors(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
-        self.assertEqual(len(project.implementors), 13)
-        self.assertEqual(len(project.implementor_refs), 13)
+        self.assertEqual(len(project.implementors), 14)
+        self.assertEqual(len(project.implementor_refs), 14)
 
     def test_common_has_zero_implementors(self) -> None:
         project = load_named_project_source("common", REPO_ROOT)
@@ -86,10 +86,10 @@ class TestImplementorSourceParsing(unittest.TestCase):
         self.assertEqual(lib_req.name, "mbedtls")
         self.assertEqual(lib_req.attrs.get("feature"), "SHA256 C")
 
-    def test_total_53_implementations(self) -> None:
+    def test_total_58_implementations(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
         total = sum(len(imp.implementations) for imp in project.implementors)
-        self.assertEqual(total, 56)
+        self.assertEqual(total, 58)
 
     def test_ed25519_has_dependencies(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
@@ -103,10 +103,10 @@ class TestImplementorSourceParsing(unittest.TestCase):
 class TestIRImplementationParsing(unittest.TestCase):
     """Test that IRImplementation is correctly built from source."""
 
-    def test_ir_has_53_implementations(self) -> None:
+    def test_ir_has_58_implementations(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
         ir = project_to_ir(project)
-        self.assertEqual(len(ir.implementations), 56)
+        self.assertEqual(len(ir.implementations), 58)
 
     def test_ir_implementation_output_target(self) -> None:
         project = load_named_project_source("foundation", REPO_ROOT)
