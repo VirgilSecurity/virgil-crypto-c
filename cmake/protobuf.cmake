@@ -74,9 +74,11 @@ function(_virgil_resolve_protobuf_tools out_protoc out_generator)
         set(_generator "${VIRGIL_PROTOC_GEN_NANOPB}")
     endif()
     if(NOT _generator)
+        # HINTS (virgil's venv) take priority over the system PATH so the pinned
+        # nanopb generator wins over any system-installed one.
         find_program(_generator
                 NAMES protoc-gen-nanopb protoc-gen-nanopb.bat
-                PATHS "$ENV{VIRTUAL_ENV}/bin" "$ENV{VIRTUAL_ENV}/Scripts"
+                HINTS "$ENV{VIRTUAL_ENV}/bin" "$ENV{VIRTUAL_ENV}/Scripts"
                 NO_CMAKE_FIND_ROOT_PATH)
     endif()
     if(NOT _generator)

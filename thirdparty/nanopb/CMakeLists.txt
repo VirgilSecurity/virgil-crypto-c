@@ -199,11 +199,18 @@ set(VIRGIL_PROTOC "${PROTOC_EXE}"
 
 # venv puts executables in bin/ on *nix and Scripts/ on Windows; also fall back
 # to the ExternalProject-installed generator under the nanopb prefix.
+#
+# HINTS (virgil's own venv) are searched before the system PATH so virgil's
+# pinned nanopb generator wins over any differently-versioned protoc-gen-nanopb
+# a consumer happens to have installed system-wide. The ExternalProject copy is
+# a lower-priority PATHS fallback.
+#
 find_program(VIRGIL_PROTOC_GEN_NANOPB
         NAMES protoc-gen-nanopb protoc-gen-nanopb.bat
-        PATHS
+        HINTS
             "$ENV{VIRTUAL_ENV}/bin"
             "$ENV{VIRTUAL_ENV}/Scripts"
+        PATHS
             "${NANOPB_INSTALL_LOCATION}/bin"
         NO_CMAKE_FIND_ROOT_PATH
         )
