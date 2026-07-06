@@ -177,6 +177,49 @@ if(NOT TARGET nanopb::protobuf-nanopb)
     add_library(nanopb::protobuf-nanopb ALIAS protobuf-nanopb)
 endif()
 
+# ---------------------------------------------------------------------------
+#   Export the nanopb toolchain for downstream consumers
+# ---------------------------------------------------------------------------
+#
+# Publish the protoc compiler and the nanopb generator so a downstream project
+# (e.g. via FetchContent / add_subdirectory) can generate its own .proto files
+# without having to know about virgil's internal Python venv layout.
+#
+#   VIRGIL_PROTOC              - path to the SHA-pinned protoc built by this repo
+#   VIRGIL_PROTOC_GEN_NANOPB   - path to the nanopb generator plug-in
+#   nanopb::protoc-gen-nanopb  - IMPORTED GLOBAL executable target for the above
+#
+# The generator is virgil's venv copy, which is self-contained (it bundles
+# nanopb + protobuf + grpc_tools and its shebang points at the venv python).
+# virgil's own build populates that venv at configure time, so the copy already
+# exists here for any consumer that added this repo as a subproject.
+#
+set(VIRGIL_PROTOC "${PROTOC_EXE}"
+        CACHE FILEPATH "protoc compiler built by virgil-crypto-c" FORCE)
+
+# venv puts executables in bin/ on *nix and Scripts/ on Windows; also fall back
+# to the ExternalProject-installed generator under the nanopb prefix.
+find_program(VIRGIL_PROTOC_GEN_NANOPB
+        NAMES protoc-gen-nanopb protoc-gen-nanopb.bat
+        PATHS
+            "$ENV{VIRTUAL_ENV}/bin"
+            "$ENV{VIRTUAL_ENV}/Scripts"
+            "${NANOPB_INSTALL_LOCATION}/bin"
+        NO_CMAKE_FIND_ROOT_PATH
+        )
+
+if(VIRGIL_PROTOC_GEN_NANOPB)
+    message(STATUS "VIRGIL_PROTOC_GEN_NANOPB: ${VIRGIL_PROTOC_GEN_NANOPB}")
+    if(NOT TARGET nanopb::protoc-gen-nanopb)
+        add_executable(nanopb::protoc-gen-nanopb IMPORTED GLOBAL)
+        set_target_properties(nanopb::protoc-gen-nanopb PROPERTIES
+                IMPORTED_LOCATION "${VIRGIL_PROTOC_GEN_NANOPB}")
+    endif()
+else()
+    message(STATUS "VIRGIL_PROTOC_GEN_NANOPB: not found at configure time "
+            "(will be resolved lazily by target_protobuf_sources)")
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Install library
