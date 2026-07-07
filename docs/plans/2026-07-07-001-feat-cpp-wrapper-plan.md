@@ -231,7 +231,7 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** generated `aes256_gcm.hpp/.cpp` compile in a scratch TU against the C libs; pytest class tests pass.
 
-- [ ] **Unit 3: Interfaces, implementations, and impl-tag dispatch**
+- [x] **Unit 3: Interfaces, implementations, and impl-tag dispatch**
 
 **Goal:** Generate C++ abstract base classes for IR interfaces, concrete implementation wrappers, and the `<Project>Implementation` dispatch, so polymorphic C "interface" objects and delegates work idiomatically.
 
@@ -270,6 +270,7 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Approach:**
 - Run `python3 -m tools.codegen.common_bootstrap --project all --apply`; commit generated output. Re-run and confirm `git status` is clean (no drift). Add file-count and byte-identical parity tests (as Swift does).
+- **Cross-project references (surfaced in Unit 3, resolve here):** foundation compiles clean (133 headers + dispatch verified with `clang++ -std=c++20 -fsyntax-only` against the committed C headers), but phe/ratchet reference **foundation** types (e.g. the `random` dependency has `attrs['project']='foundation'`) and thirdparty C types (`mbedtls_*`, nanopb `ProofOfSuccess`). The include path, C++ namespace qualifier, and — for any foundation *interface* return — the dispatch owner (`foundation::FoundationImplementation`, not phe's) must become project-aware. Thirdparty-typed methods are currently all private (correctly skipped); confirm that holds. This is the main net-new work to make phe/ratchet compile.
 
 **Execution note:** Consistency-first — the acceptance is a clean-diff regenerate.
 

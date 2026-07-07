@@ -71,7 +71,8 @@ class GenerationTests(unittest.TestCase):
     def test_all_paths_under_wrapper_dir(self) -> None:
         for path in self.files:
             self.assertTrue(
-                path.startswith("wrappers/cpp/include/virgil/crypto/foundation/"),
+                path.startswith("wrappers/cpp/include/virgil/crypto/foundation/")
+                or path.startswith("wrappers/cpp/src/foundation/"),
                 path,
             )
 
@@ -129,7 +130,12 @@ class ClassGenerationTests(unittest.TestCase):
 
     def test_status_methods_return_expected(self) -> None:
         self.assertIn("tl::expected<void, Error> setup_defaults()", self.kp)
-        self.assertIn("tl::expected<PrivateKey, Error> generate_private_key(AlgId alg_id)", self.kp)
+        # Interface returns are wrapped as unique_ptr via the dispatch (Unit 3).
+        self.assertIn(
+            "tl::expected<std::unique_ptr<PrivateKey>, Error> generate_private_key(AlgId alg_id)",
+            self.kp,
+        )
+        self.assertIn("return FoundationImplementation::wrap_private_key(proxy_result);", self.kp)
 
     def test_error_branch_uses_unexpected(self) -> None:
         self.assertIn("return tl::unexpected(static_cast<Error>(status));", self.kp)
@@ -140,7 +146,8 @@ class ClassGenerationTests(unittest.TestCase):
     def test_dependency_setter(self) -> None:
         self.assertIn("void set_random(const Random& random)", self.kp)
         self.assertIn("vscf_key_provider_release_random(c_ctx_);", self.kp)
-        self.assertIn("vscf_key_provider_use_random(c_ctx_, random.c_ctx());", self.kp)
+        # Interface args are passed via impl() (the polymorphic handle), not c_ctx().
+        self.assertIn("vscf_key_provider_use_random(c_ctx_, random.impl());", self.kp)
 
     def test_no_value_call_anywhere(self) -> None:
         # -fno-exceptions invariant: never call expected::value() on an error path.
@@ -171,6 +178,155 @@ class ClassGenerationTests(unittest.TestCase):
         self.assertIsNotNone(content, "expected at least one emitted static (context=none) class")
         self.assertNotIn("c_ctx_", content)
         self.assertIn("static ", content)
+
+
+class InterfaceAndImplementationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = _load_ir("foundation")
+        cls.files = dict(generate_cpp_files(cls.ir, repo_root=str(REPO_ROOT)))
+
+    def _f(self, name: str) -> str:
+        return self.files[f"wrappers/cpp/include/virgil/crypto/foundation/{name}"]
+
+    def test_context_base(self) -> None:
+        c = self._f("context.hpp")
+        self.assertIn("class Context {", c)
+        self.assertIn("virtual vscf_impl_t* impl() const noexcept = 0;", c)
+        self.assertIn("virtual ~Context() = default;", c)
+
+    def test_interface_is_abstract_base(self) -> None:
+        c = self._f("hash.hpp")
+        self.assertIn("class Hash : virtual public Context {", c)
+        self.assertIn("virtual std::vector<uint8_t> hash(std::span<const uint8_t> data) = 0;", c)
+        self.assertIn("virtual void start() = 0;", c)
+
+    def test_interface_inheritance_chain(self) -> None:
+        # cipher_info-style inheritance is expressed as virtual public bases.
+        c = self._f("auth_encrypt.hpp")  # auth encrypt : cipher info (per IR inherits)
+        self.assertRegex(c, r"class AuthEncrypt : virtual public Context(, virtual public \w+)+ \{")
+
+    def test_implementation_inherits_and_overrides(self) -> None:
+        c = self._f("sha256.hpp")
+        self.assertIn("class Sha256 : virtual public Alg, virtual public Hash {", c)
+        self.assertIn("vscf_impl_t* impl() const noexcept override { return vscf_sha256_impl(c_ctx_); }", c)
+        self.assertIn("std::vector<uint8_t> hash(std::span<const uint8_t> data) override {", c)
+        self.assertIn("vscf_sha256_hash(", c)  # calls its own C func, not vscf_hash_*
+
+    def test_interface_return_wrapped_as_unique_ptr(self) -> None:
+        c = self._f("sha256.hpp")
+        self.assertIn("std::unique_ptr<AlgInfo> produce_alg_info() override {", c)
+        self.assertIn("return FoundationImplementation::wrap_alg_info(proxy_result);", c)
+
+    def test_interface_arg_uses_impl(self) -> None:
+        c = self._f("sha256.hpp")
+        self.assertIn("restore_alg_info(const AlgInfo& alg_info)", c)
+        self.assertIn("vscf_sha256_restore_alg_info(c_ctx_, alg_info.impl());", c)
+
+    def test_dispatch_header_declares_wrap(self) -> None:
+        c = self._f("foundation_implementation.hpp")
+        self.assertIn("class FoundationImplementation {", c)
+        self.assertIn("static std::unique_ptr<Hash> wrap_hash(vscf_impl_t* impl);", c)
+
+    def test_dispatch_source_switches_on_tag(self) -> None:
+        c = self.files["wrappers/cpp/src/foundation/foundation_implementation.cpp"]
+        self.assertIn("std::unique_ptr<Hash> FoundationImplementation::wrap_hash(vscf_impl_t* impl) {", c)
+        self.assertIn("switch (vscf_impl_tag(impl)) {", c)
+        self.assertIn("case vscf_impl_tag_SHA256:", c)
+        self.assertIn("return std::make_unique<Sha256>(reinterpret_cast<vscf_sha256_t*>(impl));", c)
+
+    def test_no_value_call_in_interfaces_and_impls(self) -> None:
+        for path, content in self.files.items():
+            self.assertNotIn(".value()", content, path)
+
+
+class OwnershipAndConventionTests(unittest.TestCase):
+    """Regression tests for the C API ownership/const/naming conventions the wrapper
+    must honour to compile against the real C headers."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = _load_ir("foundation")
+        cls.files = dict(generate_cpp_files(cls.ir, repo_root=str(REPO_ROOT)))
+
+    def _f(self, name: str) -> str:
+        return self.files[f"wrappers/cpp/include/virgil/crypto/foundation/{name}"]
+
+    def test_borrowed_interface_return_is_shallow_copied(self) -> None:
+        # access="readonly" -> C returns `const vscf_impl_t*` (borrowed); the RAII
+        # wrapper must shallow-copy so it does not double-free the callee's object.
+        c = self._f("raw_public_key.hpp")
+        self.assertIn(
+            "wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)))",
+            c,
+        )
+
+    def test_owned_interface_return_is_adopted_directly(self) -> None:
+        # access="disown" -> owned; adopt the returned impl without copying.
+        c = self._f("sha256.hpp")
+        self.assertIn("wrap_alg_info(proxy_result);", c)
+        self.assertNotIn("wrap_alg_info(vscf_impl_shallow_copy", c)
+
+    def test_borrowed_class_return_is_shallow_copied(self) -> None:
+        c = self._f("raw_private_key.hpp")
+        self.assertIn(
+            "RawPublicKey(vscf_raw_public_key_shallow_copy("
+            "const_cast<vscf_raw_public_key_t*>(proxy_result)))",
+            c,
+        )
+
+    def test_disown_object_argument_transfers_via_shallow_copied_ref(self) -> None:
+        # C sig: set_public_key(self, vscf_raw_public_key_t **). Hand it a copy so the
+        # caller keeps ownership; the callee adopts + nulls the temp.
+        c = self._f("raw_private_key.hpp")
+        self.assertIn(
+            "vscf_raw_public_key_t* raw_public_key_ref = "
+            "vscf_raw_public_key_shallow_copy(raw_public_key.c_ctx());",
+            c,
+        )
+        self.assertIn("vscf_raw_private_key_set_public_key(c_ctx_, &raw_public_key_ref);", c)
+
+    def test_class_typed_dependency_uses_c_ctx_not_impl(self) -> None:
+        # use_ecies takes vscf_ecies_t* (Ecies is a plain class, no impl()); use_random
+        # takes vscf_impl_t* (Random is an interface).
+        c = self._f("curve25519.hpp")
+        self.assertIn("vscf_curve25519_use_ecies(c_ctx_, ecies.c_ctx());", c)
+        self.assertIn("vscf_curve25519_use_random(c_ctx_, random.impl());", c)
+
+    def test_private_implementation_method_is_not_wrapped(self) -> None:
+        # deserialize_simple_alg_info et al. have no declaration="public" and live only
+        # in the .c — wrapping them would call undeclared C functions.
+        c = self._f("alg_info_der_deserializer.hpp")
+        self.assertNotIn("deserialize_simple", c)
+        self.assertIn("deserialize", c)  # the public method survives
+
+    def test_enum_header_includes_its_c_header(self) -> None:
+        c = self._f("oid_id.hpp")
+        self.assertIn("#include <virgil/crypto/foundation/vscf_oid_id.h>", c)
+
+    def test_constants_are_screaming_snake_case(self) -> None:
+        # A constant and a method may share a base name in C (vscf_ml_dsa_SIGNATURE_LEN
+        # vs vscf_ml_dsa_signature_len); distinct case keeps them from colliding in C++.
+        c = self._f("ml_dsa.hpp")
+        self.assertIn("static constexpr std::size_t SIGNATURE_LEN = 3309;", c)
+        self.assertIn("std::size_t signature_len(", c)
+
+    def test_string_argument_passed_as_c_str(self) -> None:
+        c = self._f("pem.hpp")
+        self.assertIn("vscf_pem_wrapped_len(title.c_str(), data_len);", c)
+
+    def test_interface_forward_declares_referenced_class(self) -> None:
+        # Interfaces forward-declare referenced class/interface types instead of
+        # including their headers, breaking the include cycle
+        # (interface -> concrete class -> foundation_implementation.hpp -> interface).
+        c = self._f("key_alg.hpp")
+        self.assertIn("class RawPublicKey;", c)
+        self.assertNotIn("#include <virgil/crypto/foundation/raw_public_key.hpp>", c)
+
+    def test_interface_does_not_include_dispatch_header(self) -> None:
+        for name in ("hash.hpp", "alg.hpp", "key_alg.hpp"):
+            c = self._f(name)
+            self.assertNotIn("foundation_implementation.hpp", c, name)
 
 
 if __name__ == "__main__":
