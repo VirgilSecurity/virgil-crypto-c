@@ -1,0 +1,3 @@
+<wrapper lang="cpp" source_dir="../wrappers/cpp/include/virgil/crypto">
+    Wrapper to the C++ (C++20) programming language.
+</wrapper>

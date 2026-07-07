@@ -170,7 +170,7 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 ### Phase A — Codegen backend
 
-- [ ] **Unit 1: C++ backend scaffolding, registration, and name/type mapping**
+- [x] **Unit 1: C++ backend scaffolding, registration, and name/type mapping**
 
 **Goal:** Stand up `project_cpp_backend.py` with the orchestrator + pure name/type utilities, wire it into `common_bootstrap`, register `cpp` on the projects, and emit the smallest vertical slice (enums + per-project `Error` + a base/`detail` header).
 
