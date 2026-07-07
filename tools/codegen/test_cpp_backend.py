@@ -329,5 +329,69 @@ class OwnershipAndConventionTests(unittest.TestCase):
             self.assertNotIn("foundation_implementation.hpp", c, name)
 
 
+class CrossProjectTests(unittest.TestCase):
+    """phe/ratchet reference foundation types (random, private/public key) across
+    projects; the include path and type name must resolve to the foundation
+    namespace, not the local one."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.phe = dict(generate_cpp_files(_load_ir("phe"), repo_root=str(REPO_ROOT)))
+        cls.ratchet = dict(generate_cpp_files(_load_ir("ratchet"), repo_root=str(REPO_ROOT)))
+
+    def test_phe_dependency_on_foundation_uses_foundation_namespace(self) -> None:
+        c = self.phe["wrappers/cpp/include/virgil/crypto/phe/phe_cipher.hpp"]
+        self.assertIn("#include <virgil/crypto/foundation/random.hpp>", c)
+        self.assertIn("void set_random(const virgil::crypto::foundation::Random& random)", c)
+
+    def test_ratchet_arg_on_foundation_uses_foundation_namespace(self) -> None:
+        c = self.ratchet["wrappers/cpp/include/virgil/crypto/ratchet/ratchet_session.hpp"]
+        self.assertIn("#include <virgil/crypto/foundation/private_key.hpp>", c)
+        self.assertIn("#include <virgil/crypto/foundation/public_key.hpp>", c)
+        self.assertIn("virgil::crypto::foundation::PrivateKey", c)
+        self.assertIn("virgil::crypto::foundation::PublicKey", c)
+
+    def test_buffer_return_copies_out_and_frees(self) -> None:
+        # vscr_ratchet_session_serialize returns an owned vsc_buffer_t*.
+        c = self.ratchet["wrappers/cpp/include/virgil/crypto/ratchet/ratchet_session.hpp"]
+        self.assertIn("std::vector<uint8_t> serialize()", c)
+        self.assertIn("vsc_buffer_bytes(proxy_result)", c)
+        self.assertIn("vsc_buffer_delete(proxy_result);", c)
+
+    def test_length_owner_class_header_included(self) -> None:
+        # phe_client buffers size against PheCommon::PHE_*_LENGTH constants.
+        c = self.phe["wrappers/cpp/include/virgil/crypto/phe/phe_client.hpp"]
+        self.assertIn("#include <virgil/crypto/phe/phe_common.hpp>", c)
+        self.assertIn("PheCommon::PHE_PRIVATE_KEY_LENGTH", c)
+
+
+class GeneratedTreeParityTests(unittest.TestCase):
+    """The committed wrappers/cpp tree must be byte-identical to a fresh
+    regeneration (no drift), and the per-project file counts must be stable."""
+
+    # Update deliberately if the surface changes; a mismatch flags accidental drift.
+    EXPECTED_FILE_COUNTS = {"foundation": 133, "phe": 8, "ratchet": 6}
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.license = (REPO_ROOT / "LICENSE").read_text()
+
+    def _generate(self, project: str):
+        return dict(generate_cpp_files(
+            _load_ir(project), license_text=self.license, repo_root=str(REPO_ROOT),
+        ))
+
+    def test_generated_tree_is_byte_identical_to_committed(self) -> None:
+        for project in ("foundation", "phe", "ratchet"):
+            for rel, content in self._generate(project).items():
+                path = REPO_ROOT / rel
+                self.assertTrue(path.exists(), f"missing committed file: {rel}")
+                self.assertEqual(path.read_text(), content, f"drift in {rel}")
+
+    def test_per_project_file_counts(self) -> None:
+        for project, expected in self.EXPECTED_FILE_COUNTS.items():
+            self.assertEqual(len(self._generate(project)), expected, project)
+
+
 if __name__ == "__main__":
     unittest.main()

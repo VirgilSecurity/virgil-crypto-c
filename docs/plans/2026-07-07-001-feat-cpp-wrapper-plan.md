@@ -256,7 +256,7 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** interface/impl tests pass; a generated interface + one implementation compile together.
 
-- [ ] **Unit 4: Full-surface generation, commit, and consistency check**
+- [x] **Unit 4: Full-surface generation, commit, and consistency check**
 
 **Goal:** Regenerate the whole C++ wrapper for foundation/ratchet/phe, commit the generated tree, and lock the no-drift guarantee + codegen snapshot tests.
 

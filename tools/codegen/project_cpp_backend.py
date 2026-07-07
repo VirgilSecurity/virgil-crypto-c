@@ -397,30 +397,67 @@ def _project_impl_type(project_ir: IRProject) -> str:
     return f"{cpp_type_name(project_ir.name)}Implementation"
 
 
+# project name -> (C++ namespace leaf, C symbol prefix). Used to resolve
+# cross-project references (e.g. a phe/ratchet class depending on a foundation
+# interface) to the right namespace and header path.
+_CPP_PROJECT_NS = {
+    "common": ("common", "vsc"),
+    "foundation": ("foundation", "vscf"),
+    "ratchet": ("ratchet", "vscr"),
+    "phe": ("phe", "vsce"),
+}
+
+
+def _ref_leaf(project_ir: IRProject, ref_project: str | None) -> str | None:
+    """Namespace leaf for a referenced type's project, or ``None`` when the
+    reference is local (same project / unset)."""
+    if ref_project and ref_project != project_ir.name:
+        entry = _CPP_PROJECT_NS.get(ref_project)
+        if entry:
+            return entry[0]
+    return None
+
+
+def _qual_type_name(project_ir: IRProject, type_name: str, ref_project: str | None) -> str:
+    """PascalCase C++ type name, namespace-qualified when it lives in another
+    project (``virgil::crypto::foundation::PrivateKey``)."""
+    tn = cpp_type_name(type_name)
+    leaf = _ref_leaf(project_ir, ref_project)
+    return f"virgil::crypto::{leaf}::{tn}" if leaf else tn
+
+
+def _ref_include(project_ir: IRProject, type_name: str, ref_project: str | None) -> str:
+    """Wrapper-header include path for a referenced type, in its owning project's
+    directory (cross-project references point at e.g. ``foundation/``)."""
+    leaf = _ref_leaf(project_ir, ref_project) or _ns_leaf(project_ir)
+    return f"virgil/crypto/{leaf}/{_entity_snake(type_name)}.hpp"
+
+
 def _cpp_value_type(project_ir: IRProject, arg: IRCArgument) -> str:
     """C++ type for a value argument or return (not a buffer output)."""
     if arg.enum_name:
-        return cpp_type_name(arg.enum_name)
+        return _qual_type_name(project_ir, arg.enum_name, arg.project)
     if arg.interface_name:
         # Interfaces are abstract; a returned impl is owned polymorphically.
-        return f"std::unique_ptr<{cpp_type_name(arg.interface_name)}>"
-    if arg.class_name == "data":
-        return "std::vector<uint8_t>"  # returned data becomes an owned vector
-    if arg.class_name and arg.class_name not in {"data", "buffer"}:
-        return cpp_type_name(arg.class_name)
+        return f"std::unique_ptr<{_qual_type_name(project_ir, arg.interface_name, arg.project)}>"
+    if arg.class_name in {"data", "buffer"}:
+        # returned data / an owned vsc_buffer_t* both surface as an owned vector
+        return "std::vector<uint8_t>"
+    if arg.class_name:
+        return _qual_type_name(project_ir, arg.class_name, arg.project)
     return _cpp_scalar_type(arg)
 
 
 def _cpp_param_type(project_ir: IRProject, arg: IRCArgument) -> str:
     """C++ parameter type for an input argument."""
     if arg.enum_name:
-        return cpp_type_name(arg.enum_name)
+        return _qual_type_name(project_ir, arg.enum_name, arg.project)
     if arg.interface_name:
-        return f"const {cpp_type_name(arg.interface_name)}&"
+        return f"const {_qual_type_name(project_ir, arg.interface_name, arg.project)}&"
     if arg.class_name == "data":
         return "std::span<const uint8_t>"
     if arg.class_name and arg.class_name not in {"data", "buffer"}:
-        return f"const {cpp_type_name(arg.class_name)}&"
+        return f"const {_qual_type_name(project_ir, arg.class_name, arg.project)}&"
     scalar = _cpp_scalar_type(arg)
     return f"const {scalar}&" if scalar == "std::string" else scalar
 
@@ -639,6 +676,12 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
     if total == 0:
         if has_error:
             lines.append(f"{ind}return {{}};")
+    elif total == 1 and not buffers and values[0].class_name == "buffer":
+        # An owned vsc_buffer_t* return: copy the bytes out into a vector and free it.
+        lines.append(f"{ind}std::vector<uint8_t> result(vsc_buffer_bytes(proxy_result), "
+                     f"vsc_buffer_bytes(proxy_result) + vsc_buffer_len(proxy_result));")
+        lines.append(f"{ind}vsc_buffer_delete(proxy_result);")
+        lines.append(f"{ind}return result;")
     elif total == 1 and not buffers:
         lines.append(f"{ind}return {_cpp_return_expr(project_ir, values[0], 'proxy_result')};")
     elif total == 1 and buffers:
@@ -693,8 +736,8 @@ def _class_includes(project_ir: IRProject, cls: IRClass) -> list[str]:
         f"<{ns_path}/{project_ir.prefix}_{_entity_snake(cls.name)}.h>",
         f"<{ns_path}/error.hpp>",
     ]
-    for stem in _referenced_wrapper_stems(project_ir, cls.name, cls.methods, cls.dependencies):
-        incs.append(f"<{ns_path}/{stem}.hpp>")
+    for inc in _referenced_wrapper_includes(project_ir, cls.name, cls.methods, cls.dependencies):
+        incs.append(f"<{inc}>")
     if returns_iface:
         incs.append(f"<{ns_path}/{_header_stem(project_ir.name)}_implementation.hpp>")
     return _dedup(incs)
@@ -729,8 +772,10 @@ def _emit_raii_lifecycle(lines, type_name, c_type, prefix, entity):
     lines.append("")
 
 
-def _referenced_wrapper_stems(project_ir, entity_name, methods, deps):
-    """Snake stems of wrapper headers referenced by a set of methods + deps."""
+def _referenced_wrapper_includes(project_ir, entity_name, methods, deps):
+    """Wrapper-header include paths referenced by a set of methods + deps, each in
+    its owning project's directory (cross-project references — e.g. a phe class
+    depending on a foundation interface — point at ``foundation/``)."""
     ref: set[str] = set()
     for m in methods:
         if not _method_should_wrap(m):
@@ -738,34 +783,49 @@ def _referenced_wrapper_stems(project_ir, entity_name, methods, deps):
         for a in list(m.arguments) + list(m.returns):
             a = _resolve_self(entity_name, a)
             if a.enum_name and a.enum_name not in _INFRASTRUCTURE_ENUMS:
-                ref.add(_entity_snake(a.enum_name))
+                ref.add(_ref_include(project_ir, a.enum_name, a.project))
             elif a.interface_name:
-                ref.add(_entity_snake(a.interface_name))
+                ref.add(_ref_include(project_ir, a.interface_name, a.project))
             elif a.class_name and a.class_name not in {"data", "buffer", "error", entity_name}:
-                ref.add(_entity_snake(a.class_name))
+                ref.add(_ref_include(project_ir, a.class_name, a.project))
+            # A buffer's capacity may reference a constant/method on another class
+            # (e.g. PheCommon::PHE_PRIVATE_KEY_LENGTH) — that class's header is needed.
+            owner = a.length_attrs.get("class") if _arg_is_buffer_output(a) else None
+            if owner and owner != "self" and owner != entity_name:
+                ref.add(_ref_include(project_ir, owner, None))
     for d in deps:
-        ref.add(_entity_snake(d.type_name))
+        ref.add(_ref_include(project_ir, d.type_name, d.attrs.get("project")))
     return sorted(ref)
 
 
 def _interface_ref_split(project_ir, iface):
-    """Split an interface's referenced wrapper types into (enum stems to include,
-    class/interface PascalCase names to forward-declare). See generate_cpp_interface
-    for why class/interface refs are forward-declared rather than included."""
-    enums: list[str] = []
+    """Split an interface's referenced wrapper types into (include paths, local
+    class/interface PascalCase names to forward-declare). Local class/interface refs
+    are forward-declared (see generate_cpp_interface for the cycle they'd otherwise
+    create); enums and *cross-project* class/interface refs are included, since a
+    forward declaration cannot re-open another project's namespace and cross-project
+    headers (e.g. foundation) never cycle back into this project."""
+    includes: list[str] = []
     fwd: list[str] = []
+
+    def _add(type_name, project):
+        if _ref_leaf(project_ir, project):  # cross-project -> include
+            includes.append(_ref_include(project_ir, type_name, project))
+        else:
+            fwd.append(cpp_type_name(type_name))
+
     for m in iface.methods:
         if not _method_should_wrap(m):
             continue
         for a in list(m.arguments) + list(m.returns):
             a = _resolve_self(iface.name, a)
             if a.enum_name and a.enum_name not in _INFRASTRUCTURE_ENUMS:
-                enums.append(_entity_snake(a.enum_name))
+                includes.append(_ref_include(project_ir, a.enum_name, a.project))
             elif a.interface_name:
-                fwd.append(cpp_type_name(a.interface_name))
+                _add(a.interface_name, a.project)
             elif a.class_name and a.class_name not in {"data", "buffer", "error", iface.name}:
-                fwd.append(cpp_type_name(a.class_name))
-    return sorted(set(enums)), sorted(set(fwd))
+                _add(a.class_name, a.project)
+    return sorted(set(includes)), sorted(set(fwd))
 
 
 def _dep_handle_expr(dep, local: str) -> str:
@@ -853,7 +913,7 @@ def generate_cpp_class(project_ir: IRProject, cls: IRClass) -> str:
     if not is_static:
         for dep in cls.dependencies:
             dep_snake = _entity_snake(dep.name)
-            dep_type = cpp_type_name(dep.type_name)
+            dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
             local = cpp_method_name(dep.name)
             lines.append(f"    void set_{dep_snake}(const {dep_type}& {local}) {{")
             lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
@@ -922,9 +982,9 @@ def generate_cpp_interface(project_ir: IRProject, iface) -> str:
     # interface bases incomplete (e.g. `class KeyCipher : ... public KeyAlg` when KeyAlg
     # is mid-include). Completeness is only required at the call site — the concrete
     # class/impl that overrides the method and does include the full headers.
-    ref_enums, fwd_types = _interface_ref_split(project_ir, iface)
-    for stem in ref_enums:
-        incs.append(f"<{ns_path}/{stem}.hpp>")
+    ref_includes, fwd_types = _interface_ref_split(project_ir, iface)
+    for inc in ref_includes:
+        incs.append(f"<{inc}>")
 
     lines: list[str] = []
     _header_open(lines, project_ir, _dedup(incs))
@@ -997,8 +1057,8 @@ def generate_cpp_implementation(project_ir: IRProject, impl) -> str:
     ]
     for name in all_iface_names:
         incs.append(f"<{ns_path}/{_entity_snake(name)}.hpp>")
-    for stem in _referenced_wrapper_stems(project_ir, impl.name, all_methods, impl.dependencies):
-        incs.append(f"<{ns_path}/{stem}.hpp>")
+    for inc in _referenced_wrapper_includes(project_ir, impl.name, all_methods, impl.dependencies):
+        incs.append(f"<{inc}>")
     if returns_iface:
         incs.append(f"<{ns_path}/{_header_stem(project_ir.name)}_implementation.hpp>")
 
@@ -1034,7 +1094,7 @@ def generate_cpp_implementation(project_ir: IRProject, impl) -> str:
 
     for dep in impl.dependencies:
         dep_snake = _entity_snake(dep.name)
-        dep_type = cpp_type_name(dep.type_name)
+        dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
         local = cpp_method_name(dep.name)
         lines.append(f"    void set_{dep_snake}(const {dep_type}& {local}) {{")
         lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
