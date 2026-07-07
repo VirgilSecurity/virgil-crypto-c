@@ -1,5 +1,23 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.22.0 released 2026-07-07
+
+### New
+
+- **Chunk cipher random-access seek API** — `vscf_chunk_cipher` gains `encrypt_at` / `decrypt_at`, encrypting and decrypting individual chunks by index for random-access and parallel processing without streaming the whole payload. Available in all language wrappers.
+- **Self-describing chunked AEAD (`aes256-gcm-chunked`)** — a new CMS `AlgorithmIdentifier` and `vscf_chunked_alg_info` class carry the chunk parameters (chunk size, initial nonce) in DER, and the chunk cipher binds that metadata into the data AEAD **fail-closed**, so chunked ciphertexts are self-describing and tamper-evident instead of relying on out-of-band parameters. `alg_factory` reconstructs the cipher directly from the alg info.
+- **Reusable nanopb toolchain for downstream CMake consumers** — the build now exports `VIRGIL_PROTOC` / `VIRGIL_PROTOC_GEN_NANOPB`, the `nanopb::protoc-gen-nanopb` target, and a public `virgil_nanopb_generate()` function, so projects consuming virgil-crypto-c via FetchContent/`add_subdirectory` can generate their own `.proto` messages without a system protobuf or a Python virtualenv on PATH.
+
+### Bugfix
+
+- **Chunk cipher framing authentication** — `chunk_size` is now bound into every frame's AEAD associated data (previously only frame 0), so a random-access `decrypt_at` of any chunk authenticates the framing parameter; a single overflow-safe 4 GiB `chunk_size` bound is enforced consistently on encrypt, restore, and DER decode.
+- **recipient_cipher memory leak** — `message_info_buffer` is now freed on teardown, fixing a leak on the fail-closed decryption path (caught by valgrind).
+- **nanopb generation on Windows** — options are passed via `--nanopb_opt` so absolute `.options` paths with drive letters work; the build prefers virgil's pinned nanopb generator over any system-installed one.
+
+### Build
+
+- Java/Android publishing is resilient to slow Central Portal: the release waits for Central to *validate* the deployment (not the slower final publish) and no longer fails a release on publish-poll latency.
+
 ## Version 0.21.0 released 2026-06-18
 
 ### New
