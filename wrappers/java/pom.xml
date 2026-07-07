@@ -216,7 +216,15 @@
 						<configuration>
 							<publishingServerId>central</publishingServerId>
 							<autoPublish>true</autoPublish>
-							<waitUntil>published</waitUntil>
+							<!--
+								Wait only until Central VALIDATES the deployment (which
+								catches real errors: bad signatures, missing files, POM
+								issues), not until it finishes PUBLISHING. With autoPublish
+								the final publish happens asynchronously; blocking on it made
+								releases fail on Central Portal's (frequently slow) publish
+								polling even though the bundle uploaded and validated fine.
+							-->
+							<waitUntil>validated</waitUntil>
 						</configuration>
 					</plugin>
 					<plugin>
