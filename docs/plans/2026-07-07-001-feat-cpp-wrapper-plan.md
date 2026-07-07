@@ -200,7 +200,7 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** `python3 -m pytest tools/codegen/test_cpp_backend.py -q` passes; `--project foundation --apply` emits enum + `Error` + detail headers under `wrappers/cpp/`.
 
-- [ ] **Unit 2: Class generation — RAII wrappers, data/buffer mapping, status→expected**
+- [x] **Unit 2: Class generation — RAII wrappers, data/buffer mapping, status→expected**
 
 **Goal:** Generate idiomatic C++ classes: opaque-handle RAII (ctors take/use, dtor, move, copy-via-shallow_copy where supported), methods mapping `std::span` in / `std::vector<uint8_t>` out with buffer-capacity handling, and status returns funneled through a generated `status→expected<T,Error>` helper.
 

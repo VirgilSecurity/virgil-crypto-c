@@ -109,5 +109,69 @@ class GenerationTests(unittest.TestCase):
         self.assertIn("#pragma once", content)
 
 
+class ClassGenerationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = _load_ir("foundation")
+        cls.files = dict(generate_cpp_files(cls.ir, repo_root=str(REPO_ROOT)))
+        cls.kp = cls.files["wrappers/cpp/include/virgil/crypto/foundation/key_provider.hpp"]
+
+    def test_raii_lifecycle_rule_of_five(self) -> None:
+        c = self.kp
+        self.assertIn("KeyProvider() : c_ctx_(vscf_key_provider_new())", c)
+        self.assertIn("explicit KeyProvider(vscf_key_provider_t* c_ctx) noexcept", c)
+        self.assertIn("KeyProvider(const KeyProvider& other)", c)  # copy via shallow_copy
+        self.assertIn("vscf_key_provider_shallow_copy(other.c_ctx_)", c)
+        self.assertIn("KeyProvider(KeyProvider&& other) noexcept", c)  # move
+        self.assertIn("~KeyProvider() { vscf_key_provider_delete(c_ctx_); }", c)
+        self.assertIn("vscf_key_provider_t* c_ctx() const noexcept", c)
+        self.assertIn("private:", c)
+
+    def test_status_methods_return_expected(self) -> None:
+        self.assertIn("tl::expected<void, Error> setup_defaults()", self.kp)
+        self.assertIn("tl::expected<PrivateKey, Error> generate_private_key(AlgId alg_id)", self.kp)
+
+    def test_error_branch_uses_unexpected(self) -> None:
+        self.assertIn("return tl::unexpected(static_cast<Error>(status));", self.kp)
+
+    def test_enum_arg_cast_to_c_enum(self) -> None:
+        self.assertIn("static_cast<vscf_alg_id_t>(alg_id)", self.kp)
+
+    def test_dependency_setter(self) -> None:
+        self.assertIn("void set_random(const Random& random)", self.kp)
+        self.assertIn("vscf_key_provider_release_random(c_ctx_);", self.kp)
+        self.assertIn("vscf_key_provider_use_random(c_ctx_, random.c_ctx());", self.kp)
+
+    def test_no_value_call_anywhere(self) -> None:
+        # -fno-exceptions invariant: never call expected::value() on an error path.
+        for path, content in self.files.items():
+            self.assertNotIn(".value()", content, path)
+
+    def test_buffer_output_maps_to_vector(self) -> None:
+        # At least one generated class must exercise the buffer->vector pattern.
+        joined = "\n".join(self.files.values())
+        self.assertIn("vsc_buffer_use(", joined)
+        self.assertIn(".resize(vsc_buffer_len(", joined)
+        self.assertIn("vsc_buffer_delete(", joined)
+
+    def test_static_class_has_no_handle(self) -> None:
+        # A context="none" class (e.g. base64) is emitted with static methods and
+        # no C handle member.
+        # Pick a context=none class that is actually emitted (public scope).
+        content = None
+        for c in self.ir.classes:
+            if c.attrs.get("context") != "none":
+                continue
+            if c.attrs.get("scope") in {"private", "internal"}:
+                continue
+            path = f"wrappers/cpp/include/virgil/crypto/foundation/{c.name.replace(' ', '_').lower()}.hpp"
+            if path in self.files:
+                content = self.files[path]
+                break
+        self.assertIsNotNone(content, "expected at least one emitted static (context=none) class")
+        self.assertNotIn("c_ctx_", content)
+        self.assertIn("static ", content)
+
+
 if __name__ == "__main__":
     unittest.main()
