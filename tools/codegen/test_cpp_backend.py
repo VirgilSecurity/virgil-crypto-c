@@ -311,9 +311,12 @@ class OwnershipAndConventionTests(unittest.TestCase):
         self.assertIn("static constexpr std::size_t SIGNATURE_LEN = 3309;", c)
         self.assertIn("std::size_t signature_len(", c)
 
-    def test_string_argument_passed_as_c_str(self) -> None:
+    def test_string_argument_is_string_view_passed_as_c_str(self) -> None:
         c = self._f("pem.hpp")
-        self.assertIn("vscf_pem_wrapped_len(title.c_str(), data_len);", c)
+        # Parameter is a non-owning std::string_view; a std::string is materialised
+        # for the null-terminated C const char*.
+        self.assertIn("std::string_view title", c)
+        self.assertIn("vscf_pem_wrapped_len(std::string(title).c_str(), data_len);", c)
 
     def test_interface_forward_declares_referenced_class(self) -> None:
         # Interfaces forward-declare referenced class/interface types instead of

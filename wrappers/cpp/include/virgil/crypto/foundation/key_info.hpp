@@ -38,6 +38,7 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
 #include <virgil/crypto/foundation/vscf_key_info.h>

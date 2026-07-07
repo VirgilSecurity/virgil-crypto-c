@@ -387,7 +387,9 @@ def _cpp_scalar_type(arg: IRCArgument) -> str:
     if tn == "unsigned":
         return _UINT_MAP.get(arg.type_size or "4", "uint32_t")
     if tn in ("string", "char") or arg.is_string:
-        return "std::string"
+        # Input strings are non-owning views (cheap, accept literals/std::string).
+        # Owning returns override this in _cpp_value_type (a view would dangle).
+        return "std::string_view"
     if tn == "byte":
         return "uint8_t*" if (arg.is_array or arg.is_reference) else "uint8_t"
     return "void"
@@ -445,6 +447,8 @@ def _cpp_value_type(project_ir: IRProject, arg: IRCArgument) -> str:
         return "std::vector<uint8_t>"
     if arg.class_name:
         return _qual_type_name(project_ir, arg.class_name, arg.project)
+    if arg.is_string or (arg.type_name or "").lower() in {"string", "char"}:
+        return "std::string"  # a returned std::string_view would dangle
     return _cpp_scalar_type(arg)
 
 
@@ -458,8 +462,8 @@ def _cpp_param_type(project_ir: IRProject, arg: IRCArgument) -> str:
         return "std::span<const uint8_t>"
     if arg.class_name and arg.class_name not in {"data", "buffer"}:
         return f"const {_qual_type_name(project_ir, arg.class_name, arg.project)}&"
-    scalar = _cpp_scalar_type(arg)
-    return f"const {scalar}&" if scalar == "std::string" else scalar
+    # std::string_view and the numeric scalars are all cheap to pass by value.
+    return _cpp_scalar_type(arg)
 
 
 def _method_inputs(entity_name: str, method: IRCMethod) -> list[IRCArgument]:
@@ -569,8 +573,9 @@ def _c_call_args(project_ir, entity_name, method, is_static):
             c_enum = _c_enum_type_by_name(project_ir, arg.enum_name)
             parts.append(f"static_cast<{c_enum}>({local})")
         elif arg.is_string or (arg.type_name or "").lower() in {"string", "char"}:
-            # C takes ``const char *``; the wrapper parameter is ``const std::string&``.
-            parts.append(f"{local}.c_str()")
+            # C takes a null-terminated ``const char *``; the parameter is a
+            # (non-null-terminated) std::string_view, so materialise a std::string.
+            parts.append(f"std::string({local}).c_str()")
         else:
             parts.append(local)
     return parts
@@ -849,7 +854,7 @@ def _returns_interface(project_ir, entity_name, methods) -> bool:
 
 
 def _base_std_includes(needs_memory: bool) -> list[str]:
-    inc = ["<cstddef>", "<cstdint>", "<span>", "<string>", "<vector>", "<tl/expected.hpp>"]
+    inc = ["<cstddef>", "<cstdint>", "<span>", "<string>", "<string_view>", "<vector>", "<tl/expected.hpp>"]
     if needs_memory:
         inc.append("<memory>")
     return inc

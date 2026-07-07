@@ -38,6 +38,7 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
 #include <virgil/crypto/foundation/vscf_pem.h>
@@ -49,19 +50,19 @@ namespace virgil::crypto::foundation {
 class Pem {
 public:
     /// Return length in bytes required to hold wrapped PEM format.
-    static std::size_t wrapped_len(const std::string& title, std::size_t data_len) {
-        auto proxy_result = vscf_pem_wrapped_len(title.c_str(), data_len);
+    static std::size_t wrapped_len(std::string_view title, std::size_t data_len) {
+        auto proxy_result = vscf_pem_wrapped_len(std::string(title).c_str(), data_len);
         return proxy_result;
     }
 
     /// Takes binary data and wraps it to the simple PEM format - no
     /// additional information just header-base64-footer.
     /// Note, written buffer is NOT null-terminated.
-    static std::vector<uint8_t> wrap(const std::string& title, std::span<const uint8_t> data) {
+    static std::vector<uint8_t> wrap(std::string_view title, std::span<const uint8_t> data) {
         std::vector<uint8_t> pem(Pem::wrapped_len(title, data.size()));
         vsc_buffer_t* pem_buf = vsc_buffer_new();
         vsc_buffer_use(pem_buf, pem.data(), pem.size());
-        vscf_pem_wrap(title.c_str(), vsc_data(data.data(), data.size()), pem_buf);
+        vscf_pem_wrap(std::string(title).c_str(), vsc_data(data.data(), data.size()), pem_buf);
         pem.resize(vsc_buffer_len(pem_buf));
         vsc_buffer_delete(pem_buf);
         return pem;
