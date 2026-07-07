@@ -136,16 +136,22 @@ function(virgil_nanopb_generate)
     # nanopb .options: explicit arg wins, otherwise auto-detect <name>.options
     # next to the .proto (preserves the historical target_protobuf_sources behaviour).
     #
-    set(_options_arg "")
+    # Passed as a plugin option (--nanopb_opt), NOT spliced into --nanopb_out=<opts>:<dir>:
+    # protoc's first-colon split of the combined form collides with a Windows drive-letter
+    # colon in an absolute options path (e.g. -fC:/…/foo.options), so a downstream consumer
+    # that passes an absolute OPTIONS path fails on Windows. Keeping --nanopb_out a bare
+    # directory lets protoc recognise the drive letter, and --nanopb_opt carries -f verbatim.
+    #
+    set(_opt_arg "")
     set(_options_dep "")
     if(ARG_OPTIONS)
         if(NOT EXISTS "${ARG_OPTIONS}")
             message(FATAL_ERROR "virgil_nanopb_generate: OPTIONS file not found: ${ARG_OPTIONS}")
         endif()
-        set(_options_arg "-f${ARG_OPTIONS}")
+        set(_opt_arg "--nanopb_opt=-f${ARG_OPTIONS}")
         set(_options_dep "${ARG_OPTIONS}")
     elseif(EXISTS "${_proto_dir}/${_proto_name}.options")
-        set(_options_arg "-f${_proto_name}.options")
+        set(_opt_arg "--nanopb_opt=-f${_proto_name}.options")
         set(_options_dep "${_proto_dir}/${_proto_name}.options")
     endif()
 
@@ -173,7 +179,8 @@ function(virgil_nanopb_generate)
             OUTPUT "${_out_h}" "${_out_c}"
             COMMAND "${_protoc}"
                 "--plugin=protoc-gen-nanopb=${_generator}"
-                "--nanopb_out=${_options_arg}:${CMAKE_CURRENT_BINARY_DIR}"
+                ${_opt_arg}
+                "--nanopb_out=${CMAKE_CURRENT_BINARY_DIR}"
                 ${_proto_path_args}
                 "${_proto_name}.proto"
             DEPENDS "${ARG_PROTO}" ${_options_dep} ${_runtime_dep}
