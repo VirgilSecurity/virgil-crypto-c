@@ -285,7 +285,7 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 ### Phase B — Build & packaging
 
-- [ ] **Unit 5: CMake build for the wrapper (per-library CXX targets)**
+- [x] **Unit 5: CMake build for the wrapper (per-library CXX targets)**
 
 **Goal:** Build the generated C++ SDK as static per-library targets linking the C libs, gated by `VIRGIL_WRAP_CPP`, with a config preset.
 

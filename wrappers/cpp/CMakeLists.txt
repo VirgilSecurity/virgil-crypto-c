@@ -1,0 +1,94 @@
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+
+# The root project is LANGUAGES C; the C++ wrapper enables CXX for itself.
+project(virgil_crypto_cpp VERSION ${virgil_crypto_VERSION} LANGUAGES CXX)
+
+# ---------------------------------------------------------------------------
+#   Third-party dependencies
+# ---------------------------------------------------------------------------
+# tl::expected is the only external dependency (header-only, CC0). It backs the
+# public expected<T, Error> error type and is safe under -fno-exceptions.
+# Note: GSL is intentionally NOT used — interface/delegate arguments are passed
+# by reference (const T&), which is non-nullable by construction, so gsl::not_null
+# is unnecessary.
+include(FetchContent)
+FetchContent_Declare(tl_expected
+    GIT_REPOSITORY https://github.com/TartanLlama/expected.git
+    GIT_TAG v1.1.0
+)
+set(EXPECTED_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(EXPECTED_BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(tl_expected)
+
+set(VIRGIL_CPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+# ---------------------------------------------------------------------------
+#   foundation-cpp (has a generated dispatch translation unit -> STATIC)
+# ---------------------------------------------------------------------------
+add_library(foundation-cpp STATIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/foundation_implementation.cpp"
+)
+add_library(virgil::foundation-cpp ALIAS foundation-cpp)
+target_include_directories(foundation-cpp PUBLIC
+    "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
+    "$<INSTALL_INTERFACE:include>"
+)
+target_compile_features(foundation-cpp PUBLIC cxx_std_20)
+target_link_libraries(foundation-cpp PUBLIC vsc::foundation tl::expected)
+
+# ---------------------------------------------------------------------------
+#   ratchet-cpp / phe-cpp (header-only -> INTERFACE libraries)
+# ---------------------------------------------------------------------------
+# Both depend on foundation types (Random, PrivateKey, PublicKey), so they link
+# virgil::foundation-cpp for its headers + include dir, plus their own C library.
+add_library(ratchet-cpp INTERFACE)
+add_library(virgil::ratchet-cpp ALIAS ratchet-cpp)
+target_include_directories(ratchet-cpp INTERFACE
+    "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
+    "$<INSTALL_INTERFACE:include>"
+)
+target_compile_features(ratchet-cpp INTERFACE cxx_std_20)
+target_link_libraries(ratchet-cpp INTERFACE virgil::foundation-cpp vsc::ratchet tl::expected)
+
+add_library(phe-cpp INTERFACE)
+add_library(virgil::phe-cpp ALIAS phe-cpp)
+target_include_directories(phe-cpp INTERFACE
+    "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
+    "$<INSTALL_INTERFACE:include>"
+)
+target_compile_features(phe-cpp INTERFACE cxx_std_20)
+target_link_libraries(phe-cpp INTERFACE virgil::foundation-cpp vsc::phe tl::expected)
