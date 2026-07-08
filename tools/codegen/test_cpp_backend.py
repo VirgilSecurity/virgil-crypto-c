@@ -318,6 +318,15 @@ class OwnershipAndConventionTests(unittest.TestCase):
         self.assertIn("std::string_view title", c)
         self.assertIn("vscf_pem_wrapped_len(std::string(title).c_str(), data_len);", c)
 
+    def test_status_returning_dependency_setter_returns_expected(self) -> None:
+        # vscf_ctr_drbg_use_entropy_source returns vscf_status_t (VSCF_NODISCARD);
+        # its setter must surface the failure, not drop it.
+        c = self._f("ctr_drbg.hpp")
+        self.assertIn("tl::expected<void, Error> set_entropy_source(const EntropySource& entropy_source)", c)
+        self.assertIn("const vscf_status_t status = vscf_ctr_drbg_use_entropy_source(", c)
+        # a plain (void-returning) use_ setter stays void
+        self.assertIn("void set_hash(const Hash& hash)", self._f("hkdf.hpp"))
+
     def test_is_const_methods_are_const_qualified(self) -> None:
         # Class method, interface override, and interface pure-virtual decl all pick
         # up C++ `const` from the IR is_const flag; static methods never do.

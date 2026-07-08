@@ -839,6 +839,35 @@ def _interface_ref_split(project_ir, iface):
     return sorted(set(includes)), sorted(set(fwd))
 
 
+def _emit_dependency_setter(lines, project_ir, entity, dep):
+    """Emit a ``set_<dep>`` setter that release+use-replaces a dependency.
+
+    Most ``use_<dep>`` C functions return void, but a validating one (marked
+    ``is_observers_return_status``, e.g. ``vscf_ctr_drbg_use_entropy_source`` which
+    is ``VSCF_NODISCARD``) returns a ``vscf_status_t``; those setters return
+    ``expected<void, Error>`` and surface the failure instead of dropping it."""
+    prefix = project_ir.prefix
+    dep_snake = _entity_snake(dep.name)
+    dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
+    local = cpp_method_name(dep.name)
+    use = f"{prefix}_{entity}_use_{dep_snake}(c_ctx_, {_dep_handle_expr(dep, local)})"
+    if dep.is_observers_return_status:
+        lines.append(f"    tl::expected<void, Error> set_{dep_snake}(const {dep_type}& {local}) {{")
+        lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
+        lines.append(f"        const {prefix}_status_t status = {use};")
+        lines.append(f"        if (status != {prefix}_status_SUCCESS) {{")
+        lines.append(f"            return tl::unexpected(static_cast<Error>(status));")
+        lines.append(f"        }}")
+        lines.append(f"        return {{}};")
+        lines.append(f"    }}")
+    else:
+        lines.append(f"    void set_{dep_snake}(const {dep_type}& {local}) {{")
+        lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
+        lines.append(f"        {use};")
+        lines.append(f"    }}")
+    lines.append("")
+
+
 def _dep_handle_expr(dep, local: str) -> str:
     """C handle expression for passing a dependency to a ``use_<dep>`` C call.
 
@@ -924,14 +953,7 @@ def generate_cpp_class(project_ir: IRProject, cls: IRClass) -> str:
     # --- Dependency setters ---
     if not is_static:
         for dep in cls.dependencies:
-            dep_snake = _entity_snake(dep.name)
-            dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
-            local = cpp_method_name(dep.name)
-            lines.append(f"    void set_{dep_snake}(const {dep_type}& {local}) {{")
-            lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
-            lines.append(f"        {prefix}_{entity}_use_{dep_snake}(c_ctx_, {_dep_handle_expr(dep, local)});")
-            lines.append(f"    }}")
-            lines.append("")
+            _emit_dependency_setter(lines, project_ir, entity, dep)
 
     # --- Methods ---
     for method in cls.methods:
@@ -1106,14 +1128,7 @@ def generate_cpp_implementation(project_ir: IRProject, impl) -> str:
             lines.append("")
 
     for dep in impl.dependencies:
-        dep_snake = _entity_snake(dep.name)
-        dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
-        local = cpp_method_name(dep.name)
-        lines.append(f"    void set_{dep_snake}(const {dep_type}& {local}) {{")
-        lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
-        lines.append(f"        {prefix}_{entity}_use_{dep_snake}(c_ctx_, {_dep_handle_expr(dep, local)});")
-        lines.append(f"    }}")
-        lines.append("")
+        _emit_dependency_setter(lines, project_ir, entity, dep)
 
     for method in own_methods:
         _emit_cpp_method(lines, project_ir, method, sig_entity=impl.name)

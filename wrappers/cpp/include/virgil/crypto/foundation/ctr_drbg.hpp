@@ -89,9 +89,13 @@ public:
     /// The amount of entropy used per seed by default.
     static constexpr std::size_t ENTROPY_LEN = 48;
 
-    void set_entropy_source(const EntropySource& entropy_source) {
+    tl::expected<void, Error> set_entropy_source(const EntropySource& entropy_source) {
         vscf_ctr_drbg_release_entropy_source(c_ctx_);
-        vscf_ctr_drbg_use_entropy_source(c_ctx_, entropy_source.impl());
+        const vscf_status_t status = vscf_ctr_drbg_use_entropy_source(c_ctx_, entropy_source.impl());
+        if (status != vscf_status_SUCCESS) {
+            return tl::unexpected(static_cast<Error>(status));
+        }
+        return {};
     }
 
     /// Setup predefined values to the uninitialized class dependencies.
