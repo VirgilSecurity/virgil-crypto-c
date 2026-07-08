@@ -76,13 +76,13 @@ public:
     vscr_ratchet_message_t* c_ctx() const noexcept { return c_ctx_; }
 
     /// Returns message type.
-    MsgType get_type() {
+    MsgType get_type() const {
         auto proxy_result = vscr_ratchet_message_get_type(c_ctx_);
         return static_cast<MsgType>(proxy_result);
     }
 
     /// Returns message counter in current asymmetric ratchet round.
-    uint32_t get_counter() {
+    uint32_t get_counter() const {
         auto proxy_result = vscr_ratchet_message_get_counter(c_ctx_);
         return proxy_result;
     }
@@ -112,13 +112,13 @@ public:
     }
 
     /// Buffer len to serialize this class.
-    std::size_t serialize_len() {
+    std::size_t serialize_len() const {
         auto proxy_result = vscr_ratchet_message_serialize_len(c_ctx_);
         return proxy_result;
     }
 
     /// Serializes instance.
-    std::vector<uint8_t> serialize() {
+    std::vector<uint8_t> serialize() const {
         std::vector<uint8_t> output(this->serialize_len());
         vsc_buffer_t* output_buf = vsc_buffer_new();
         vsc_buffer_use(output_buf, output.data(), output.size());

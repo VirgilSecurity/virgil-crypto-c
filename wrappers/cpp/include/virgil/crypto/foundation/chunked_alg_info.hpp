@@ -84,25 +84,25 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_chunked_alg_info_impl(c_ctx_); }
 
     /// Return chunk cipher alg info version.
-    std::size_t version() {
+    std::size_t version() const {
         auto proxy_result = vscf_chunked_alg_info_version(c_ctx_);
         return proxy_result;
     }
 
     /// Return chunk size.
-    std::size_t chunk_size() {
+    std::size_t chunk_size() const {
         auto proxy_result = vscf_chunked_alg_info_chunk_size(c_ctx_);
         return proxy_result;
     }
 
     /// Return the initial nonce.
-    std::vector<uint8_t> nonce() {
+    std::vector<uint8_t> nonce() const {
         auto proxy_result = vscf_chunked_alg_info_nonce(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_chunked_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

@@ -81,13 +81,13 @@ public:
     static constexpr std::size_t DEFAULT_FRAME_MAX = 256;
 
     /// Return padding frame in bytes.
-    std::size_t frame() {
+    std::size_t frame() const {
         auto proxy_result = vscf_padding_params_frame(c_ctx_);
         return proxy_result;
     }
 
     /// Return maximum padding frame in bytes.
-    std::size_t frame_max() {
+    std::size_t frame_max() const {
         auto proxy_result = vscf_padding_params_frame_max(c_ctx_);
         return proxy_result;
     }

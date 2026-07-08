@@ -89,44 +89,44 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_compound_public_key_impl(c_ctx_); }
 
     /// Return a cipher public key suitable for initial encryption.
-    std::unique_ptr<PublicKey> cipher_key() {
+    std::unique_ptr<PublicKey> cipher_key() const {
         auto proxy_result = vscf_compound_public_key_cipher_key(c_ctx_);
         return FoundationImplementation::wrap_public_key(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return public key suitable for verifying.
-    std::unique_ptr<PublicKey> signer_key() {
+    std::unique_ptr<PublicKey> signer_key() const {
         auto proxy_result = vscf_compound_public_key_signer_key(c_ctx_);
         return FoundationImplementation::wrap_public_key(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Algorithm identifier the key belongs to.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_compound_public_key_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Return algorithm information that can be used for serialization.
-    std::unique_ptr<AlgInfo> alg_info() override {
+    std::unique_ptr<AlgInfo> alg_info() const override {
         auto proxy_result = vscf_compound_public_key_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Length of the key in bytes.
-    std::size_t len() override {
+    std::size_t len() const override {
         auto proxy_result = vscf_compound_public_key_len(c_ctx_);
         return proxy_result;
     }
 
     /// Length of the key in bits.
-    std::size_t bitlen() override {
+    std::size_t bitlen() const override {
         auto proxy_result = vscf_compound_public_key_bitlen(c_ctx_);
         return proxy_result;
     }
 
     /// Check that key is valid.
     /// Note, this operation can be slow.
-    bool is_valid() override {
+    bool is_valid() const override {
         auto proxy_result = vscf_compound_public_key_is_valid(c_ctx_);
         return proxy_result;
     }

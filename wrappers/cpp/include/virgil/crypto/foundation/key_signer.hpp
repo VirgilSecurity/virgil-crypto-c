@@ -58,20 +58,20 @@ public:
     ~KeySigner() override = default;
 
     /// Check if algorithm can sign data digest with a given key.
-    virtual bool can_sign(const PrivateKey& private_key) = 0;
+    virtual bool can_sign(const PrivateKey& private_key) const = 0;
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    virtual std::size_t signature_len(const PrivateKey& private_key) = 0;
+    virtual std::size_t signature_len(const PrivateKey& private_key) const = 0;
 
     /// Sign data digest with a given private key.
-    virtual tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) = 0;
+    virtual tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const = 0;
 
     /// Check if algorithm can verify data digest with a given key.
-    virtual bool can_verify(const PublicKey& public_key) = 0;
+    virtual bool can_verify(const PublicKey& public_key) const = 0;
 
     /// Verify data digest with a given public key and signature.
-    virtual bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) = 0;
+    virtual bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const = 0;
 
 };
 

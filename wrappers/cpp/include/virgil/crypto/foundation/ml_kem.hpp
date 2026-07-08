@@ -120,7 +120,7 @@ public:
 
     /// Generate new private key.
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_key() {
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_key() const {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_ml_kem_generate_key(c_ctx_, &error);
@@ -131,13 +131,13 @@ public:
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_ml_kem_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_ml_kem_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -153,7 +153,7 @@ public:
 
     /// Generate ephemeral private key of the same type.
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) override {
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_ml_kem_generate_ephemeral_key(c_ctx_, key.impl(), &error);
@@ -171,7 +171,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) override {
+    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_ml_kem_import_public_key(c_ctx_, raw_key.c_ctx(), &error);
@@ -186,7 +186,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be exported in format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) override {
+    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_ml_kem_export_public_key(c_ctx_, public_key.impl(), &error);
@@ -204,7 +204,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) override {
+    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_ml_kem_import_private_key(c_ctx_, raw_key.c_ctx(), &error);
@@ -219,7 +219,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be exported in format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) override {
+    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_ml_kem_export_private_key(c_ctx_, private_key.impl(), &error);
@@ -230,19 +230,19 @@ public:
     }
 
     /// Return length in bytes required to hold encapsulated shared key.
-    std::size_t kem_shared_key_len(const Key& key) override {
+    std::size_t kem_shared_key_len(const Key& key) const override {
         auto proxy_result = vscf_ml_kem_kem_shared_key_len(c_ctx_, key.impl());
         return proxy_result;
     }
 
     /// Return length in bytes required to hold encapsulated key.
-    std::size_t kem_encapsulated_key_len(const PublicKey& public_key) override {
+    std::size_t kem_encapsulated_key_len(const PublicKey& public_key) const override {
         auto proxy_result = vscf_ml_kem_kem_encapsulated_key_len(c_ctx_, public_key.impl());
         return proxy_result;
     }
 
     /// Generate a shared key and a key encapsulated message.
-    tl::expected<KemKemEncapsulateResult, Error> kem_encapsulate(const PublicKey& public_key) override {
+    tl::expected<KemKemEncapsulateResult, Error> kem_encapsulate(const PublicKey& public_key) const override {
         std::vector<uint8_t> shared_key(this->kem_shared_key_len(public_key));
         vsc_buffer_t* shared_key_buf = vsc_buffer_new();
         vsc_buffer_use(shared_key_buf, shared_key.data(), shared_key.size());
@@ -261,7 +261,7 @@ public:
     }
 
     /// Decapsulate the shared key.
-    tl::expected<std::vector<uint8_t>, Error> kem_decapsulate(std::span<const uint8_t> encapsulated_key, const PrivateKey& private_key) override {
+    tl::expected<std::vector<uint8_t>, Error> kem_decapsulate(std::span<const uint8_t> encapsulated_key, const PrivateKey& private_key) const override {
         std::vector<uint8_t> shared_key(this->kem_shared_key_len(private_key));
         vsc_buffer_t* shared_key_buf = vsc_buffer_new();
         vsc_buffer_use(shared_key_buf, shared_key.data(), shared_key.size());

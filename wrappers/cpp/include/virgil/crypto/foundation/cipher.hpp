@@ -77,12 +77,12 @@ public:
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an encryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    virtual std::size_t encrypted_out_len(std::size_t data_len) = 0;
+    virtual std::size_t encrypted_out_len(std::size_t data_len) const = 0;
 
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an decryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    virtual std::size_t decrypted_out_len(std::size_t data_len) = 0;
+    virtual std::size_t decrypted_out_len(std::size_t data_len) const = 0;
 
     /// Accomplish encryption or decryption process.
     virtual tl::expected<std::vector<uint8_t>, Error> finish() = 0;

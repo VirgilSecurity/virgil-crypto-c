@@ -53,7 +53,7 @@ public:
     ~AlgInfo() override = default;
 
     /// Provide algorithm identificator.
-    virtual AlgId alg_id() = 0;
+    virtual AlgId alg_id() const = 0;
 
 };
 

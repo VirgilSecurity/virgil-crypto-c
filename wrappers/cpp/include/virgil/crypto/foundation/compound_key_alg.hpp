@@ -112,7 +112,7 @@ public:
     /// Make compound private key from given.
     ///
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> make_key(const PrivateKey& cipher_key, const PrivateKey& signer_key) {
+    tl::expected<std::unique_ptr<PrivateKey>, Error> make_key(const PrivateKey& cipher_key, const PrivateKey& signer_key) const {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_compound_key_alg_make_key(c_ctx_, cipher_key.impl(), signer_key.impl(), &error);
@@ -123,13 +123,13 @@ public:
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_compound_key_alg_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_compound_key_alg_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -145,7 +145,7 @@ public:
 
     /// Generate ephemeral private key of the same type.
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) override {
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_compound_key_alg_generate_ephemeral_key(c_ctx_, key.impl(), &error);
@@ -163,7 +163,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) override {
+    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_compound_key_alg_import_public_key(c_ctx_, raw_key.c_ctx(), &error);
@@ -178,7 +178,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be exported in format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) override {
+    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_compound_key_alg_export_public_key(c_ctx_, public_key.impl(), &error);
@@ -196,7 +196,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) override {
+    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_compound_key_alg_import_private_key(c_ctx_, raw_key.c_ctx(), &error);
@@ -211,7 +211,7 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be exported in format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) override {
+    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const override {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_compound_key_alg_export_private_key(c_ctx_, private_key.impl(), &error);
@@ -222,19 +222,19 @@ public:
     }
 
     /// Check if algorithm can encrypt data with a given key.
-    bool can_encrypt(const PublicKey& public_key, std::size_t data_len) override {
+    bool can_encrypt(const PublicKey& public_key, std::size_t data_len) const override {
         auto proxy_result = vscf_compound_key_alg_can_encrypt(c_ctx_, public_key.impl(), data_len);
         return proxy_result;
     }
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) override {
+    std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) const override {
         auto proxy_result = vscf_compound_key_alg_encrypted_len(c_ctx_, public_key.impl(), data_len);
         return proxy_result;
     }
 
     /// Encrypt data with a given public key.
-    tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) override {
+    tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) const override {
         std::vector<uint8_t> out(this->encrypted_len(public_key, data.size()));
         vsc_buffer_t* out_buf = vsc_buffer_new();
         vsc_buffer_use(out_buf, out.data(), out.size());
@@ -249,19 +249,19 @@ public:
 
     /// Check if algorithm can decrypt data with a given key.
     /// However, success result of decryption is not guaranteed.
-    bool can_decrypt(const PrivateKey& private_key, std::size_t data_len) override {
+    bool can_decrypt(const PrivateKey& private_key, std::size_t data_len) const override {
         auto proxy_result = vscf_compound_key_alg_can_decrypt(c_ctx_, private_key.impl(), data_len);
         return proxy_result;
     }
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) override {
+    std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) const override {
         auto proxy_result = vscf_compound_key_alg_decrypted_len(c_ctx_, private_key.impl(), data_len);
         return proxy_result;
     }
 
     /// Decrypt given data.
-    tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) override {
+    tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) const override {
         std::vector<uint8_t> out(this->decrypted_len(private_key, data.size()));
         vsc_buffer_t* out_buf = vsc_buffer_new();
         vsc_buffer_use(out_buf, out.data(), out.size());
@@ -275,20 +275,20 @@ public:
     }
 
     /// Check if algorithm can sign data digest with a given key.
-    bool can_sign(const PrivateKey& private_key) override {
+    bool can_sign(const PrivateKey& private_key) const override {
         auto proxy_result = vscf_compound_key_alg_can_sign(c_ctx_, private_key.impl());
         return proxy_result;
     }
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    std::size_t signature_len(const PrivateKey& private_key) override {
+    std::size_t signature_len(const PrivateKey& private_key) const override {
         auto proxy_result = vscf_compound_key_alg_signature_len(c_ctx_, private_key.impl());
         return proxy_result;
     }
 
     /// Sign data digest with a given private key.
-    tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) override {
+    tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const override {
         std::vector<uint8_t> signature(this->signature_len(private_key));
         vsc_buffer_t* signature_buf = vsc_buffer_new();
         vsc_buffer_use(signature_buf, signature.data(), signature.size());
@@ -302,13 +302,13 @@ public:
     }
 
     /// Check if algorithm can verify data digest with a given key.
-    bool can_verify(const PublicKey& public_key) override {
+    bool can_verify(const PublicKey& public_key) const override {
         auto proxy_result = vscf_compound_key_alg_can_verify(c_ctx_, public_key.impl());
         return proxy_result;
     }
 
     /// Verify data digest with a given public key and signature.
-    bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) override {
+    bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const override {
         auto proxy_result = vscf_compound_key_alg_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), vsc_data(signature.data(), signature.size()));
         return proxy_result;
     }

@@ -83,19 +83,19 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_ecc_alg_info_impl(c_ctx_); }
 
     /// Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
-    OidId key_id() {
+    OidId key_id() const {
         auto proxy_result = vscf_ecc_alg_info_key_id(c_ctx_);
         return static_cast<OidId>(proxy_result);
     }
 
     /// Return EC domain group identificator.
-    OidId domain_id() {
+    OidId domain_id() const {
         auto proxy_result = vscf_ecc_alg_info_domain_id(c_ctx_);
         return static_cast<OidId>(proxy_result);
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_ecc_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

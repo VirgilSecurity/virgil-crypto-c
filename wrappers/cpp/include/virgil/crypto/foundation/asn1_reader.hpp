@@ -60,10 +60,10 @@ public:
     virtual std::size_t left_len() = 0;
 
     /// Return true if status is not "success".
-    virtual bool has_error() = 0;
+    virtual bool has_error() const = 0;
 
     /// Return error code.
-    virtual tl::expected<void, Error> status() = 0;
+    virtual tl::expected<void, Error> status() const = 0;
 
     /// Get tag of the current ASN.1 element.
     virtual int32_t get_tag() = 0;

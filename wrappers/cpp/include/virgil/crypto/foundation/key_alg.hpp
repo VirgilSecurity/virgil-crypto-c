@@ -60,7 +60,7 @@ public:
 
     /// Generate ephemeral private key of the same type.
     /// Note, this operation might be slow.
-    virtual tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) = 0;
+    virtual tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const = 0;
 
     /// Import public key from the raw binary format.
     ///
@@ -70,14 +70,14 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.1.
-    virtual tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) = 0;
+    virtual tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const = 0;
 
     /// Export public key to the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be exported in format defined in
     /// RFC 3447 Appendix A.1.1.
-    virtual tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) = 0;
+    virtual tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const = 0;
 
     /// Import private key from the raw binary format.
     ///
@@ -87,14 +87,14 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
-    virtual tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) = 0;
+    virtual tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const = 0;
 
     /// Export private key in the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be exported in format defined in
     /// RFC 3447 Appendix A.1.2.
-    virtual tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) = 0;
+    virtual tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const = 0;
 
 };
 

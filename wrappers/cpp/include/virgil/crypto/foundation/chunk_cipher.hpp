@@ -123,13 +123,13 @@ public:
     /// Valid after calling start_encryption. On the generic CMS path the
     /// nonce is carried in the produced 'chunked alg info' (self-describing),
     /// so no out-of-band custom params are needed.
-    std::vector<uint8_t> nonce() {
+    std::vector<uint8_t> nonce() const {
         auto proxy_result = vscf_chunk_cipher_nonce(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
 
     /// Return buffer length required to hold output of process_encryption and finish_encryption.
-    std::size_t encryption_out_len(std::size_t data_len) {
+    std::size_t encryption_out_len(std::size_t data_len) const {
         auto proxy_result = vscf_chunk_cipher_encryption_out_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -163,7 +163,7 @@ public:
     }
 
     /// Return buffer length required to hold output of process_decryption and finish_decryption.
-    std::size_t decryption_out_len(std::size_t data_len) {
+    std::size_t decryption_out_len(std::size_t data_len) const {
         auto proxy_result = vscf_chunk_cipher_decryption_out_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -201,7 +201,7 @@ public:
     /// is empty when data_len is an exact multiple of chunk_size. Use this to drive random-access /
     /// parallel encryption via encrypt_at over indices 0 .. chunk_count-1, placing is_last on the
     /// highest index. Requires chunk_size to be set (> 0).
-    std::size_t chunk_count(std::size_t data_len) {
+    std::size_t chunk_count(std::size_t data_len) const {
         auto proxy_result = vscf_chunk_cipher_chunk_count(c_ctx_, data_len);
         return proxy_result;
     }
@@ -268,13 +268,13 @@ public:
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_chunk_cipher_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_chunk_cipher_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -303,13 +303,13 @@ public:
     }
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(std::size_t data_len) override {
+    std::size_t encrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_chunk_cipher_encrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
 
     /// Precise length calculation of encrypted data.
-    std::size_t precise_encrypted_len(std::size_t data_len) override {
+    std::size_t precise_encrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_chunk_cipher_precise_encrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -329,7 +329,7 @@ public:
     }
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(std::size_t data_len) override {
+    std::size_t decrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_chunk_cipher_decrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -376,7 +376,7 @@ public:
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an encryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t encrypted_out_len(std::size_t data_len) override {
+    std::size_t encrypted_out_len(std::size_t data_len) const override {
         auto proxy_result = vscf_chunk_cipher_encrypted_out_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -384,7 +384,7 @@ public:
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an decryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t decrypted_out_len(std::size_t data_len) override {
+    std::size_t decrypted_out_len(std::size_t data_len) const override {
         auto proxy_result = vscf_chunk_cipher_decrypted_out_len(c_ctx_, data_len);
         return proxy_result;
     }

@@ -85,13 +85,13 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_aes128_kw_impl(c_ctx_); }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_aes128_kw_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_aes128_kw_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -106,13 +106,13 @@ public:
     }
 
     /// Return buffer length required to hold a wrapped key for the given plain key length.
-    std::size_t wrapped_len(std::size_t data_len) override {
+    std::size_t wrapped_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes128_kw_wrapped_len(c_ctx_, data_len);
         return proxy_result;
     }
 
     /// Return buffer length required to hold an unwrapped key for the given wrapped key length.
-    std::size_t unwrapped_len(std::size_t data_len) override {
+    std::size_t unwrapped_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes128_kw_unwrapped_len(c_ctx_, data_len);
         return proxy_result;
     }

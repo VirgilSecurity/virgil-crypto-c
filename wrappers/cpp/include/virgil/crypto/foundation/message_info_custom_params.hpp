@@ -127,7 +127,7 @@ public:
     }
 
     /// Return true if at least one param exists.
-    bool has_params() {
+    bool has_params() const {
         auto proxy_result = vscf_message_info_custom_params_has_params(c_ctx_);
         return proxy_result;
     }

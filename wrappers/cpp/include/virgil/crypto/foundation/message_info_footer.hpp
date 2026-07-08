@@ -79,25 +79,25 @@ public:
     vscf_message_info_footer_t* c_ctx() const noexcept { return c_ctx_; }
 
     /// Return true if at least one signer info presents.
-    bool has_signer_infos() {
+    bool has_signer_infos() const {
         auto proxy_result = vscf_message_info_footer_has_signer_infos(c_ctx_);
         return proxy_result;
     }
 
     /// Return list with a "signer info" elements.
-    SignerInfoList signer_infos() {
+    SignerInfoList signer_infos() const {
         auto proxy_result = vscf_message_info_footer_signer_infos(c_ctx_);
         return SignerInfoList(vscf_signer_info_list_shallow_copy(const_cast<vscf_signer_info_list_t*>(proxy_result)));
     }
 
     /// Return information about algorithm that was used for data hashing.
-    std::unique_ptr<AlgInfo> signer_hash_alg_info() {
+    std::unique_ptr<AlgInfo> signer_hash_alg_info() const {
         auto proxy_result = vscf_message_info_footer_signer_hash_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return plain text digest that was used to produce signature.
-    std::vector<uint8_t> signer_digest() {
+    std::vector<uint8_t> signer_digest() const {
         auto proxy_result = vscf_message_info_footer_signer_digest(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }

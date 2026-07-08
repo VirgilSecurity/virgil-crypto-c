@@ -58,11 +58,11 @@ public:
 
     /// Compute shared key for 2 asymmetric keys.
     /// Note, computed shared key can be used only within symmetric cryptography.
-    virtual tl::expected<std::vector<uint8_t>, Error> compute_shared_key(const PublicKey& public_key, const PrivateKey& private_key) = 0;
+    virtual tl::expected<std::vector<uint8_t>, Error> compute_shared_key(const PublicKey& public_key, const PrivateKey& private_key) const = 0;
 
     /// Return number of bytes required to hold shared key.
     /// Expect Public Key or Private Key.
-    virtual std::size_t shared_key_len(const Key& key) = 0;
+    virtual std::size_t shared_key_len(const Key& key) const = 0;
 
 };
 

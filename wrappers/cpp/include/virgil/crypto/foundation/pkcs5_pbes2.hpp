@@ -103,13 +103,13 @@ public:
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_pkcs5_pbes2_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_pkcs5_pbes2_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -138,13 +138,13 @@ public:
     }
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(std::size_t data_len) override {
+    std::size_t encrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_pkcs5_pbes2_encrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
 
     /// Precise length calculation of encrypted data.
-    std::size_t precise_encrypted_len(std::size_t data_len) override {
+    std::size_t precise_encrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_pkcs5_pbes2_precise_encrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -164,7 +164,7 @@ public:
     }
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(std::size_t data_len) override {
+    std::size_t decrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_pkcs5_pbes2_decrypted_len(c_ctx_, data_len);
         return proxy_result;
     }

@@ -104,31 +104,31 @@ public:
     }
 
     /// Returns total inner buffer length.
-    std::size_t len() override {
+    std::size_t len() const override {
         auto proxy_result = vscf_asn1wr_len(c_ctx_);
         return proxy_result;
     }
 
     /// Returns how many bytes were already written to the ASN.1 structure.
-    std::size_t written_len() override {
+    std::size_t written_len() const override {
         auto proxy_result = vscf_asn1wr_written_len(c_ctx_);
         return proxy_result;
     }
 
     /// Returns how many bytes are available for writing.
-    std::size_t unwritten_len() override {
+    std::size_t unwritten_len() const override {
         auto proxy_result = vscf_asn1wr_unwritten_len(c_ctx_);
         return proxy_result;
     }
 
     /// Return true if status is not "success".
-    bool has_error() override {
+    bool has_error() const override {
         auto proxy_result = vscf_asn1wr_has_error(c_ctx_);
         return proxy_result;
     }
 
     /// Return error code.
-    tl::expected<void, Error> status() override {
+    tl::expected<void, Error> status() const override {
         const vscf_status_t status = vscf_asn1wr_status(c_ctx_);
         if (status != vscf_status_SUCCESS) {
             return tl::unexpected(static_cast<Error>(status));

@@ -79,19 +79,19 @@ public:
     vscf_signer_info_t* c_ctx() const noexcept { return c_ctx_; }
 
     /// Return signer identifier.
-    std::vector<uint8_t> signer_id() {
+    std::vector<uint8_t> signer_id() const {
         auto proxy_result = vscf_signer_info_signer_id(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
 
     /// Return algorithm information that was used for data signing.
-    std::unique_ptr<AlgInfo> signer_alg_info() {
+    std::unique_ptr<AlgInfo> signer_alg_info() const {
         auto proxy_result = vscf_signer_info_signer_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return data signature.
-    std::vector<uint8_t> signature() {
+    std::vector<uint8_t> signature() const {
         auto proxy_result = vscf_signer_info_signature(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }

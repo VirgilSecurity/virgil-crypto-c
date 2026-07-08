@@ -55,10 +55,10 @@ public:
     virtual tl::expected<std::vector<uint8_t>, Error> encrypt(std::span<const uint8_t> data) = 0;
 
     /// Calculate required buffer length to hold the encrypted data.
-    virtual std::size_t encrypted_len(std::size_t data_len) = 0;
+    virtual std::size_t encrypted_len(std::size_t data_len) const = 0;
 
     /// Precise length calculation of encrypted data.
-    virtual std::size_t precise_encrypted_len(std::size_t data_len) = 0;
+    virtual std::size_t precise_encrypted_len(std::size_t data_len) const = 0;
 
 };
 

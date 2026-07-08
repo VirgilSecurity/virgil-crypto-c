@@ -215,7 +215,7 @@ class InterfaceAndImplementationTests(unittest.TestCase):
 
     def test_interface_return_wrapped_as_unique_ptr(self) -> None:
         c = self._f("sha256.hpp")
-        self.assertIn("std::unique_ptr<AlgInfo> produce_alg_info() override {", c)
+        self.assertIn("std::unique_ptr<AlgInfo> produce_alg_info() const override {", c)
         self.assertIn("return FoundationImplementation::wrap_alg_info(proxy_result);", c)
 
     def test_interface_arg_uses_impl(self) -> None:
@@ -317,6 +317,17 @@ class OwnershipAndConventionTests(unittest.TestCase):
         # for the null-terminated C const char*.
         self.assertIn("std::string_view title", c)
         self.assertIn("vscf_pem_wrapped_len(std::string(title).c_str(), data_len);", c)
+
+    def test_is_const_methods_are_const_qualified(self) -> None:
+        # Class method, interface override, and interface pure-virtual decl all pick
+        # up C++ `const` from the IR is_const flag; static methods never do.
+        rpk = self._f("raw_private_key.hpp")
+        self.assertIn("RawPublicKey get_public_key() const {", rpk)   # class method
+        self.assertIn("AlgId alg_id() const override {", rpk)         # interface override
+        key = self._f("key.hpp")
+        self.assertIn("virtual AlgId alg_id() const = 0;", key)       # interface decl
+        # a mutating method stays non-const
+        self.assertNotIn("setup_defaults() const", self._f("key_provider.hpp"))
 
     def test_interface_forward_declares_referenced_class(self) -> None:
         # Interfaces forward-declare referenced class/interface types instead of

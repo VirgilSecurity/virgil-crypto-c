@@ -83,19 +83,19 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_pbe_alg_info_impl(c_ctx_); }
 
     /// Return KDF algorithm information.
-    std::unique_ptr<AlgInfo> kdf_alg_info() {
+    std::unique_ptr<AlgInfo> kdf_alg_info() const {
         auto proxy_result = vscf_pbe_alg_info_kdf_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return cipher algorithm information.
-    std::unique_ptr<AlgInfo> cipher_alg_info() {
+    std::unique_ptr<AlgInfo> cipher_alg_info() const {
         auto proxy_result = vscf_pbe_alg_info_cipher_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_pbe_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

@@ -92,13 +92,13 @@ public:
     }
 
     /// Return true if status is not "success".
-    bool has_error() override {
+    bool has_error() const override {
         auto proxy_result = vscf_asn1rd_has_error(c_ctx_);
         return proxy_result;
     }
 
     /// Return error code.
-    tl::expected<void, Error> status() override {
+    tl::expected<void, Error> status() const override {
         const vscf_status_t status = vscf_asn1rd_status(c_ctx_);
         if (status != vscf_status_SUCCESS) {
             return tl::unexpected(static_cast<Error>(status));

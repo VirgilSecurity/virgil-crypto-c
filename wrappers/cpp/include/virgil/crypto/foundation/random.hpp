@@ -53,7 +53,7 @@ public:
 
     /// Generate random bytes.
     /// All RNG implementations must be thread-safe.
-    virtual tl::expected<std::vector<uint8_t>, Error> random(std::size_t data_len) = 0;
+    virtual tl::expected<std::vector<uint8_t>, Error> random(std::size_t data_len) const = 0;
 
     /// Retrieve new seed data from the entropy sources.
     virtual tl::expected<void, Error> reseed() = 0;

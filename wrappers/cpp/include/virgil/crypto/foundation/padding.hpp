@@ -57,14 +57,14 @@ public:
     virtual void configure(const PaddingParams& params) = 0;
 
     /// Return length in bytes of a data with a padding.
-    virtual std::size_t padded_data_len(std::size_t data_len) = 0;
+    virtual std::size_t padded_data_len(std::size_t data_len) const = 0;
 
     /// Return an actual number of padding in bytes.
     /// Note, this method might be called right before "finish data processing".
-    virtual std::size_t len() = 0;
+    virtual std::size_t len() const = 0;
 
     /// Return a maximum number of padding in bytes.
-    virtual std::size_t len_max() = 0;
+    virtual std::size_t len_max() const = 0;
 
     /// Prepare the algorithm to process data.
     virtual void start_data_processing() = 0;
@@ -85,7 +85,7 @@ public:
 
     /// Return length in bytes required hold output of the method
     /// "finish padded data processing".
-    virtual std::size_t finish_padded_data_processing_out_len() = 0;
+    virtual std::size_t finish_padded_data_processing_out_len() const = 0;
 
     /// Accomplish padded data processing and return left data without a padding.
     virtual tl::expected<std::vector<uint8_t>, Error> finish_padded_data_processing() = 0;

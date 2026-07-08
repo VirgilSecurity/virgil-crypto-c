@@ -57,10 +57,10 @@ public:
     ~Alg() override = default;
 
     /// Provide algorithm identificator.
-    virtual AlgId alg_id() = 0;
+    virtual AlgId alg_id() const = 0;
 
     /// Produce object with algorithm information and configuration parameters.
-    virtual std::unique_ptr<AlgInfo> produce_alg_info() = 0;
+    virtual std::unique_ptr<AlgInfo> produce_alg_info() const = 0;
 
     /// Restore algorithm configuration from the given object.
     virtual tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) = 0;

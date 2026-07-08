@@ -95,7 +95,7 @@ public:
 
     /// Generate random bytes.
     /// All RNG implementations must be thread-safe.
-    tl::expected<std::vector<uint8_t>, Error> random(std::size_t data_len) override {
+    tl::expected<std::vector<uint8_t>, Error> random(std::size_t data_len) const override {
         std::vector<uint8_t> data(data_len);
         vsc_buffer_t* data_buf = vsc_buffer_new();
         vsc_buffer_use(data_buf, data.data(), data.size());

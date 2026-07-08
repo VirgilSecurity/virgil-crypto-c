@@ -56,7 +56,7 @@ public:
     ~PrivateKey() override = default;
 
     /// Extract public key from the private key.
-    virtual std::unique_ptr<PublicKey> extract_public_key() = 0;
+    virtual std::unique_ptr<PublicKey> extract_public_key() const = 0;
 
 };
 

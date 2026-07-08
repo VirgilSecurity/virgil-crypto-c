@@ -53,10 +53,10 @@ public:
     ~KeyWrap() override = default;
 
     /// Return buffer length required to hold a wrapped key for the given plain key length.
-    virtual std::size_t wrapped_len(std::size_t data_len) = 0;
+    virtual std::size_t wrapped_len(std::size_t data_len) const = 0;
 
     /// Return buffer length required to hold an unwrapped key for the given wrapped key length.
-    virtual std::size_t unwrapped_len(std::size_t data_len) = 0;
+    virtual std::size_t unwrapped_len(std::size_t data_len) const = 0;
 
     /// Wrap given key data using the Key Encryption Key (KEK).
     virtual tl::expected<std::vector<uint8_t>, Error> wrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) = 0;

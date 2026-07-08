@@ -83,26 +83,26 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_salted_kdf_alg_info_impl(c_ctx_); }
 
     /// Return hash algorithm information.
-    std::unique_ptr<AlgInfo> hash_alg_info() {
+    std::unique_ptr<AlgInfo> hash_alg_info() const {
         auto proxy_result = vscf_salted_kdf_alg_info_hash_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return KDF salt.
-    std::vector<uint8_t> salt() {
+    std::vector<uint8_t> salt() const {
         auto proxy_result = vscf_salted_kdf_alg_info_salt(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
 
     /// Return KDF iteration count.
     /// Note, can be 0 if KDF does not need the iteration count.
-    std::size_t iteration_count() {
+    std::size_t iteration_count() const {
         auto proxy_result = vscf_salted_kdf_alg_info_iteration_count(c_ctx_);
         return proxy_result;
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_salted_kdf_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

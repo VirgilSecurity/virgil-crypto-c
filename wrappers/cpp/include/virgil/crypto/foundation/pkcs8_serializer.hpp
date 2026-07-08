@@ -122,7 +122,7 @@ public:
     /// Calculate buffer size enough to hold serialized public key.
     ///
     /// Precondition: public key must be exportable.
-    std::size_t serialized_public_key_len(const RawPublicKey& public_key) override {
+    std::size_t serialized_public_key_len(const RawPublicKey& public_key) const override {
         auto proxy_result = vscf_pkcs8_serializer_serialized_public_key_len(c_ctx_, public_key.c_ctx());
         return proxy_result;
     }
@@ -146,7 +146,7 @@ public:
     /// Calculate buffer size enough to hold serialized private key.
     ///
     /// Precondition: private key must be exportable.
-    std::size_t serialized_private_key_len(const RawPrivateKey& private_key) override {
+    std::size_t serialized_private_key_len(const RawPrivateKey& private_key) const override {
         auto proxy_result = vscf_pkcs8_serializer_serialized_private_key_len(c_ctx_, private_key.c_ctx());
         return proxy_result;
     }

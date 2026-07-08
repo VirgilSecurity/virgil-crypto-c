@@ -101,7 +101,7 @@ public:
     }
 
     /// Returns message that should be sent to all participants using secure channel.
-    GroupSessionMessage get_ticket_message() {
+    GroupSessionMessage get_ticket_message() const {
         auto proxy_result = vscf_group_session_ticket_get_ticket_message(c_ctx_);
         return GroupSessionMessage(vscf_group_session_message_shallow_copy(const_cast<vscf_group_session_message_t*>(proxy_result)));
     }

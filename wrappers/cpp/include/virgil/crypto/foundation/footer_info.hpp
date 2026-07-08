@@ -76,13 +76,13 @@ public:
     vscf_footer_info_t* c_ctx() const noexcept { return c_ctx_; }
 
     /// Retrun true if signed data info present.
-    bool has_signed_data_info() {
+    bool has_signed_data_info() const {
         auto proxy_result = vscf_footer_info_has_signed_data_info(c_ctx_);
         return proxy_result;
     }
 
     /// Return signed data info.
-    SignedDataInfo signed_data_info() {
+    SignedDataInfo signed_data_info() const {
         auto proxy_result = vscf_footer_info_signed_data_info(c_ctx_);
         return SignedDataInfo(vscf_signed_data_info_shallow_copy(const_cast<vscf_signed_data_info_t*>(proxy_result)));
     }
@@ -93,7 +93,7 @@ public:
     }
 
     /// Return data size.
-    std::size_t data_size() {
+    std::size_t data_size() const {
         auto proxy_result = vscf_footer_info_data_size(c_ctx_);
         return proxy_result;
     }

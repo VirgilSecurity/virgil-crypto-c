@@ -79,13 +79,13 @@ public:
 
     /// Return algorithm information that was used for encryption
     /// a data encryption key.
-    std::unique_ptr<AlgInfo> key_encryption_algorithm() {
+    std::unique_ptr<AlgInfo> key_encryption_algorithm() const {
         auto proxy_result = vscf_password_recipient_info_key_encryption_algorithm(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return an encrypted data encryption key.
-    std::vector<uint8_t> encrypted_key() {
+    std::vector<uint8_t> encrypted_key() const {
         auto proxy_result = vscf_password_recipient_info_encrypted_key(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }

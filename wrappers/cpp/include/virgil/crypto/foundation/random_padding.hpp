@@ -94,13 +94,13 @@ public:
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_random_padding_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_random_padding_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -120,20 +120,20 @@ public:
     }
 
     /// Return length in bytes of a data with a padding.
-    std::size_t padded_data_len(std::size_t data_len) override {
+    std::size_t padded_data_len(std::size_t data_len) const override {
         auto proxy_result = vscf_random_padding_padded_data_len(c_ctx_, data_len);
         return proxy_result;
     }
 
     /// Return an actual number of padding in bytes.
     /// Note, this method might be called right before "finish data processing".
-    std::size_t len() override {
+    std::size_t len() const override {
         auto proxy_result = vscf_random_padding_len(c_ctx_);
         return proxy_result;
     }
 
     /// Return a maximum number of padding in bytes.
-    std::size_t len_max() override {
+    std::size_t len_max() const override {
         auto proxy_result = vscf_random_padding_len_max(c_ctx_);
         return proxy_result;
     }
@@ -183,7 +183,7 @@ public:
 
     /// Return length in bytes required hold output of the method
     /// "finish padded data processing".
-    std::size_t finish_padded_data_processing_out_len() override {
+    std::size_t finish_padded_data_processing_out_len() const override {
         auto proxy_result = vscf_random_padding_finish_padded_data_processing_out_len(c_ctx_);
         return proxy_result;
     }

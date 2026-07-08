@@ -69,19 +69,19 @@ public:
     virtual uint8_t* bytes() = 0;
 
     /// Returns total inner buffer length.
-    virtual std::size_t len() = 0;
+    virtual std::size_t len() const = 0;
 
     /// Returns how many bytes were already written to the ASN.1 structure.
-    virtual std::size_t written_len() = 0;
+    virtual std::size_t written_len() const = 0;
 
     /// Returns how many bytes are available for writing.
-    virtual std::size_t unwritten_len() = 0;
+    virtual std::size_t unwritten_len() const = 0;
 
     /// Return true if status is not "success".
-    virtual bool has_error() = 0;
+    virtual bool has_error() const = 0;
 
     /// Return error code.
-    virtual tl::expected<void, Error> status() = 0;
+    virtual tl::expected<void, Error> status() const = 0;
 
     /// Move writing position backward for the given length.
     /// Return current writing position.

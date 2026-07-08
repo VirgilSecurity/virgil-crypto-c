@@ -82,13 +82,13 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_cipher_alg_info_impl(c_ctx_); }
 
     /// Return IV.
-    std::vector<uint8_t> nonce() {
+    std::vector<uint8_t> nonce() const {
         auto proxy_result = vscf_cipher_alg_info_nonce(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_cipher_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

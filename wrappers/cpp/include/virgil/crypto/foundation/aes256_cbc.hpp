@@ -98,13 +98,13 @@ public:
     static constexpr std::size_t BLOCK_LEN = 16;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_aes256_cbc_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() override {
+    std::unique_ptr<AlgInfo> produce_alg_info() const override {
         auto proxy_result = vscf_aes256_cbc_produce_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(proxy_result);
     }
@@ -133,13 +133,13 @@ public:
     }
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(std::size_t data_len) override {
+    std::size_t encrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes256_cbc_encrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
 
     /// Precise length calculation of encrypted data.
-    std::size_t precise_encrypted_len(std::size_t data_len) override {
+    std::size_t precise_encrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes256_cbc_precise_encrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -159,7 +159,7 @@ public:
     }
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(std::size_t data_len) override {
+    std::size_t decrypted_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes256_cbc_decrypted_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -206,7 +206,7 @@ public:
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an encryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t encrypted_out_len(std::size_t data_len) override {
+    std::size_t encrypted_out_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes256_cbc_encrypted_out_len(c_ctx_, data_len);
         return proxy_result;
     }
@@ -214,7 +214,7 @@ public:
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an decryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t decrypted_out_len(std::size_t data_len) override {
+    std::size_t decrypted_out_len(std::size_t data_len) const override {
         auto proxy_result = vscf_aes256_cbc_decrypted_out_len(c_ctx_, data_len);
         return proxy_result;
     }

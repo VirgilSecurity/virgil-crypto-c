@@ -98,13 +98,13 @@ public:
     }
 
     /// Return length of the signature.
-    std::size_t signature_len(const PrivateKey& private_key) {
+    std::size_t signature_len(const PrivateKey& private_key) const {
         auto proxy_result = vscf_signer_signature_len(c_ctx_, private_key.impl());
         return proxy_result;
     }
 
     /// Accomplish signing and return signature.
-    tl::expected<std::vector<uint8_t>, Error> sign(const PrivateKey& private_key) {
+    tl::expected<std::vector<uint8_t>, Error> sign(const PrivateKey& private_key) const {
         std::vector<uint8_t> signature(this->signature_len(private_key));
         vsc_buffer_t* signature_buf = vsc_buffer_new();
         vsc_buffer_use(signature_buf, signature.data(), signature.size());

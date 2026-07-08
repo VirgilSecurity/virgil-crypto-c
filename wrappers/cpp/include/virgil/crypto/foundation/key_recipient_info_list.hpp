@@ -76,37 +76,37 @@ public:
     vscf_key_recipient_info_list_t* c_ctx() const noexcept { return c_ctx_; }
 
     /// Return true if given list has item.
-    bool has_item() {
+    bool has_item() const {
         auto proxy_result = vscf_key_recipient_info_list_has_item(c_ctx_);
         return proxy_result;
     }
 
     /// Return list item.
-    KeyRecipientInfo item() {
+    KeyRecipientInfo item() const {
         auto proxy_result = vscf_key_recipient_info_list_item(c_ctx_);
         return KeyRecipientInfo(vscf_key_recipient_info_shallow_copy(const_cast<vscf_key_recipient_info_t*>(proxy_result)));
     }
 
     /// Return true if list has next item.
-    bool has_next() {
+    bool has_next() const {
         auto proxy_result = vscf_key_recipient_info_list_has_next(c_ctx_);
         return proxy_result;
     }
 
     /// Return next list node if exists, or NULL otherwise.
-    KeyRecipientInfoList next() {
+    KeyRecipientInfoList next() const {
         auto proxy_result = vscf_key_recipient_info_list_next(c_ctx_);
         return KeyRecipientInfoList(vscf_key_recipient_info_list_shallow_copy(const_cast<vscf_key_recipient_info_list_t*>(proxy_result)));
     }
 
     /// Return true if list has previous item.
-    bool has_prev() {
+    bool has_prev() const {
         auto proxy_result = vscf_key_recipient_info_list_has_prev(c_ctx_);
         return proxy_result;
     }
 
     /// Return previous list node if exists, or NULL otherwise.
-    KeyRecipientInfoList prev() {
+    KeyRecipientInfoList prev() const {
         auto proxy_result = vscf_key_recipient_info_list_prev(c_ctx_);
         return KeyRecipientInfoList(vscf_key_recipient_info_list_shallow_copy(const_cast<vscf_key_recipient_info_list_t*>(proxy_result)));
     }

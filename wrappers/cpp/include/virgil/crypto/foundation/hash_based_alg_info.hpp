@@ -83,13 +83,13 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_hash_based_alg_info_impl(c_ctx_); }
 
     /// Return hash algorithm information.
-    std::unique_ptr<AlgInfo> hash_alg_info() {
+    std::unique_ptr<AlgInfo> hash_alg_info() const {
         auto proxy_result = vscf_hash_based_alg_info_hash_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_hash_based_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

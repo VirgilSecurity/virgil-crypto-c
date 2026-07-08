@@ -140,7 +140,7 @@ public:
 
     /// Return length of serialized message info.
     /// Actual length can be obtained right after applying changes.
-    std::size_t packed_len() {
+    std::size_t packed_len() const {
         auto proxy_result = vscf_message_info_editor_packed_len(c_ctx_);
         return proxy_result;
     }

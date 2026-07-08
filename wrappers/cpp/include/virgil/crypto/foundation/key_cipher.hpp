@@ -56,23 +56,23 @@ public:
     ~KeyCipher() override = default;
 
     /// Check if algorithm can encrypt data with a given key.
-    virtual bool can_encrypt(const PublicKey& public_key, std::size_t data_len) = 0;
+    virtual bool can_encrypt(const PublicKey& public_key, std::size_t data_len) const = 0;
 
     /// Calculate required buffer length to hold the encrypted data.
-    virtual std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) = 0;
+    virtual std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) const = 0;
 
     /// Encrypt data with a given public key.
-    virtual tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) = 0;
+    virtual tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) const = 0;
 
     /// Check if algorithm can decrypt data with a given key.
     /// However, success result of decryption is not guaranteed.
-    virtual bool can_decrypt(const PrivateKey& private_key, std::size_t data_len) = 0;
+    virtual bool can_decrypt(const PrivateKey& private_key, std::size_t data_len) const = 0;
 
     /// Calculate required buffer length to hold the decrypted data.
-    virtual std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) = 0;
+    virtual std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) const = 0;
 
     /// Decrypt given data.
-    virtual tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) = 0;
+    virtual tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) const = 0;
 
 };
 

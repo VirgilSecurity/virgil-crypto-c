@@ -104,7 +104,7 @@ public:
     /// produced for a secret of the given length. The buffer given to 'split'
     /// must be at least this size; the actual written length may be a few
     /// bytes smaller.
-    std::size_t share_len(std::size_t secret_len) {
+    std::size_t share_len(std::size_t secret_len) const {
         auto proxy_result = vscf_shamir_share_len(c_ctx_, secret_len);
         return proxy_result;
     }
@@ -113,7 +113,7 @@ public:
     /// hold all shares produced by 'split' for a secret of the given length and
     /// the given number of shares. The actual written length is reported on the
     /// output buffer by 'split'.
-    std::size_t shares_len(std::size_t secret_len, std::size_t share_count) {
+    std::size_t shares_len(std::size_t secret_len, std::size_t share_count) const {
         auto proxy_result = vscf_shamir_shares_len(c_ctx_, secret_len, share_count);
         return proxy_result;
     }
@@ -121,7 +121,7 @@ public:
     /// Calculate an upper bound on the length in bytes of the recovered secret
     /// for the given total shares length and number of provided shares.
     /// The exact length is set on the output buffer by 'combine'.
-    std::size_t recovered_secret_len(std::size_t shares_len, std::size_t share_count) {
+    std::size_t recovered_secret_len(std::size_t shares_len, std::size_t share_count) const {
         auto proxy_result = vscf_shamir_recovered_secret_len(c_ctx_, shares_len, share_count);
         return proxy_result;
     }
@@ -158,7 +158,7 @@ public:
     /// failed' if the shares are structurally valid but cryptographically
     /// wrong, tampered, or insufficient to meet the threshold. On any failure
     /// the output buffer is left empty.
-    tl::expected<std::vector<uint8_t>, Error> combine(std::span<const uint8_t> shares, std::size_t share_count) {
+    tl::expected<std::vector<uint8_t>, Error> combine(std::span<const uint8_t> shares, std::size_t share_count) const {
         std::vector<uint8_t> secret(this->recovered_secret_len(shares.size(), share_count));
         vsc_buffer_t* secret_buf = vsc_buffer_new();
         vsc_buffer_use(secret_buf, secret.data(), secret.size());

@@ -57,7 +57,7 @@ public:
     /// Calculate buffer size enough to hold serialized public key.
     ///
     /// Precondition: public key must be exportable.
-    virtual std::size_t serialized_public_key_len(const RawPublicKey& public_key) = 0;
+    virtual std::size_t serialized_public_key_len(const RawPublicKey& public_key) const = 0;
 
     /// Serialize given public key to an interchangeable format.
     ///
@@ -67,7 +67,7 @@ public:
     /// Calculate buffer size enough to hold serialized private key.
     ///
     /// Precondition: private key must be exportable.
-    virtual std::size_t serialized_private_key_len(const RawPrivateKey& private_key) = 0;
+    virtual std::size_t serialized_private_key_len(const RawPrivateKey& private_key) const = 0;
 
     /// Serialize given private key to an interchangeable format.
     ///

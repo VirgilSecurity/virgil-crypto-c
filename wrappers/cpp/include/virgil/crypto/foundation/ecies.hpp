@@ -133,13 +133,13 @@ public:
     }
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) {
+    std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) const {
         auto proxy_result = vscf_ecies_encrypted_len(c_ctx_, public_key.impl(), data_len);
         return proxy_result;
     }
 
     /// Encrypt data with a given public key.
-    tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) {
+    tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) const {
         std::vector<uint8_t> out(this->encrypted_len(public_key, data.size()));
         vsc_buffer_t* out_buf = vsc_buffer_new();
         vsc_buffer_use(out_buf, out.data(), out.size());
@@ -153,13 +153,13 @@ public:
     }
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) {
+    std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) const {
         auto proxy_result = vscf_ecies_decrypted_len(c_ctx_, private_key.impl(), data_len);
         return proxy_result;
     }
 
     /// Decrypt given data.
-    tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) {
+    tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) const {
         std::vector<uint8_t> out(this->decrypted_len(private_key, data.size()));
         vsc_buffer_t* out_buf = vsc_buffer_new();
         vsc_buffer_use(out_buf, out.data(), out.size());

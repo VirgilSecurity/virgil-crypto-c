@@ -345,6 +345,12 @@ def _method_is_static(method: IRCMethod) -> bool:
     return method.attrs.get("is_static") == "1"
 
 
+def _method_is_const(method: IRCMethod) -> bool:
+    """Whether the method reads but does not mutate the object (IR ``is_const``),
+    so it can be a C++ ``const`` member function. Static methods are never const."""
+    return method.attrs.get("is_const") in {"1", "true"} and not _method_is_static(method)
+
+
 def _arg_is_buffer_output(arg: IRCArgument) -> bool:
     return arg.class_name == "buffer"
 
@@ -875,7 +881,8 @@ def _emit_cpp_method(lines, project_ir, method, *, sig_entity, call_entity=None,
         for a in _method_inputs(sig_entity, method)
     )
     _emit_doc(lines, method.description, indent="    ")
-    lines.append(f"    {static_kw}{ret} {cpp_method_name(method.name)}({params}){override_kw} {{")
+    const_kw = " const" if _method_is_const(method) else ""
+    lines.append(f"    {static_kw}{ret} {cpp_method_name(method.name)}({params}){const_kw}{override_kw} {{")
     lines.extend(_cpp_method_body(project_ir, sig_entity, method, call_entity=call_entity))
     lines.append("    }")
     lines.append("")
@@ -1011,7 +1018,8 @@ def generate_cpp_interface(project_ir: IRProject, iface) -> str:
             f"{_cpp_param_type(project_ir, a)} {cpp_method_name(a.name)}"
             for a in _method_inputs(iface.name, m)
         )
-        lines.append(f"    virtual {ret} {cpp_method_name(m.name)}({params}) = 0;")
+        const_kw = " const" if _method_is_const(m) else ""
+        lines.append(f"    virtual {ret} {cpp_method_name(m.name)}({params}){const_kw} = 0;")
         lines.append("")
     lines.append("};")
     lines.append("")

@@ -56,20 +56,20 @@ public:
     ~Key() override = default;
 
     /// Algorithm identifier the key belongs to.
-    virtual AlgId alg_id() = 0;
+    virtual AlgId alg_id() const = 0;
 
     /// Return algorithm information that can be used for serialization.
-    virtual std::unique_ptr<AlgInfo> alg_info() = 0;
+    virtual std::unique_ptr<AlgInfo> alg_info() const = 0;
 
     /// Length of the key in bytes.
-    virtual std::size_t len() = 0;
+    virtual std::size_t len() const = 0;
 
     /// Length of the key in bits.
-    virtual std::size_t bitlen() = 0;
+    virtual std::size_t bitlen() const = 0;
 
     /// Check that key is valid.
     /// Note, this operation can be slow.
-    virtual bool is_valid() = 0;
+    virtual bool is_valid() const = 0;
 
 };
 

@@ -62,16 +62,16 @@ public:
     ~Kem() override = default;
 
     /// Return length in bytes required to hold encapsulated shared key.
-    virtual std::size_t kem_shared_key_len(const Key& key) = 0;
+    virtual std::size_t kem_shared_key_len(const Key& key) const = 0;
 
     /// Return length in bytes required to hold encapsulated key.
-    virtual std::size_t kem_encapsulated_key_len(const PublicKey& public_key) = 0;
+    virtual std::size_t kem_encapsulated_key_len(const PublicKey& public_key) const = 0;
 
     /// Generate a shared key and a key encapsulated message.
-    virtual tl::expected<KemKemEncapsulateResult, Error> kem_encapsulate(const PublicKey& public_key) = 0;
+    virtual tl::expected<KemKemEncapsulateResult, Error> kem_encapsulate(const PublicKey& public_key) const = 0;
 
     /// Decapsulate the shared key.
-    virtual tl::expected<std::vector<uint8_t>, Error> kem_decapsulate(std::span<const uint8_t> encapsulated_key, const PrivateKey& private_key) = 0;
+    virtual tl::expected<std::vector<uint8_t>, Error> kem_decapsulate(std::span<const uint8_t> encapsulated_key, const PrivateKey& private_key) const = 0;
 
 };
 

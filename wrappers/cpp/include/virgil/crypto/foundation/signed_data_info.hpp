@@ -78,7 +78,7 @@ public:
     vscf_signed_data_info_t* c_ctx() const noexcept { return c_ctx_; }
 
     /// Return information about algorithm that was used to produce data digest.
-    std::unique_ptr<AlgInfo> hash_alg_info() {
+    std::unique_ptr<AlgInfo> hash_alg_info() const {
         auto proxy_result = vscf_signed_data_info_hash_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }

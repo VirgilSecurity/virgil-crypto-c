@@ -54,7 +54,7 @@ public:
     ~AlgInfoSerializer() override = default;
 
     /// Return buffer size enough to hold serialized algorithm.
-    virtual std::size_t serialized_len(const AlgInfo& alg_info) = 0;
+    virtual std::size_t serialized_len(const AlgInfo& alg_info) const = 0;
 
     /// Serialize algorithm info to buffer class.
     virtual std::vector<uint8_t> serialize(const AlgInfo& alg_info) = 0;

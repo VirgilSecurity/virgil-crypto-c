@@ -83,19 +83,19 @@ public:
     vscf_impl_t* impl() const noexcept override { return vscf_hybrid_key_alg_info_impl(c_ctx_); }
 
     /// Return algorithm information about the first key.
-    std::unique_ptr<AlgInfo> first_key_alg_info() {
+    std::unique_ptr<AlgInfo> first_key_alg_info() const {
         auto proxy_result = vscf_hybrid_key_alg_info_first_key_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Return algorithm information about the second key.
-    std::unique_ptr<AlgInfo> second_key_alg_info() {
+    std::unique_ptr<AlgInfo> second_key_alg_info() const {
         auto proxy_result = vscf_hybrid_key_alg_info_second_key_alg_info(c_ctx_);
         return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
     }
 
     /// Provide algorithm identificator.
-    AlgId alg_id() override {
+    AlgId alg_id() const override {
         auto proxy_result = vscf_hybrid_key_alg_info_alg_id(c_ctx_);
         return static_cast<AlgId>(proxy_result);
     }

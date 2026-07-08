@@ -101,7 +101,7 @@ public:
     }
 
     /// Return buffer size enough to hold serialized algorithm.
-    std::size_t serialized_len(const AlgInfo& alg_info) override {
+    std::size_t serialized_len(const AlgInfo& alg_info) const override {
         auto proxy_result = vscf_alg_info_der_serializer_serialized_len(c_ctx_, alg_info.impl());
         return proxy_result;
     }

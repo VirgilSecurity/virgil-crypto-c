@@ -55,7 +55,7 @@ public:
     virtual tl::expected<std::vector<uint8_t>, Error> decrypt(std::span<const uint8_t> data) = 0;
 
     /// Calculate required buffer length to hold the decrypted data.
-    virtual std::size_t decrypted_len(std::size_t data_len) = 0;
+    virtual std::size_t decrypted_len(std::size_t data_len) const = 0;
 
 };
 

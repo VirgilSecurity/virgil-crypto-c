@@ -97,7 +97,7 @@ public:
     }
 
     /// Returns current epoch.
-    uint32_t get_current_epoch() {
+    uint32_t get_current_epoch() const {
         auto proxy_result = vscf_group_session_get_current_epoch(c_ctx_);
         return proxy_result;
     }
@@ -113,7 +113,7 @@ public:
     }
 
     /// Returns session id.
-    std::vector<uint8_t> get_session_id() {
+    std::vector<uint8_t> get_session_id() const {
         auto proxy_result = vscf_group_session_get_session_id(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
@@ -160,7 +160,7 @@ public:
     }
 
     /// Creates ticket with new key for removing participants or proactive to rotate encryption key.
-    tl::expected<GroupSessionTicket, Error> create_group_ticket() {
+    tl::expected<GroupSessionTicket, Error> create_group_ticket() const {
         vscf_error_t error;
         vscf_error_reset(&error);
         auto proxy_result = vscf_group_session_create_group_ticket(c_ctx_, &error);

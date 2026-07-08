@@ -114,7 +114,7 @@ public:
 
     /// Return true if a key recipient with a given id has been added.
     /// Note, operation has O(N) time complexity.
-    bool has_key_recipient(std::span<const uint8_t> recipient_id) {
+    bool has_key_recipient(std::span<const uint8_t> recipient_id) const {
         auto proxy_result = vscf_recipient_cipher_has_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()));
         return proxy_result;
     }
@@ -180,7 +180,7 @@ public:
     /// Return buffer length required to hold message info returned by the
     /// "pack message info" method.
     /// Precondition: all recipients and custom parameters should be set.
-    std::size_t message_info_len() {
+    std::size_t message_info_len() const {
         auto proxy_result = vscf_recipient_cipher_message_info_len(c_ctx_);
         return proxy_result;
     }
@@ -311,7 +311,7 @@ public:
     /// Return true if data was signed by a sender.
     ///
     /// Precondition: this method should be called after "finish decryption".
-    bool is_data_signed() {
+    bool is_data_signed() const {
         auto proxy_result = vscf_recipient_cipher_is_data_signed(c_ctx_);
         return proxy_result;
     }
@@ -320,7 +320,7 @@ public:
     ///
     /// Precondition: this method should be called after "finish decryption".
     /// Precondition: method "is data signed" returns true.
-    SignerInfoList signer_infos() {
+    SignerInfoList signer_infos() const {
         auto proxy_result = vscf_recipient_cipher_signer_infos(c_ctx_);
         return SignerInfoList(vscf_signer_info_list_shallow_copy(const_cast<vscf_signer_info_list_t*>(proxy_result)));
     }
@@ -335,7 +335,7 @@ public:
     /// "pack message footer" method.
     ///
     /// Precondition: this method should be called after "finish encryption".
-    std::size_t message_info_footer_len() {
+    std::size_t message_info_footer_len() const {
         auto proxy_result = vscf_recipient_cipher_message_info_footer_len(c_ctx_);
         return proxy_result;
     }

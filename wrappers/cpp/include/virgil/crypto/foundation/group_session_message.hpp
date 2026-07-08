@@ -82,32 +82,32 @@ public:
     static constexpr std::size_t MESSAGE_VERSION = 1;
 
     /// Returns message type.
-    GroupMsgType get_type() {
+    GroupMsgType get_type() const {
         auto proxy_result = vscf_group_session_message_get_type(c_ctx_);
         return static_cast<GroupMsgType>(proxy_result);
     }
 
     /// Returns session id.
     /// This method should be called only for group info type.
-    std::vector<uint8_t> get_session_id() {
+    std::vector<uint8_t> get_session_id() const {
         auto proxy_result = vscf_group_session_message_get_session_id(c_ctx_);
         return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
     }
 
     /// Returns message epoch.
-    uint32_t get_epoch() {
+    uint32_t get_epoch() const {
         auto proxy_result = vscf_group_session_message_get_epoch(c_ctx_);
         return proxy_result;
     }
 
     /// Buffer len to serialize this class.
-    std::size_t serialize_len() {
+    std::size_t serialize_len() const {
         auto proxy_result = vscf_group_session_message_serialize_len(c_ctx_);
         return proxy_result;
     }
 
     /// Serializes instance.
-    std::vector<uint8_t> serialize() {
+    std::vector<uint8_t> serialize() const {
         std::vector<uint8_t> output(this->serialize_len());
         vsc_buffer_t* output_buf = vsc_buffer_new();
         vsc_buffer_use(output_buf, output.data(), output.size());

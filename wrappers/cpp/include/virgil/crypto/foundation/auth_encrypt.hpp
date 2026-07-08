@@ -63,7 +63,7 @@ public:
     virtual tl::expected<AuthEncryptAuthEncryptResult, Error> auth_encrypt(std::span<const uint8_t> data, std::span<const uint8_t> auth_data) = 0;
 
     /// Calculate required buffer length to hold the authenticated encrypted data.
-    virtual std::size_t auth_encrypted_len(std::size_t data_len) = 0;
+    virtual std::size_t auth_encrypted_len(std::size_t data_len) const = 0;
 
 };
 
