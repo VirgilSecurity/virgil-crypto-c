@@ -14,8 +14,14 @@ from tools.codegen.project_cpp_backend import (
     cpp_type_name,
     generate_cpp_error,
     generate_cpp_files,
+    _cpp_return_expr,
+    _cpp_method_body,
+    _uses_output_buffer,
+    _interface_ref_split,
 )
-from tools.codegen.project_ir import project_to_ir
+from tools.codegen.project_ir import (
+    project_to_ir, IRCArgument, IRCMethod, IRInterface,
+)
 from tools.codegen.project_source import load_named_project_source
 
 
@@ -434,6 +440,72 @@ class GeneratedTreeParityTests(unittest.TestCase):
     def test_per_project_file_counts(self) -> None:
         for project, expected in self.EXPECTED_FILE_COUNTS.items():
             self.assertEqual(len(self._generate(project)), expected, project)
+
+
+class HardeningTests(unittest.TestCase):
+    """Latent-gap hardening from code review — behaviours not exercised by the current
+    IR but that must be correct if the models grow these shapes."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.phe = project_to_ir(load_named_project_source("phe", str(REPO_ROOT)))
+        cls.foundation = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+
+    def test_cross_project_interface_return_uses_owning_project(self) -> None:
+        # A phe method returning a foundation interface must dispatch/shallow-copy via
+        # foundation (vscf_/FoundationImplementation), never the local phe project.
+        borrowed = IRCArgument(name="pk", interface_name="private key",
+                               project="foundation", access="readonly")
+        expr = _cpp_return_expr(self.phe, borrowed, "proxy_result")
+        self.assertIn("virgil::crypto::foundation::FoundationImplementation::wrap_private_key", expr)
+        self.assertIn("vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result))", expr)
+        self.assertNotIn("vsce_impl", expr)  # not the local (phe) prefix
+
+        owned = IRCArgument(name="pk", interface_name="private key",
+                            project="foundation", access="disown")
+        self.assertEqual(
+            _cpp_return_expr(self.phe, owned, "proxy_result"),
+            "virgil::crypto::foundation::FoundationImplementation::wrap_private_key(proxy_result)",
+        )
+
+    def test_cross_project_class_return_uses_owning_project(self) -> None:
+        borrowed = IRCArgument(name="k", class_name="raw private key",
+                               project="foundation", access="readonly")
+        expr = _cpp_return_expr(self.phe, borrowed, "proxy_result")
+        self.assertIn("virgil::crypto::foundation::RawPrivateKey(", expr)
+        self.assertIn("vscf_raw_private_key_shallow_copy(const_cast<vscf_raw_private_key_t*>(proxy_result))", expr)
+
+    def test_borrowed_buffer_return_not_deleted(self) -> None:
+        # An owned (disown) vsc_buffer_t* return is freed; a borrowed one must not be.
+        def body(access):
+            m = IRCMethod(name="serialize",
+                          returns=[IRCArgument(name="out", class_name="buffer", access=access)])
+            return "\n".join(_cpp_method_body(self.foundation, "ratchet session", m))
+        self.assertIn("vsc_buffer_delete(proxy_result);", body("disown"))
+        self.assertNotIn("vsc_buffer_delete(proxy_result);", body("readonly"))
+
+    def test_uses_output_buffer_detects_buffer_return(self) -> None:
+        m = IRCMethod(name="serialize",
+                      returns=[IRCArgument(name="out", class_name="buffer", access="disown")])
+        self.assertTrue(_uses_output_buffer([m]))
+
+    def test_interface_result_struct_member_class_is_included(self) -> None:
+        # A multi-value interface return whose member is a by-value local class must be
+        # #included (complete type needed for the result struct), not forward-declared.
+        m = IRCMethod(name="split", declaration="public", returns=[
+            IRCArgument(name="a", class_name="raw private key", access="disown"),
+            IRCArgument(name="b", class_name="raw public key", access="disown"),
+        ])
+        iface = IRInterface(name="splitter", methods=[m])
+        includes, fwd = _interface_ref_split(self.foundation, iface)
+        self.assertIn("virgil/crypto/foundation/raw_private_key.hpp", includes)
+        self.assertNotIn("RawPrivateKey", fwd)
+
+    def test_dispatch_deletes_impl_on_unknown_tag(self) -> None:
+        files = dict(generate_cpp_files(self.foundation, repo_root=str(REPO_ROOT)))
+        c = files["wrappers/cpp/src/foundation/foundation_implementation.cpp"]
+        self.assertIn("default:", c)
+        self.assertIn("vscf_impl_delete(impl);", c)
 
 
 if __name__ == "__main__":

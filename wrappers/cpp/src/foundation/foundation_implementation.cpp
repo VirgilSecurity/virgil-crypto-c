@@ -139,6 +139,7 @@ std::unique_ptr<Alg> FoundationImplementation::wrap_alg(vscf_impl_t* impl) {
     case vscf_impl_tag_CHUNK_CIPHER:
         return std::make_unique<ChunkCipher>(reinterpret_cast<vscf_chunk_cipher_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -154,6 +155,7 @@ std::unique_ptr<Hash> FoundationImplementation::wrap_hash(vscf_impl_t* impl) {
     case vscf_impl_tag_SHA512:
         return std::make_unique<Sha512>(reinterpret_cast<vscf_sha512_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -169,6 +171,7 @@ std::unique_ptr<Encrypt> FoundationImplementation::wrap_encrypt(vscf_impl_t* imp
     case vscf_impl_tag_CHUNK_CIPHER:
         return std::make_unique<ChunkCipher>(reinterpret_cast<vscf_chunk_cipher_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -184,6 +187,7 @@ std::unique_ptr<Decrypt> FoundationImplementation::wrap_decrypt(vscf_impl_t* imp
     case vscf_impl_tag_CHUNK_CIPHER:
         return std::make_unique<ChunkCipher>(reinterpret_cast<vscf_chunk_cipher_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -197,6 +201,7 @@ std::unique_ptr<CipherInfo> FoundationImplementation::wrap_cipher_info(vscf_impl
     case vscf_impl_tag_CHUNK_CIPHER:
         return std::make_unique<ChunkCipher>(reinterpret_cast<vscf_chunk_cipher_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -210,6 +215,7 @@ std::unique_ptr<Cipher> FoundationImplementation::wrap_cipher(vscf_impl_t* impl)
     case vscf_impl_tag_CHUNK_CIPHER:
         return std::make_unique<ChunkCipher>(reinterpret_cast<vscf_chunk_cipher_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -219,6 +225,7 @@ std::unique_ptr<CipherAuthInfo> FoundationImplementation::wrap_cipher_auth_info(
     case vscf_impl_tag_AES256_GCM:
         return std::make_unique<Aes256Gcm>(reinterpret_cast<vscf_aes256_gcm_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -228,6 +235,7 @@ std::unique_ptr<AuthEncrypt> FoundationImplementation::wrap_auth_encrypt(vscf_im
     case vscf_impl_tag_AES256_GCM:
         return std::make_unique<Aes256Gcm>(reinterpret_cast<vscf_aes256_gcm_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -237,6 +245,7 @@ std::unique_ptr<AuthDecrypt> FoundationImplementation::wrap_auth_decrypt(vscf_im
     case vscf_impl_tag_AES256_GCM:
         return std::make_unique<Aes256Gcm>(reinterpret_cast<vscf_aes256_gcm_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -246,6 +255,7 @@ std::unique_ptr<CipherAuth> FoundationImplementation::wrap_cipher_auth(vscf_impl
     case vscf_impl_tag_AES256_GCM:
         return std::make_unique<Aes256Gcm>(reinterpret_cast<vscf_aes256_gcm_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -257,6 +267,7 @@ std::unique_ptr<KeyWrap> FoundationImplementation::wrap_key_wrap(vscf_impl_t* im
     case vscf_impl_tag_AES256_KW:
         return std::make_unique<Aes256Kw>(reinterpret_cast<vscf_aes256_kw_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -266,6 +277,7 @@ std::unique_ptr<Asn1Reader> FoundationImplementation::wrap_asn1_reader(vscf_impl
     case vscf_impl_tag_ASN1RD:
         return std::make_unique<Asn1rd>(reinterpret_cast<vscf_asn1rd_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -275,6 +287,7 @@ std::unique_ptr<Asn1Writer> FoundationImplementation::wrap_asn1_writer(vscf_impl
     case vscf_impl_tag_ASN1WR:
         return std::make_unique<Asn1wr>(reinterpret_cast<vscf_asn1wr_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -302,6 +315,7 @@ std::unique_ptr<Key> FoundationImplementation::wrap_key(vscf_impl_t* impl) {
     case vscf_impl_tag_HYBRID_PRIVATE_KEY:
         return std::make_unique<HybridPrivateKey>(reinterpret_cast<vscf_hybrid_private_key_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -319,6 +333,7 @@ std::unique_ptr<PublicKey> FoundationImplementation::wrap_public_key(vscf_impl_t
     case vscf_impl_tag_HYBRID_PUBLIC_KEY:
         return std::make_unique<HybridPublicKey>(reinterpret_cast<vscf_hybrid_public_key_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -336,6 +351,7 @@ std::unique_ptr<PrivateKey> FoundationImplementation::wrap_private_key(vscf_impl
     case vscf_impl_tag_HYBRID_PRIVATE_KEY:
         return std::make_unique<HybridPrivateKey>(reinterpret_cast<vscf_hybrid_private_key_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -361,6 +377,7 @@ std::unique_ptr<KeyAlg> FoundationImplementation::wrap_key_alg(vscf_impl_t* impl
     case vscf_impl_tag_HYBRID_KEY_ALG:
         return std::make_unique<HybridKeyAlg>(reinterpret_cast<vscf_hybrid_key_alg_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -380,6 +397,7 @@ std::unique_ptr<KeyCipher> FoundationImplementation::wrap_key_cipher(vscf_impl_t
     case vscf_impl_tag_HYBRID_KEY_ALG:
         return std::make_unique<HybridKeyAlg>(reinterpret_cast<vscf_hybrid_key_alg_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -401,6 +419,7 @@ std::unique_ptr<KeySigner> FoundationImplementation::wrap_key_signer(vscf_impl_t
     case vscf_impl_tag_HYBRID_KEY_ALG:
         return std::make_unique<HybridKeyAlg>(reinterpret_cast<vscf_hybrid_key_alg_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -414,6 +433,7 @@ std::unique_ptr<ComputeSharedKey> FoundationImplementation::wrap_compute_shared_
     case vscf_impl_tag_CURVE25519:
         return std::make_unique<Curve25519>(reinterpret_cast<vscf_curve25519_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -429,6 +449,7 @@ std::unique_ptr<Kem> FoundationImplementation::wrap_kem(vscf_impl_t* impl) {
     case vscf_impl_tag_ML_KEM:
         return std::make_unique<MlKem>(reinterpret_cast<vscf_ml_kem_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -442,6 +463,7 @@ std::unique_ptr<EntropySource> FoundationImplementation::wrap_entropy_source(vsc
     case vscf_impl_tag_SEED_ENTROPY_SOURCE:
         return std::make_unique<SeedEntropySource>(reinterpret_cast<vscf_seed_entropy_source_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -455,6 +477,7 @@ std::unique_ptr<Random> FoundationImplementation::wrap_random(vscf_impl_t* impl)
     case vscf_impl_tag_KEY_MATERIAL_RNG:
         return std::make_unique<KeyMaterialRng>(reinterpret_cast<vscf_key_material_rng_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -464,6 +487,7 @@ std::unique_ptr<Mac> FoundationImplementation::wrap_mac(vscf_impl_t* impl) {
     case vscf_impl_tag_HMAC:
         return std::make_unique<Hmac>(reinterpret_cast<vscf_hmac_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -479,6 +503,7 @@ std::unique_ptr<Kdf> FoundationImplementation::wrap_kdf(vscf_impl_t* impl) {
     case vscf_impl_tag_PKCS5_PBKDF2:
         return std::make_unique<Pkcs5Pbkdf2>(reinterpret_cast<vscf_pkcs5_pbkdf2_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -490,6 +515,7 @@ std::unique_ptr<SaltedKdf> FoundationImplementation::wrap_salted_kdf(vscf_impl_t
     case vscf_impl_tag_PKCS5_PBKDF2:
         return std::make_unique<Pkcs5Pbkdf2>(reinterpret_cast<vscf_pkcs5_pbkdf2_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -503,6 +529,7 @@ std::unique_ptr<KeySerializer> FoundationImplementation::wrap_key_serializer(vsc
     case vscf_impl_tag_KEY_ASN1_SERIALIZER:
         return std::make_unique<KeyAsn1Serializer>(reinterpret_cast<vscf_key_asn1_serializer_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -512,6 +539,7 @@ std::unique_ptr<KeyDeserializer> FoundationImplementation::wrap_key_deserializer
     case vscf_impl_tag_KEY_ASN1_DESERIALIZER:
         return std::make_unique<KeyAsn1Deserializer>(reinterpret_cast<vscf_key_asn1_deserializer_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -537,6 +565,7 @@ std::unique_ptr<AlgInfo> FoundationImplementation::wrap_alg_info(vscf_impl_t* im
     case vscf_impl_tag_ECC_ALG_INFO:
         return std::make_unique<EccAlgInfo>(reinterpret_cast<vscf_ecc_alg_info_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -546,6 +575,7 @@ std::unique_ptr<AlgInfoSerializer> FoundationImplementation::wrap_alg_info_seria
     case vscf_impl_tag_ALG_INFO_DER_SERIALIZER:
         return std::make_unique<AlgInfoDerSerializer>(reinterpret_cast<vscf_alg_info_der_serializer_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -555,6 +585,7 @@ std::unique_ptr<AlgInfoDeserializer> FoundationImplementation::wrap_alg_info_des
     case vscf_impl_tag_ALG_INFO_DER_DESERIALIZER:
         return std::make_unique<AlgInfoDerDeserializer>(reinterpret_cast<vscf_alg_info_der_deserializer_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -564,6 +595,7 @@ std::unique_ptr<MessageInfoSerializer> FoundationImplementation::wrap_message_in
     case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
         return std::make_unique<MessageInfoDerSerializer>(reinterpret_cast<vscf_message_info_der_serializer_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -573,6 +605,7 @@ std::unique_ptr<MessageInfoFooterSerializer> FoundationImplementation::wrap_mess
     case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
         return std::make_unique<MessageInfoDerSerializer>(reinterpret_cast<vscf_message_info_der_serializer_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }
@@ -582,6 +615,7 @@ std::unique_ptr<Padding> FoundationImplementation::wrap_padding(vscf_impl_t* imp
     case vscf_impl_tag_RANDOM_PADDING:
         return std::make_unique<RandomPadding>(reinterpret_cast<vscf_random_padding_t*>(impl));
     default:
+        vscf_impl_delete(impl);
         return nullptr;
     }
 }

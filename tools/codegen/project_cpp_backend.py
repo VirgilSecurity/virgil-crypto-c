@@ -462,6 +462,25 @@ def _ref_include(project_ir: IRProject, type_name: str, ref_project: str | None)
     return f"virgil/crypto/{leaf}/{_entity_snake(type_name)}.hpp"
 
 
+def _ref_prefix(project_ir: IRProject, ref_project: str | None) -> str:
+    """C symbol prefix for a referenced type's project (``vscf`` for a foundation
+    type referenced from phe/ratchet), defaulting to the current project's."""
+    if ref_project and ref_project != project_ir.name:
+        entry = _CPP_PROJECT_NS.get(ref_project)
+        if entry:
+            return entry[1]
+    return project_ir.prefix
+
+
+def _ref_project_impl_type(project_ir: IRProject, ref_project: str | None) -> str:
+    """Namespace-qualified ``<Project>Implementation`` dispatcher for a referenced
+    interface's owning project (cross-project returns dispatch via that project)."""
+    leaf = _ref_leaf(project_ir, ref_project)
+    if leaf:
+        return f"virgil::crypto::{leaf}::{cpp_type_name(ref_project)}Implementation"
+    return _project_impl_type(project_ir)
+
+
 def _cpp_value_type(project_ir: IRProject, arg: IRCArgument) -> str:
     """C++ type for a value argument or return (not a buffer output)."""
     if arg.enum_name:
@@ -612,8 +631,11 @@ def _cpp_return_expr(project_ir, ret: IRCArgument, c_expr: str) -> str:
     if ret.class_name == "data":
         return f"std::vector<uint8_t>({c_expr}.bytes, {c_expr}.bytes + {c_expr}.len)"
     if ret.enum_name:
-        return f"static_cast<{cpp_type_name(ret.enum_name)}>({c_expr})"
-    prefix = project_ir.prefix
+        return f"static_cast<{_qual_type_name(project_ir, ret.enum_name, ret.project)}>({c_expr})"
+    # A returned handle may belong to another project (e.g. a phe method returning a
+    # foundation type): the shallow_copy, C type, wrapper type, and dispatcher must all
+    # use that project's prefix/namespace, not the current one.
+    prefix = _ref_prefix(project_ir, ret.project)
     # Ownership of a returned C handle is encoded in ``access``: ``disown`` transfers
     # ownership to the caller (adopt directly), while ``readonly``/``readwrite`` return
     # a borrowed reference the callee still owns — the C signature is then ``const T*``.
@@ -625,12 +647,13 @@ def _cpp_return_expr(project_ir, ret: IRCArgument, c_expr: str) -> str:
     if ret.interface_name:
         adopt = (c_expr if owned
                  else f"{prefix}_impl_shallow_copy(const_cast<{prefix}_impl_t*>({c_expr}))")
-        return f"{_project_impl_type(project_ir)}::wrap_{_entity_snake(ret.interface_name)}({adopt})"
+        dispatcher = _ref_project_impl_type(project_ir, ret.project)
+        return f"{dispatcher}::wrap_{_entity_snake(ret.interface_name)}({adopt})"
     if ret.class_name and ret.class_name not in {"data", "buffer"}:
-        c_t = _c_type(project_ir, ret.class_name)
+        c_t = f"{prefix}_{_entity_snake(ret.class_name)}_t"
         adopt = (c_expr if owned
                  else f"{prefix}_{_entity_snake(ret.class_name)}_shallow_copy(const_cast<{c_t}*>({c_expr}))")
-        return f"{cpp_type_name(ret.class_name)}({adopt})"
+        return f"{_qual_type_name(project_ir, ret.class_name, ret.project)}({adopt})"
     return c_expr
 
 
@@ -713,10 +736,14 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
         if has_error:
             lines.append(f"{ind}return {{}};")
     elif total == 1 and not buffers and values[0].class_name == "buffer":
-        # An owned vsc_buffer_t* return: copy the bytes out into a vector and free it.
+        # A vsc_buffer_t* return: copy the bytes out into a vector. Only free it when
+        # the callee transferred ownership (access="disown"); a borrowed buffer
+        # (readonly/readwrite) is still owned by the callee — deleting it would be a
+        # double-free / use-after-free.
         lines.append(f"{ind}std::vector<uint8_t> result(vsc_buffer_bytes(proxy_result), "
                      f"vsc_buffer_bytes(proxy_result) + vsc_buffer_len(proxy_result));")
-        lines.append(f"{ind}vsc_buffer_delete(proxy_result);")
+        if values[0].access == "disown":
+            lines.append(f"{ind}vsc_buffer_delete(proxy_result);")
         lines.append(f"{ind}return result;")
     elif total == 1 and not buffers:
         lines.append(f"{ind}return {_cpp_return_expr(project_ir, values[0], 'proxy_result')};")
@@ -764,7 +791,14 @@ def _cpp_constant_type(const) -> str:
 
 
 def _uses_output_buffer(methods) -> bool:
-    return any(_arg_is_buffer_output(a) for m in methods for a in m.arguments)
+    """Whether any method needs the vsc_buffer API in its body — either a buffer
+    output argument (init/use/cleanup) or a ``vsc_buffer_t*`` return (bytes/len/delete)."""
+    for m in methods:
+        if any(_arg_is_buffer_output(a) for a in m.arguments):
+            return True
+        if any(r.class_name == "buffer" for r in m.returns):
+            return True
+    return False
 
 
 _COMMON_NS_PATH = "virgil/crypto/common"
@@ -936,9 +970,12 @@ def _interface_ref_split(project_ir, iface):
     headers (e.g. foundation) never cycle back into this project."""
     includes: list[str] = []
     fwd: list[str] = []
+    # By-value result-struct members need the complete type in this header (the struct
+    # is defined here), so they are #included even when local — same rule as _hpp_ref_split.
+    rs_members = _result_struct_member_classes(project_ir, iface.name, iface.methods)
 
-    def _add(type_name, project):
-        if _ref_leaf(project_ir, project):  # cross-project -> include
+    def _add(type_name, project, is_iface):
+        if _ref_leaf(project_ir, project) or (not is_iface and type_name in rs_members):
             includes.append(_ref_include(project_ir, type_name, project))
         else:
             fwd.append(cpp_type_name(type_name))
@@ -951,9 +988,9 @@ def _interface_ref_split(project_ir, iface):
             if a.enum_name and a.enum_name not in _INFRASTRUCTURE_ENUMS:
                 includes.append(_ref_include(project_ir, a.enum_name, a.project))
             elif a.interface_name:
-                _add(a.interface_name, a.project)
+                _add(a.interface_name, a.project, True)
             elif a.class_name and a.class_name not in {"data", "buffer", "error", iface.name}:
-                _add(a.class_name, a.project)
+                _add(a.class_name, a.project, False)
     return sorted(set(includes)), sorted(set(fwd))
 
 
@@ -1383,6 +1420,9 @@ def generate_cpp_project_implementation_source(project_ir: IRProject) -> str:
             lines.append(f"    case {tag}:")
             lines.append(f"        return std::make_unique<{it}>(reinterpret_cast<{ic}*>(impl));")
         lines.append("    default:")
+        # We adopted ``impl``; on an unrecognised tag we cannot wrap it, so free it
+        # rather than leak (only reachable for an impl not registered in this dispatch).
+        lines.append(f"        {prefix}_impl_delete(impl);")
         lines.append("        return nullptr;")
         lines.append("    }")
         lines.append("}")
