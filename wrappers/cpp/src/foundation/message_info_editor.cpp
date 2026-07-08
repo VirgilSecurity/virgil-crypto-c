@@ -39,7 +39,6 @@
 #include <virgil/crypto/foundation/public_key.hpp>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -125,12 +124,11 @@ std::size_t MessageInfoEditor::packed_len() const {
 
 std::vector<uint8_t> MessageInfoEditor::pack() {
     std::vector<uint8_t> message_info(this->packed_len());
-    vsc_buffer_t message_info_buf;
-    vsc_buffer_init(&message_info_buf);
-    vsc_buffer_use(&message_info_buf, message_info.data(), message_info.size());
-    vscf_message_info_editor_pack(c_ctx_, &message_info_buf);
-    message_info.resize(vsc_buffer_len(&message_info_buf));
-    vsc_buffer_cleanup(&message_info_buf);
+    vsc_buffer_t* message_info_buf = vsc_buffer_new();
+    vsc_buffer_use(message_info_buf, message_info.data(), message_info.size());
+    vscf_message_info_editor_pack(c_ctx_, message_info_buf);
+    message_info.resize(vsc_buffer_len(message_info_buf));
+    vsc_buffer_delete(message_info_buf);
     return message_info;
 }
 

@@ -43,7 +43,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -131,12 +130,11 @@ std::vector<uint8_t> RandomPadding::process_data(std::span<const uint8_t> data) 
 
 tl::expected<std::vector<uint8_t>, Error> RandomPadding::finish_data_processing() {
     std::vector<uint8_t> out(this->len());
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_random_padding_finish_data_processing(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_random_padding_finish_data_processing(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -149,12 +147,11 @@ void RandomPadding::start_padded_data_processing() {
 
 std::vector<uint8_t> RandomPadding::process_padded_data(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(data.size());
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_random_padding_process_padded_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    vscf_random_padding_process_padded_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     return out;
 }
 
@@ -165,12 +162,11 @@ std::size_t RandomPadding::finish_padded_data_processing_out_len() const {
 
 tl::expected<std::vector<uint8_t>, Error> RandomPadding::finish_padded_data_processing() {
     std::vector<uint8_t> out(this->finish_padded_data_processing_out_len());
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_random_padding_finish_padded_data_processing(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_random_padding_finish_padded_data_processing(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

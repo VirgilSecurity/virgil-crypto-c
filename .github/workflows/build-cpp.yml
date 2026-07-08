@@ -30,6 +30,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install pytest
+        run: python3 -m pip install --upgrade pytest
+
       - name: Run C++ backend tests
         run: python3 -m pytest tools/codegen/test_cpp_backend.py -q
 

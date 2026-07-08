@@ -42,7 +42,6 @@
 #include <virgil/crypto/foundation/hash.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -107,12 +106,11 @@ std::size_t Hmac::digest_len() {
 
 std::vector<uint8_t> Hmac::mac(std::span<const uint8_t> key, std::span<const uint8_t> data) {
     std::vector<uint8_t> mac(this->digest_len());
-    vsc_buffer_t mac_buf;
-    vsc_buffer_init(&mac_buf);
-    vsc_buffer_use(&mac_buf, mac.data(), mac.size());
-    vscf_hmac_mac(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &mac_buf);
-    mac.resize(vsc_buffer_len(&mac_buf));
-    vsc_buffer_cleanup(&mac_buf);
+    vsc_buffer_t* mac_buf = vsc_buffer_new();
+    vsc_buffer_use(mac_buf, mac.data(), mac.size());
+    vscf_hmac_mac(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), mac_buf);
+    mac.resize(vsc_buffer_len(mac_buf));
+    vsc_buffer_delete(mac_buf);
     return mac;
 }
 
@@ -126,12 +124,11 @@ void Hmac::update(std::span<const uint8_t> data) {
 
 std::vector<uint8_t> Hmac::finish() {
     std::vector<uint8_t> mac(this->digest_len());
-    vsc_buffer_t mac_buf;
-    vsc_buffer_init(&mac_buf);
-    vsc_buffer_use(&mac_buf, mac.data(), mac.size());
-    vscf_hmac_finish(c_ctx_, &mac_buf);
-    mac.resize(vsc_buffer_len(&mac_buf));
-    vsc_buffer_cleanup(&mac_buf);
+    vsc_buffer_t* mac_buf = vsc_buffer_new();
+    vsc_buffer_use(mac_buf, mac.data(), mac.size());
+    vscf_hmac_finish(c_ctx_, mac_buf);
+    mac.resize(vsc_buffer_len(mac_buf));
+    vsc_buffer_delete(mac_buf);
     return mac;
 }
 

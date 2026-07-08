@@ -48,7 +48,6 @@
 #include <virgil/crypto/foundation/raw_public_key.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -186,12 +185,11 @@ std::size_t MlDsa::signature_len(const PrivateKey& private_key) const {
 
 tl::expected<std::vector<uint8_t>, Error> MlDsa::sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const {
     std::vector<uint8_t> signature(this->signature_len(private_key));
-    vsc_buffer_t signature_buf;
-    vsc_buffer_init(&signature_buf);
-    vsc_buffer_use(&signature_buf, signature.data(), signature.size());
-    const vscf_status_t status = vscf_ml_dsa_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), &signature_buf);
-    signature.resize(vsc_buffer_len(&signature_buf));
-    vsc_buffer_cleanup(&signature_buf);
+    vsc_buffer_t* signature_buf = vsc_buffer_new();
+    vsc_buffer_use(signature_buf, signature.data(), signature.size());
+    const vscf_status_t status = vscf_ml_dsa_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), signature_buf);
+    signature.resize(vsc_buffer_len(signature_buf));
+    vsc_buffer_delete(signature_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

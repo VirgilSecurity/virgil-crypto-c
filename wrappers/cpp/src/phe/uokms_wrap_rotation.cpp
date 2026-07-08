@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/phe/phe_common.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::phe {
 
@@ -93,12 +92,11 @@ tl::expected<void, Error> UokmsWrapRotation::set_update_token(std::span<const ui
 
 tl::expected<std::vector<uint8_t>, Error> UokmsWrapRotation::update_wrap(std::span<const uint8_t> wrap) {
     std::vector<uint8_t> new_wrap(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t new_wrap_buf;
-    vsc_buffer_init(&new_wrap_buf);
-    vsc_buffer_use(&new_wrap_buf, new_wrap.data(), new_wrap.size());
-    const vsce_status_t status = vsce_uokms_wrap_rotation_update_wrap(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), &new_wrap_buf);
-    new_wrap.resize(vsc_buffer_len(&new_wrap_buf));
-    vsc_buffer_cleanup(&new_wrap_buf);
+    vsc_buffer_t* new_wrap_buf = vsc_buffer_new();
+    vsc_buffer_use(new_wrap_buf, new_wrap.data(), new_wrap.size());
+    const vsce_status_t status = vsce_uokms_wrap_rotation_update_wrap(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), new_wrap_buf);
+    new_wrap.resize(vsc_buffer_len(new_wrap_buf));
+    vsc_buffer_delete(new_wrap_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

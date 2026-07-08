@@ -39,7 +39,6 @@
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/asn1_writer.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -95,12 +94,11 @@ std::size_t AlgInfoDerSerializer::serialized_len(const AlgInfo& alg_info) const 
 
 std::vector<uint8_t> AlgInfoDerSerializer::serialize(const AlgInfo& alg_info) {
     std::vector<uint8_t> out(this->serialized_len(alg_info));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_alg_info_der_serializer_serialize(c_ctx_, alg_info.impl(), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    vscf_alg_info_der_serializer_serialize(c_ctx_, alg_info.impl(), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     return out;
 }
 

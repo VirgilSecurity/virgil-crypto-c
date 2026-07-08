@@ -45,7 +45,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -101,12 +100,11 @@ std::size_t ChunkCipher::encryption_out_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::process_encryption(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->encryption_out_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_process_encryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_process_encryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -115,12 +113,11 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::process_encryption(std::s
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::finish_encryption() {
     std::vector<uint8_t> out(this->encryption_out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_finish_encryption(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_finish_encryption(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -134,12 +131,11 @@ std::size_t ChunkCipher::decryption_out_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::process_decryption(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->decryption_out_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_process_decryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_process_decryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -148,12 +144,11 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::process_decryption(std::s
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::finish_decryption() {
     std::vector<uint8_t> out(this->decryption_out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_finish_decryption(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_finish_decryption(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -167,12 +162,11 @@ std::size_t ChunkCipher::chunk_count(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::encrypt_at(uint64_t chunk_index, bool is_last, std::span<const uint8_t> plaintext) {
     std::vector<uint8_t> out(this->encryption_out_len(plaintext.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_encrypt_at(c_ctx_, chunk_index, is_last, plaintext.empty() ? vsc_data_empty() : vsc_data(plaintext.data(), plaintext.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_encrypt_at(c_ctx_, chunk_index, is_last, plaintext.empty() ? vsc_data_empty() : vsc_data(plaintext.data(), plaintext.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -181,12 +175,11 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::encrypt_at(uint64_t chunk
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::decrypt_at(uint64_t chunk_index, bool is_last, std::span<const uint8_t> frame) {
     std::vector<uint8_t> out(this->decryption_out_len(frame.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_decrypt_at(c_ctx_, chunk_index, is_last, frame.empty() ? vsc_data_empty() : vsc_data(frame.data(), frame.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_decrypt_at(c_ctx_, chunk_index, is_last, frame.empty() ? vsc_data_empty() : vsc_data(frame.data(), frame.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -217,12 +210,11 @@ tl::expected<void, Error> ChunkCipher::restore_alg_info(const AlgInfo& alg_info)
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::encrypt(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->encrypted_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -241,12 +233,11 @@ std::size_t ChunkCipher::precise_encrypted_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::decrypt(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->decrypted_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -276,12 +267,11 @@ void ChunkCipher::start_decryption() {
 
 std::vector<uint8_t> ChunkCipher::update(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->out_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_chunk_cipher_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    vscf_chunk_cipher_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     return out;
 }
 
@@ -302,12 +292,11 @@ std::size_t ChunkCipher::decrypted_out_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> ChunkCipher::finish() {
     std::vector<uint8_t> out(this->out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_finish(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_chunk_cipher_finish(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

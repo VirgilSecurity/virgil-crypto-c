@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -78,12 +77,11 @@ void KeyMaterialRng::reset_key_material(std::span<const uint8_t> key_material) {
 
 tl::expected<std::vector<uint8_t>, Error> KeyMaterialRng::random(std::size_t data_len) const {
     std::vector<uint8_t> data(data_len);
-    vsc_buffer_t data_buf;
-    vsc_buffer_init(&data_buf);
-    vsc_buffer_use(&data_buf, data.data(), data.size());
-    const vscf_status_t status = vscf_key_material_rng_random(c_ctx_, data_len, &data_buf);
-    data.resize(vsc_buffer_len(&data_buf));
-    vsc_buffer_cleanup(&data_buf);
+    vsc_buffer_t* data_buf = vsc_buffer_new();
+    vsc_buffer_use(data_buf, data.data(), data.size());
+    const vscf_status_t status = vscf_key_material_rng_random(c_ctx_, data_len, data_buf);
+    data.resize(vsc_buffer_len(data_buf));
+    vsc_buffer_delete(data_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

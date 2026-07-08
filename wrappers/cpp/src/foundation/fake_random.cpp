@@ -38,7 +38,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/foundation/entropy_source.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -83,12 +82,11 @@ void FakeRandom::setup_source_data(std::span<const uint8_t> data_source) {
 
 tl::expected<std::vector<uint8_t>, Error> FakeRandom::random(std::size_t data_len) const {
     std::vector<uint8_t> data(data_len);
-    vsc_buffer_t data_buf;
-    vsc_buffer_init(&data_buf);
-    vsc_buffer_use(&data_buf, data.data(), data.size());
-    const vscf_status_t status = vscf_fake_random_random(c_ctx_, data_len, &data_buf);
-    data.resize(vsc_buffer_len(&data_buf));
-    vsc_buffer_cleanup(&data_buf);
+    vsc_buffer_t* data_buf = vsc_buffer_new();
+    vsc_buffer_use(data_buf, data.data(), data.size());
+    const vscf_status_t status = vscf_fake_random_random(c_ctx_, data_len, data_buf);
+    data.resize(vsc_buffer_len(data_buf));
+    vsc_buffer_delete(data_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -110,12 +108,11 @@ bool FakeRandom::is_strong() {
 
 tl::expected<std::vector<uint8_t>, Error> FakeRandom::gather(std::size_t len) {
     std::vector<uint8_t> out(len);
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_fake_random_gather(c_ctx_, len, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_fake_random_gather(c_ctx_, len, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

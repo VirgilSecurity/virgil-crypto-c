@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/phe/phe_common.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::phe {
 
@@ -106,12 +105,11 @@ tl::expected<void, Error> UokmsClient::set_keys(std::span<const uint8_t> client_
 
 tl::expected<std::vector<uint8_t>, Error> UokmsClient::generate_client_private_key() {
     std::vector<uint8_t> client_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t client_private_key_buf;
-    vsc_buffer_init(&client_private_key_buf);
-    vsc_buffer_use(&client_private_key_buf, client_private_key.data(), client_private_key.size());
-    const vsce_status_t status = vsce_uokms_client_generate_client_private_key(c_ctx_, &client_private_key_buf);
-    client_private_key.resize(vsc_buffer_len(&client_private_key_buf));
-    vsc_buffer_cleanup(&client_private_key_buf);
+    vsc_buffer_t* client_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(client_private_key_buf, client_private_key.data(), client_private_key.size());
+    const vsce_status_t status = vsce_uokms_client_generate_client_private_key(c_ctx_, client_private_key_buf);
+    client_private_key.resize(vsc_buffer_len(client_private_key_buf));
+    vsc_buffer_delete(client_private_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -120,18 +118,16 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::generate_client_private_k
 
 tl::expected<UokmsClientGenerateEncryptWrapResult, Error> UokmsClient::generate_encrypt_wrap(std::size_t encryption_key_len) {
     std::vector<uint8_t> wrap(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t wrap_buf;
-    vsc_buffer_init(&wrap_buf);
-    vsc_buffer_use(&wrap_buf, wrap.data(), wrap.size());
+    vsc_buffer_t* wrap_buf = vsc_buffer_new();
+    vsc_buffer_use(wrap_buf, wrap.data(), wrap.size());
     std::vector<uint8_t> encryption_key(encryption_key_len);
-    vsc_buffer_t encryption_key_buf;
-    vsc_buffer_init(&encryption_key_buf);
-    vsc_buffer_use(&encryption_key_buf, encryption_key.data(), encryption_key.size());
-    const vsce_status_t status = vsce_uokms_client_generate_encrypt_wrap(c_ctx_, &wrap_buf, encryption_key_len, &encryption_key_buf);
-    wrap.resize(vsc_buffer_len(&wrap_buf));
-    vsc_buffer_cleanup(&wrap_buf);
-    encryption_key.resize(vsc_buffer_len(&encryption_key_buf));
-    vsc_buffer_cleanup(&encryption_key_buf);
+    vsc_buffer_t* encryption_key_buf = vsc_buffer_new();
+    vsc_buffer_use(encryption_key_buf, encryption_key.data(), encryption_key.size());
+    const vsce_status_t status = vsce_uokms_client_generate_encrypt_wrap(c_ctx_, wrap_buf, encryption_key_len, encryption_key_buf);
+    wrap.resize(vsc_buffer_len(wrap_buf));
+    vsc_buffer_delete(wrap_buf);
+    encryption_key.resize(vsc_buffer_len(encryption_key_buf));
+    vsc_buffer_delete(encryption_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -140,12 +136,11 @@ tl::expected<UokmsClientGenerateEncryptWrapResult, Error> UokmsClient::generate_
 
 tl::expected<std::vector<uint8_t>, Error> UokmsClient::decrypt_oneparty(std::span<const uint8_t> wrap, std::size_t encryption_key_len) {
     std::vector<uint8_t> encryption_key(encryption_key_len);
-    vsc_buffer_t encryption_key_buf;
-    vsc_buffer_init(&encryption_key_buf);
-    vsc_buffer_use(&encryption_key_buf, encryption_key.data(), encryption_key.size());
-    const vsce_status_t status = vsce_uokms_client_decrypt_oneparty(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), encryption_key_len, &encryption_key_buf);
-    encryption_key.resize(vsc_buffer_len(&encryption_key_buf));
-    vsc_buffer_cleanup(&encryption_key_buf);
+    vsc_buffer_t* encryption_key_buf = vsc_buffer_new();
+    vsc_buffer_use(encryption_key_buf, encryption_key.data(), encryption_key.size());
+    const vsce_status_t status = vsce_uokms_client_decrypt_oneparty(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), encryption_key_len, encryption_key_buf);
+    encryption_key.resize(vsc_buffer_len(encryption_key_buf));
+    vsc_buffer_delete(encryption_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -154,18 +149,16 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::decrypt_oneparty(std::spa
 
 tl::expected<UokmsClientGenerateDecryptRequestResult, Error> UokmsClient::generate_decrypt_request(std::span<const uint8_t> wrap) {
     std::vector<uint8_t> deblind_factor(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t deblind_factor_buf;
-    vsc_buffer_init(&deblind_factor_buf);
-    vsc_buffer_use(&deblind_factor_buf, deblind_factor.data(), deblind_factor.size());
+    vsc_buffer_t* deblind_factor_buf = vsc_buffer_new();
+    vsc_buffer_use(deblind_factor_buf, deblind_factor.data(), deblind_factor.size());
     std::vector<uint8_t> decrypt_request(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t decrypt_request_buf;
-    vsc_buffer_init(&decrypt_request_buf);
-    vsc_buffer_use(&decrypt_request_buf, decrypt_request.data(), decrypt_request.size());
-    const vsce_status_t status = vsce_uokms_client_generate_decrypt_request(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), &deblind_factor_buf, &decrypt_request_buf);
-    deblind_factor.resize(vsc_buffer_len(&deblind_factor_buf));
-    vsc_buffer_cleanup(&deblind_factor_buf);
-    decrypt_request.resize(vsc_buffer_len(&decrypt_request_buf));
-    vsc_buffer_cleanup(&decrypt_request_buf);
+    vsc_buffer_t* decrypt_request_buf = vsc_buffer_new();
+    vsc_buffer_use(decrypt_request_buf, decrypt_request.data(), decrypt_request.size());
+    const vsce_status_t status = vsce_uokms_client_generate_decrypt_request(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), deblind_factor_buf, decrypt_request_buf);
+    deblind_factor.resize(vsc_buffer_len(deblind_factor_buf));
+    vsc_buffer_delete(deblind_factor_buf);
+    decrypt_request.resize(vsc_buffer_len(decrypt_request_buf));
+    vsc_buffer_delete(decrypt_request_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -174,12 +167,11 @@ tl::expected<UokmsClientGenerateDecryptRequestResult, Error> UokmsClient::genera
 
 tl::expected<std::vector<uint8_t>, Error> UokmsClient::process_decrypt_response(std::span<const uint8_t> wrap, std::span<const uint8_t> decrypt_request, std::span<const uint8_t> decrypt_response, std::span<const uint8_t> deblind_factor, std::size_t encryption_key_len) {
     std::vector<uint8_t> encryption_key(encryption_key_len);
-    vsc_buffer_t encryption_key_buf;
-    vsc_buffer_init(&encryption_key_buf);
-    vsc_buffer_use(&encryption_key_buf, encryption_key.data(), encryption_key.size());
-    const vsce_status_t status = vsce_uokms_client_process_decrypt_response(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), decrypt_request.empty() ? vsc_data_empty() : vsc_data(decrypt_request.data(), decrypt_request.size()), decrypt_response.empty() ? vsc_data_empty() : vsc_data(decrypt_response.data(), decrypt_response.size()), deblind_factor.empty() ? vsc_data_empty() : vsc_data(deblind_factor.data(), deblind_factor.size()), encryption_key_len, &encryption_key_buf);
-    encryption_key.resize(vsc_buffer_len(&encryption_key_buf));
-    vsc_buffer_cleanup(&encryption_key_buf);
+    vsc_buffer_t* encryption_key_buf = vsc_buffer_new();
+    vsc_buffer_use(encryption_key_buf, encryption_key.data(), encryption_key.size());
+    const vsce_status_t status = vsce_uokms_client_process_decrypt_response(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), decrypt_request.empty() ? vsc_data_empty() : vsc_data(decrypt_request.data(), decrypt_request.size()), decrypt_response.empty() ? vsc_data_empty() : vsc_data(decrypt_response.data(), decrypt_response.size()), deblind_factor.empty() ? vsc_data_empty() : vsc_data(deblind_factor.data(), deblind_factor.size()), encryption_key_len, encryption_key_buf);
+    encryption_key.resize(vsc_buffer_len(encryption_key_buf));
+    vsc_buffer_delete(encryption_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -188,12 +180,11 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::process_decrypt_response(
 
 tl::expected<std::vector<uint8_t>, Error> UokmsClient::rotate_keys_oneparty(std::span<const uint8_t> update_token) {
     std::vector<uint8_t> new_client_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t new_client_private_key_buf;
-    vsc_buffer_init(&new_client_private_key_buf);
-    vsc_buffer_use(&new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
-    const vsce_status_t status = vsce_uokms_client_rotate_keys_oneparty(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf);
-    new_client_private_key.resize(vsc_buffer_len(&new_client_private_key_buf));
-    vsc_buffer_cleanup(&new_client_private_key_buf);
+    vsc_buffer_t* new_client_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
+    const vsce_status_t status = vsce_uokms_client_rotate_keys_oneparty(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), new_client_private_key_buf);
+    new_client_private_key.resize(vsc_buffer_len(new_client_private_key_buf));
+    vsc_buffer_delete(new_client_private_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -202,12 +193,11 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::rotate_keys_oneparty(std:
 
 tl::expected<std::vector<uint8_t>, Error> UokmsClient::generate_update_token_oneparty() {
     std::vector<uint8_t> update_token(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t update_token_buf;
-    vsc_buffer_init(&update_token_buf);
-    vsc_buffer_use(&update_token_buf, update_token.data(), update_token.size());
-    const vsce_status_t status = vsce_uokms_client_generate_update_token_oneparty(c_ctx_, &update_token_buf);
-    update_token.resize(vsc_buffer_len(&update_token_buf));
-    vsc_buffer_cleanup(&update_token_buf);
+    vsc_buffer_t* update_token_buf = vsc_buffer_new();
+    vsc_buffer_use(update_token_buf, update_token.data(), update_token.size());
+    const vsce_status_t status = vsce_uokms_client_generate_update_token_oneparty(c_ctx_, update_token_buf);
+    update_token.resize(vsc_buffer_len(update_token_buf));
+    vsc_buffer_delete(update_token_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -216,18 +206,16 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::generate_update_token_one
 
 tl::expected<UokmsClientRotateKeysResult, Error> UokmsClient::rotate_keys(std::span<const uint8_t> update_token) {
     std::vector<uint8_t> new_client_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t new_client_private_key_buf;
-    vsc_buffer_init(&new_client_private_key_buf);
-    vsc_buffer_use(&new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
+    vsc_buffer_t* new_client_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
     std::vector<uint8_t> new_server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t new_server_public_key_buf;
-    vsc_buffer_init(&new_server_public_key_buf);
-    vsc_buffer_use(&new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
-    const vsce_status_t status = vsce_uokms_client_rotate_keys(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf, &new_server_public_key_buf);
-    new_client_private_key.resize(vsc_buffer_len(&new_client_private_key_buf));
-    vsc_buffer_cleanup(&new_client_private_key_buf);
-    new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));
-    vsc_buffer_cleanup(&new_server_public_key_buf);
+    vsc_buffer_t* new_server_public_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
+    const vsce_status_t status = vsce_uokms_client_rotate_keys(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), new_client_private_key_buf, new_server_public_key_buf);
+    new_client_private_key.resize(vsc_buffer_len(new_client_private_key_buf));
+    vsc_buffer_delete(new_client_private_key_buf);
+    new_server_public_key.resize(vsc_buffer_len(new_server_public_key_buf));
+    vsc_buffer_delete(new_server_public_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

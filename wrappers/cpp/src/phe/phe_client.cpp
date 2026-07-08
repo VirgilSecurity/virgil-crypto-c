@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/phe/phe_common.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::phe {
 
@@ -98,12 +97,11 @@ tl::expected<void, Error> PheClient::set_keys(std::span<const uint8_t> client_pr
 
 tl::expected<std::vector<uint8_t>, Error> PheClient::generate_client_private_key() {
     std::vector<uint8_t> client_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t client_private_key_buf;
-    vsc_buffer_init(&client_private_key_buf);
-    vsc_buffer_use(&client_private_key_buf, client_private_key.data(), client_private_key.size());
-    const vsce_status_t status = vsce_phe_client_generate_client_private_key(c_ctx_, &client_private_key_buf);
-    client_private_key.resize(vsc_buffer_len(&client_private_key_buf));
-    vsc_buffer_cleanup(&client_private_key_buf);
+    vsc_buffer_t* client_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(client_private_key_buf, client_private_key.data(), client_private_key.size());
+    const vsce_status_t status = vsce_phe_client_generate_client_private_key(c_ctx_, client_private_key_buf);
+    client_private_key.resize(vsc_buffer_len(client_private_key_buf));
+    vsc_buffer_delete(client_private_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -117,18 +115,16 @@ std::size_t PheClient::enrollment_record_len() {
 
 tl::expected<PheClientEnrollAccountResult, Error> PheClient::enroll_account(std::span<const uint8_t> enrollment_response, std::span<const uint8_t> password) {
     std::vector<uint8_t> enrollment_record(this->enrollment_record_len());
-    vsc_buffer_t enrollment_record_buf;
-    vsc_buffer_init(&enrollment_record_buf);
-    vsc_buffer_use(&enrollment_record_buf, enrollment_record.data(), enrollment_record.size());
+    vsc_buffer_t* enrollment_record_buf = vsc_buffer_new();
+    vsc_buffer_use(enrollment_record_buf, enrollment_record.data(), enrollment_record.size());
     std::vector<uint8_t> account_key(PheCommon::PHE_ACCOUNT_KEY_LENGTH);
-    vsc_buffer_t account_key_buf;
-    vsc_buffer_init(&account_key_buf);
-    vsc_buffer_use(&account_key_buf, account_key.data(), account_key.size());
-    const vsce_status_t status = vsce_phe_client_enroll_account(c_ctx_, enrollment_response.empty() ? vsc_data_empty() : vsc_data(enrollment_response.data(), enrollment_response.size()), password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), &enrollment_record_buf, &account_key_buf);
-    enrollment_record.resize(vsc_buffer_len(&enrollment_record_buf));
-    vsc_buffer_cleanup(&enrollment_record_buf);
-    account_key.resize(vsc_buffer_len(&account_key_buf));
-    vsc_buffer_cleanup(&account_key_buf);
+    vsc_buffer_t* account_key_buf = vsc_buffer_new();
+    vsc_buffer_use(account_key_buf, account_key.data(), account_key.size());
+    const vsce_status_t status = vsce_phe_client_enroll_account(c_ctx_, enrollment_response.empty() ? vsc_data_empty() : vsc_data(enrollment_response.data(), enrollment_response.size()), password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record_buf, account_key_buf);
+    enrollment_record.resize(vsc_buffer_len(enrollment_record_buf));
+    vsc_buffer_delete(enrollment_record_buf);
+    account_key.resize(vsc_buffer_len(account_key_buf));
+    vsc_buffer_delete(account_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -142,12 +138,11 @@ std::size_t PheClient::verify_password_request_len() {
 
 tl::expected<std::vector<uint8_t>, Error> PheClient::create_verify_password_request(std::span<const uint8_t> password, std::span<const uint8_t> enrollment_record) {
     std::vector<uint8_t> verify_password_request(this->verify_password_request_len());
-    vsc_buffer_t verify_password_request_buf;
-    vsc_buffer_init(&verify_password_request_buf);
-    vsc_buffer_use(&verify_password_request_buf, verify_password_request.data(), verify_password_request.size());
-    const vsce_status_t status = vsce_phe_client_create_verify_password_request(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), &verify_password_request_buf);
-    verify_password_request.resize(vsc_buffer_len(&verify_password_request_buf));
-    vsc_buffer_cleanup(&verify_password_request_buf);
+    vsc_buffer_t* verify_password_request_buf = vsc_buffer_new();
+    vsc_buffer_use(verify_password_request_buf, verify_password_request.data(), verify_password_request.size());
+    const vsce_status_t status = vsce_phe_client_create_verify_password_request(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), verify_password_request_buf);
+    verify_password_request.resize(vsc_buffer_len(verify_password_request_buf));
+    vsc_buffer_delete(verify_password_request_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -156,12 +151,11 @@ tl::expected<std::vector<uint8_t>, Error> PheClient::create_verify_password_requ
 
 tl::expected<std::vector<uint8_t>, Error> PheClient::check_response_and_decrypt(std::span<const uint8_t> password, std::span<const uint8_t> enrollment_record, std::span<const uint8_t> verify_password_response) {
     std::vector<uint8_t> account_key(PheCommon::PHE_ACCOUNT_KEY_LENGTH);
-    vsc_buffer_t account_key_buf;
-    vsc_buffer_init(&account_key_buf);
-    vsc_buffer_use(&account_key_buf, account_key.data(), account_key.size());
-    const vsce_status_t status = vsce_phe_client_check_response_and_decrypt(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), verify_password_response.empty() ? vsc_data_empty() : vsc_data(verify_password_response.data(), verify_password_response.size()), &account_key_buf);
-    account_key.resize(vsc_buffer_len(&account_key_buf));
-    vsc_buffer_cleanup(&account_key_buf);
+    vsc_buffer_t* account_key_buf = vsc_buffer_new();
+    vsc_buffer_use(account_key_buf, account_key.data(), account_key.size());
+    const vsce_status_t status = vsce_phe_client_check_response_and_decrypt(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), verify_password_response.empty() ? vsc_data_empty() : vsc_data(verify_password_response.data(), verify_password_response.size()), account_key_buf);
+    account_key.resize(vsc_buffer_len(account_key_buf));
+    vsc_buffer_delete(account_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -170,18 +164,16 @@ tl::expected<std::vector<uint8_t>, Error> PheClient::check_response_and_decrypt(
 
 tl::expected<PheClientRotateKeysResult, Error> PheClient::rotate_keys(std::span<const uint8_t> update_token) {
     std::vector<uint8_t> new_client_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t new_client_private_key_buf;
-    vsc_buffer_init(&new_client_private_key_buf);
-    vsc_buffer_use(&new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
+    vsc_buffer_t* new_client_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
     std::vector<uint8_t> new_server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t new_server_public_key_buf;
-    vsc_buffer_init(&new_server_public_key_buf);
-    vsc_buffer_use(&new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
-    const vsce_status_t status = vsce_phe_client_rotate_keys(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf, &new_server_public_key_buf);
-    new_client_private_key.resize(vsc_buffer_len(&new_client_private_key_buf));
-    vsc_buffer_cleanup(&new_client_private_key_buf);
-    new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));
-    vsc_buffer_cleanup(&new_server_public_key_buf);
+    vsc_buffer_t* new_server_public_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
+    const vsce_status_t status = vsce_phe_client_rotate_keys(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), new_client_private_key_buf, new_server_public_key_buf);
+    new_client_private_key.resize(vsc_buffer_len(new_client_private_key_buf));
+    vsc_buffer_delete(new_client_private_key_buf);
+    new_server_public_key.resize(vsc_buffer_len(new_server_public_key_buf));
+    vsc_buffer_delete(new_server_public_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -190,12 +182,11 @@ tl::expected<PheClientRotateKeysResult, Error> PheClient::rotate_keys(std::span<
 
 tl::expected<std::vector<uint8_t>, Error> PheClient::update_enrollment_record(std::span<const uint8_t> enrollment_record, std::span<const uint8_t> update_token) {
     std::vector<uint8_t> new_enrollment_record(this->enrollment_record_len());
-    vsc_buffer_t new_enrollment_record_buf;
-    vsc_buffer_init(&new_enrollment_record_buf);
-    vsc_buffer_use(&new_enrollment_record_buf, new_enrollment_record.data(), new_enrollment_record.size());
-    const vsce_status_t status = vsce_phe_client_update_enrollment_record(c_ctx_, enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_enrollment_record_buf);
-    new_enrollment_record.resize(vsc_buffer_len(&new_enrollment_record_buf));
-    vsc_buffer_cleanup(&new_enrollment_record_buf);
+    vsc_buffer_t* new_enrollment_record_buf = vsc_buffer_new();
+    vsc_buffer_use(new_enrollment_record_buf, new_enrollment_record.data(), new_enrollment_record.size());
+    const vsce_status_t status = vsce_phe_client_update_enrollment_record(c_ctx_, enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), new_enrollment_record_buf);
+    new_enrollment_record.resize(vsc_buffer_len(new_enrollment_record_buf));
+    vsc_buffer_delete(new_enrollment_record_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

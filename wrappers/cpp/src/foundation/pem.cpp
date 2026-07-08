@@ -36,7 +36,6 @@
 #include <virgil/crypto/foundation/vscf_pem.h>
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -47,12 +46,11 @@ std::size_t Pem::wrapped_len(std::string_view title, std::size_t data_len) {
 
 std::vector<uint8_t> Pem::wrap(std::string_view title, std::span<const uint8_t> data) {
     std::vector<uint8_t> pem(Pem::wrapped_len(title, data.size()));
-    vsc_buffer_t pem_buf;
-    vsc_buffer_init(&pem_buf);
-    vsc_buffer_use(&pem_buf, pem.data(), pem.size());
-    vscf_pem_wrap(std::string(title).c_str(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &pem_buf);
-    pem.resize(vsc_buffer_len(&pem_buf));
-    vsc_buffer_cleanup(&pem_buf);
+    vsc_buffer_t* pem_buf = vsc_buffer_new();
+    vsc_buffer_use(pem_buf, pem.data(), pem.size());
+    vscf_pem_wrap(std::string(title).c_str(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), pem_buf);
+    pem.resize(vsc_buffer_len(pem_buf));
+    vsc_buffer_delete(pem_buf);
     return pem;
 }
 
@@ -63,12 +61,11 @@ std::size_t Pem::unwrapped_len(std::size_t pem_len) {
 
 tl::expected<std::vector<uint8_t>, Error> Pem::unwrap(std::span<const uint8_t> pem) {
     std::vector<uint8_t> data(Pem::unwrapped_len(pem.size()));
-    vsc_buffer_t data_buf;
-    vsc_buffer_init(&data_buf);
-    vsc_buffer_use(&data_buf, data.data(), data.size());
-    const vscf_status_t status = vscf_pem_unwrap(pem.empty() ? vsc_data_empty() : vsc_data(pem.data(), pem.size()), &data_buf);
-    data.resize(vsc_buffer_len(&data_buf));
-    vsc_buffer_cleanup(&data_buf);
+    vsc_buffer_t* data_buf = vsc_buffer_new();
+    vsc_buffer_use(data_buf, data.data(), data.size());
+    const vscf_status_t status = vscf_pem_unwrap(pem.empty() ? vsc_data_empty() : vsc_data(pem.data(), pem.size()), data_buf);
+    data.resize(vsc_buffer_len(data_buf));
+    vsc_buffer_delete(data_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

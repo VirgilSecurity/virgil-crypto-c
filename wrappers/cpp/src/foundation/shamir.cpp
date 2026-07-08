@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -100,12 +99,11 @@ std::size_t Shamir::recovered_secret_len(std::size_t shares_len, std::size_t sha
 
 tl::expected<std::vector<uint8_t>, Error> Shamir::split(std::span<const uint8_t> secret, std::size_t threshold, std::size_t share_count) {
     std::vector<uint8_t> out(this->shares_len(secret.size(), share_count));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_shamir_split(c_ctx_, secret.empty() ? vsc_data_empty() : vsc_data(secret.data(), secret.size()), threshold, share_count, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_shamir_split(c_ctx_, secret.empty() ? vsc_data_empty() : vsc_data(secret.data(), secret.size()), threshold, share_count, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -114,12 +112,11 @@ tl::expected<std::vector<uint8_t>, Error> Shamir::split(std::span<const uint8_t>
 
 tl::expected<std::vector<uint8_t>, Error> Shamir::combine(std::span<const uint8_t> shares, std::size_t share_count) const {
     std::vector<uint8_t> secret(this->recovered_secret_len(shares.size(), share_count));
-    vsc_buffer_t secret_buf;
-    vsc_buffer_init(&secret_buf);
-    vsc_buffer_use(&secret_buf, secret.data(), secret.size());
-    const vscf_status_t status = vscf_shamir_combine(c_ctx_, shares.empty() ? vsc_data_empty() : vsc_data(shares.data(), shares.size()), share_count, &secret_buf);
-    secret.resize(vsc_buffer_len(&secret_buf));
-    vsc_buffer_cleanup(&secret_buf);
+    vsc_buffer_t* secret_buf = vsc_buffer_new();
+    vsc_buffer_use(secret_buf, secret.data(), secret.size());
+    const vscf_status_t status = vscf_shamir_combine(c_ctx_, shares.empty() ? vsc_data_empty() : vsc_data(shares.data(), shares.size()), share_count, secret_buf);
+    secret.resize(vsc_buffer_len(secret_buf));
+    vsc_buffer_delete(secret_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

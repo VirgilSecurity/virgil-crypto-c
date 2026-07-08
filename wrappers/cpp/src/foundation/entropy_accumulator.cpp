@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/entropy_source.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -87,12 +86,11 @@ bool EntropyAccumulator::is_strong() {
 
 tl::expected<std::vector<uint8_t>, Error> EntropyAccumulator::gather(std::size_t len) {
     std::vector<uint8_t> out(len);
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_entropy_accumulator_gather(c_ctx_, len, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_entropy_accumulator_gather(c_ctx_, len, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

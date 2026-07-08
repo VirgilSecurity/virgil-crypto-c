@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -90,18 +89,16 @@ tl::expected<void, Error> BrainkeyClient::setup_defaults() {
 
 tl::expected<BrainkeyClientBlindResult, Error> BrainkeyClient::blind(std::span<const uint8_t> password) {
     std::vector<uint8_t> deblind_factor(this->MPI_LEN);
-    vsc_buffer_t deblind_factor_buf;
-    vsc_buffer_init(&deblind_factor_buf);
-    vsc_buffer_use(&deblind_factor_buf, deblind_factor.data(), deblind_factor.size());
+    vsc_buffer_t* deblind_factor_buf = vsc_buffer_new();
+    vsc_buffer_use(deblind_factor_buf, deblind_factor.data(), deblind_factor.size());
     std::vector<uint8_t> blinded_point(this->POINT_LEN);
-    vsc_buffer_t blinded_point_buf;
-    vsc_buffer_init(&blinded_point_buf);
-    vsc_buffer_use(&blinded_point_buf, blinded_point.data(), blinded_point.size());
-    const vscf_status_t status = vscf_brainkey_client_blind(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), &deblind_factor_buf, &blinded_point_buf);
-    deblind_factor.resize(vsc_buffer_len(&deblind_factor_buf));
-    vsc_buffer_cleanup(&deblind_factor_buf);
-    blinded_point.resize(vsc_buffer_len(&blinded_point_buf));
-    vsc_buffer_cleanup(&blinded_point_buf);
+    vsc_buffer_t* blinded_point_buf = vsc_buffer_new();
+    vsc_buffer_use(blinded_point_buf, blinded_point.data(), blinded_point.size());
+    const vscf_status_t status = vscf_brainkey_client_blind(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), deblind_factor_buf, blinded_point_buf);
+    deblind_factor.resize(vsc_buffer_len(deblind_factor_buf));
+    vsc_buffer_delete(deblind_factor_buf);
+    blinded_point.resize(vsc_buffer_len(blinded_point_buf));
+    vsc_buffer_delete(blinded_point_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -110,12 +107,11 @@ tl::expected<BrainkeyClientBlindResult, Error> BrainkeyClient::blind(std::span<c
 
 tl::expected<std::vector<uint8_t>, Error> BrainkeyClient::deblind(std::span<const uint8_t> password, std::span<const uint8_t> hardened_point, std::span<const uint8_t> deblind_factor, std::span<const uint8_t> key_name) {
     std::vector<uint8_t> seed(this->POINT_LEN);
-    vsc_buffer_t seed_buf;
-    vsc_buffer_init(&seed_buf);
-    vsc_buffer_use(&seed_buf, seed.data(), seed.size());
-    const vscf_status_t status = vscf_brainkey_client_deblind(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), deblind_factor.empty() ? vsc_data_empty() : vsc_data(deblind_factor.data(), deblind_factor.size()), key_name.empty() ? vsc_data_empty() : vsc_data(key_name.data(), key_name.size()), &seed_buf);
-    seed.resize(vsc_buffer_len(&seed_buf));
-    vsc_buffer_cleanup(&seed_buf);
+    vsc_buffer_t* seed_buf = vsc_buffer_new();
+    vsc_buffer_use(seed_buf, seed.data(), seed.size());
+    const vscf_status_t status = vscf_brainkey_client_deblind(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), deblind_factor.empty() ? vsc_data_empty() : vsc_data(deblind_factor.data(), deblind_factor.size()), key_name.empty() ? vsc_data_empty() : vsc_data(key_name.data(), key_name.size()), seed_buf);
+    seed.resize(vsc_buffer_len(seed_buf));
+    vsc_buffer_delete(seed_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

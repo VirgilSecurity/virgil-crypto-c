@@ -43,7 +43,6 @@
 #include <virgil/crypto/foundation/hash.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -103,12 +102,11 @@ tl::expected<void, Error> Hkdf::restore_alg_info(const AlgInfo& alg_info) {
 
 std::vector<uint8_t> Hkdf::derive(std::span<const uint8_t> data, std::size_t key_len) {
     std::vector<uint8_t> key(key_len);
-    vsc_buffer_t key_buf;
-    vsc_buffer_init(&key_buf);
-    vsc_buffer_use(&key_buf, key.data(), key.size());
-    vscf_hkdf_derive(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), key_len, &key_buf);
-    key.resize(vsc_buffer_len(&key_buf));
-    vsc_buffer_cleanup(&key_buf);
+    vsc_buffer_t* key_buf = vsc_buffer_new();
+    vsc_buffer_use(key_buf, key.data(), key.size());
+    vscf_hkdf_derive(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), key_len, key_buf);
+    key.resize(vsc_buffer_len(key_buf));
+    vsc_buffer_delete(key_buf);
     return key;
 }
 

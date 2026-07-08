@@ -41,7 +41,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -168,12 +167,11 @@ std::size_t KeyProvider::exported_public_key_len(const PublicKey& public_key) {
 
 tl::expected<std::vector<uint8_t>, Error> KeyProvider::export_public_key(const PublicKey& public_key) {
     std::vector<uint8_t> out(this->exported_public_key_len(public_key));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_key_provider_export_public_key(c_ctx_, public_key.impl(), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_key_provider_export_public_key(c_ctx_, public_key.impl(), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -187,12 +185,11 @@ std::size_t KeyProvider::exported_private_key_len(const PrivateKey& private_key)
 
 tl::expected<std::vector<uint8_t>, Error> KeyProvider::export_private_key(const PrivateKey& private_key) {
     std::vector<uint8_t> out(this->exported_private_key_len(private_key));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_key_provider_export_private_key(c_ctx_, private_key.impl(), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_key_provider_export_private_key(c_ctx_, private_key.impl(), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

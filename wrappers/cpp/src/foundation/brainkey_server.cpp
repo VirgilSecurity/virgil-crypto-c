@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -90,12 +89,11 @@ tl::expected<void, Error> BrainkeyServer::setup_defaults() {
 
 tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::generate_identity_secret() {
     std::vector<uint8_t> identity_secret(this->MPI_LEN);
-    vsc_buffer_t identity_secret_buf;
-    vsc_buffer_init(&identity_secret_buf);
-    vsc_buffer_use(&identity_secret_buf, identity_secret.data(), identity_secret.size());
-    const vscf_status_t status = vscf_brainkey_server_generate_identity_secret(c_ctx_, &identity_secret_buf);
-    identity_secret.resize(vsc_buffer_len(&identity_secret_buf));
-    vsc_buffer_cleanup(&identity_secret_buf);
+    vsc_buffer_t* identity_secret_buf = vsc_buffer_new();
+    vsc_buffer_use(identity_secret_buf, identity_secret.data(), identity_secret.size());
+    const vscf_status_t status = vscf_brainkey_server_generate_identity_secret(c_ctx_, identity_secret_buf);
+    identity_secret.resize(vsc_buffer_len(identity_secret_buf));
+    vsc_buffer_delete(identity_secret_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -104,12 +102,11 @@ tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::generate_identity_secr
 
 tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::harden(std::span<const uint8_t> identity_secret, std::span<const uint8_t> blinded_point) {
     std::vector<uint8_t> hardened_point(this->POINT_LEN);
-    vsc_buffer_t hardened_point_buf;
-    vsc_buffer_init(&hardened_point_buf);
-    vsc_buffer_use(&hardened_point_buf, hardened_point.data(), hardened_point.size());
-    const vscf_status_t status = vscf_brainkey_server_harden(c_ctx_, identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), &hardened_point_buf);
-    hardened_point.resize(vsc_buffer_len(&hardened_point_buf));
-    vsc_buffer_cleanup(&hardened_point_buf);
+    vsc_buffer_t* hardened_point_buf = vsc_buffer_new();
+    vsc_buffer_use(hardened_point_buf, hardened_point.data(), hardened_point.size());
+    const vscf_status_t status = vscf_brainkey_server_harden(c_ctx_, identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), hardened_point_buf);
+    hardened_point.resize(vsc_buffer_len(hardened_point_buf));
+    vsc_buffer_delete(hardened_point_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -118,12 +115,11 @@ tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::harden(std::span<const
 
 tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::compute_public_key(std::span<const uint8_t> identity_secret) {
     std::vector<uint8_t> public_key(this->POINT_LEN);
-    vsc_buffer_t public_key_buf;
-    vsc_buffer_init(&public_key_buf);
-    vsc_buffer_use(&public_key_buf, public_key.data(), public_key.size());
-    const vscf_status_t status = vscf_brainkey_server_compute_public_key(c_ctx_, identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), &public_key_buf);
-    public_key.resize(vsc_buffer_len(&public_key_buf));
-    vsc_buffer_cleanup(&public_key_buf);
+    vsc_buffer_t* public_key_buf = vsc_buffer_new();
+    vsc_buffer_use(public_key_buf, public_key.data(), public_key.size());
+    const vscf_status_t status = vscf_brainkey_server_compute_public_key(c_ctx_, identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), public_key_buf);
+    public_key.resize(vsc_buffer_len(public_key_buf));
+    vsc_buffer_delete(public_key_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -134,18 +130,16 @@ tl::expected<BrainkeyServerProveResult, Error> BrainkeyServer::prove(std::span<c
     vscf_error_t error;
     vscf_error_reset(&error);
     std::vector<uint8_t> proof_value_c(this->PROOF_VALUE_LEN);
-    vsc_buffer_t proof_value_c_buf;
-    vsc_buffer_init(&proof_value_c_buf);
-    vsc_buffer_use(&proof_value_c_buf, proof_value_c.data(), proof_value_c.size());
+    vsc_buffer_t* proof_value_c_buf = vsc_buffer_new();
+    vsc_buffer_use(proof_value_c_buf, proof_value_c.data(), proof_value_c.size());
     std::vector<uint8_t> proof_value_s(this->PROOF_VALUE_LEN);
-    vsc_buffer_t proof_value_s_buf;
-    vsc_buffer_init(&proof_value_s_buf);
-    vsc_buffer_use(&proof_value_s_buf, proof_value_s.data(), proof_value_s.size());
-    auto proxy_result = vscf_brainkey_server_prove(c_ctx_, blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), &proof_value_c_buf, &proof_value_s_buf, &error);
-    proof_value_c.resize(vsc_buffer_len(&proof_value_c_buf));
-    vsc_buffer_cleanup(&proof_value_c_buf);
-    proof_value_s.resize(vsc_buffer_len(&proof_value_s_buf));
-    vsc_buffer_cleanup(&proof_value_s_buf);
+    vsc_buffer_t* proof_value_s_buf = vsc_buffer_new();
+    vsc_buffer_use(proof_value_s_buf, proof_value_s.data(), proof_value_s.size());
+    auto proxy_result = vscf_brainkey_server_prove(c_ctx_, blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), proof_value_c_buf, proof_value_s_buf, &error);
+    proof_value_c.resize(vsc_buffer_len(proof_value_c_buf));
+    vsc_buffer_delete(proof_value_c_buf);
+    proof_value_s.resize(vsc_buffer_len(proof_value_s_buf));
+    vsc_buffer_delete(proof_value_s_buf);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

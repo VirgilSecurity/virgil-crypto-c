@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/phe/phe_common.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::phe {
 
@@ -90,18 +89,16 @@ tl::expected<void, Error> PheServer::setup_defaults() {
 
 tl::expected<PheServerGenerateServerKeyPairResult, Error> PheServer::generate_server_key_pair() {
     std::vector<uint8_t> server_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t server_private_key_buf;
-    vsc_buffer_init(&server_private_key_buf);
-    vsc_buffer_use(&server_private_key_buf, server_private_key.data(), server_private_key.size());
+    vsc_buffer_t* server_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(server_private_key_buf, server_private_key.data(), server_private_key.size());
     std::vector<uint8_t> server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t server_public_key_buf;
-    vsc_buffer_init(&server_public_key_buf);
-    vsc_buffer_use(&server_public_key_buf, server_public_key.data(), server_public_key.size());
-    const vsce_status_t status = vsce_phe_server_generate_server_key_pair(c_ctx_, &server_private_key_buf, &server_public_key_buf);
-    server_private_key.resize(vsc_buffer_len(&server_private_key_buf));
-    vsc_buffer_cleanup(&server_private_key_buf);
-    server_public_key.resize(vsc_buffer_len(&server_public_key_buf));
-    vsc_buffer_cleanup(&server_public_key_buf);
+    vsc_buffer_t* server_public_key_buf = vsc_buffer_new();
+    vsc_buffer_use(server_public_key_buf, server_public_key.data(), server_public_key.size());
+    const vsce_status_t status = vsce_phe_server_generate_server_key_pair(c_ctx_, server_private_key_buf, server_public_key_buf);
+    server_private_key.resize(vsc_buffer_len(server_private_key_buf));
+    vsc_buffer_delete(server_private_key_buf);
+    server_public_key.resize(vsc_buffer_len(server_public_key_buf));
+    vsc_buffer_delete(server_public_key_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -115,12 +112,11 @@ std::size_t PheServer::enrollment_response_len() {
 
 tl::expected<std::vector<uint8_t>, Error> PheServer::get_enrollment(std::span<const uint8_t> server_private_key, std::span<const uint8_t> server_public_key) {
     std::vector<uint8_t> enrollment_response(this->enrollment_response_len());
-    vsc_buffer_t enrollment_response_buf;
-    vsc_buffer_init(&enrollment_response_buf);
-    vsc_buffer_use(&enrollment_response_buf, enrollment_response.data(), enrollment_response.size());
-    const vsce_status_t status = vsce_phe_server_get_enrollment(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), &enrollment_response_buf);
-    enrollment_response.resize(vsc_buffer_len(&enrollment_response_buf));
-    vsc_buffer_cleanup(&enrollment_response_buf);
+    vsc_buffer_t* enrollment_response_buf = vsc_buffer_new();
+    vsc_buffer_use(enrollment_response_buf, enrollment_response.data(), enrollment_response.size());
+    const vsce_status_t status = vsce_phe_server_get_enrollment(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), enrollment_response_buf);
+    enrollment_response.resize(vsc_buffer_len(enrollment_response_buf));
+    vsc_buffer_delete(enrollment_response_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -134,12 +130,11 @@ std::size_t PheServer::verify_password_response_len() {
 
 tl::expected<std::vector<uint8_t>, Error> PheServer::verify_password(std::span<const uint8_t> server_private_key, std::span<const uint8_t> server_public_key, std::span<const uint8_t> verify_password_request) {
     std::vector<uint8_t> verify_password_response(this->verify_password_response_len());
-    vsc_buffer_t verify_password_response_buf;
-    vsc_buffer_init(&verify_password_response_buf);
-    vsc_buffer_use(&verify_password_response_buf, verify_password_response.data(), verify_password_response.size());
-    const vsce_status_t status = vsce_phe_server_verify_password(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), verify_password_request.empty() ? vsc_data_empty() : vsc_data(verify_password_request.data(), verify_password_request.size()), &verify_password_response_buf);
-    verify_password_response.resize(vsc_buffer_len(&verify_password_response_buf));
-    vsc_buffer_cleanup(&verify_password_response_buf);
+    vsc_buffer_t* verify_password_response_buf = vsc_buffer_new();
+    vsc_buffer_use(verify_password_response_buf, verify_password_response.data(), verify_password_response.size());
+    const vsce_status_t status = vsce_phe_server_verify_password(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), verify_password_request.empty() ? vsc_data_empty() : vsc_data(verify_password_request.data(), verify_password_request.size()), verify_password_response_buf);
+    verify_password_response.resize(vsc_buffer_len(verify_password_response_buf));
+    vsc_buffer_delete(verify_password_response_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -153,24 +148,21 @@ std::size_t PheServer::update_token_len() {
 
 tl::expected<PheServerRotateKeysResult, Error> PheServer::rotate_keys(std::span<const uint8_t> server_private_key) {
     std::vector<uint8_t> new_server_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t new_server_private_key_buf;
-    vsc_buffer_init(&new_server_private_key_buf);
-    vsc_buffer_use(&new_server_private_key_buf, new_server_private_key.data(), new_server_private_key.size());
+    vsc_buffer_t* new_server_private_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_server_private_key_buf, new_server_private_key.data(), new_server_private_key.size());
     std::vector<uint8_t> new_server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_t new_server_public_key_buf;
-    vsc_buffer_init(&new_server_public_key_buf);
-    vsc_buffer_use(&new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
+    vsc_buffer_t* new_server_public_key_buf = vsc_buffer_new();
+    vsc_buffer_use(new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
     std::vector<uint8_t> update_token(this->update_token_len());
-    vsc_buffer_t update_token_buf;
-    vsc_buffer_init(&update_token_buf);
-    vsc_buffer_use(&update_token_buf, update_token.data(), update_token.size());
-    const vsce_status_t status = vsce_phe_server_rotate_keys(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), &new_server_private_key_buf, &new_server_public_key_buf, &update_token_buf);
-    new_server_private_key.resize(vsc_buffer_len(&new_server_private_key_buf));
-    vsc_buffer_cleanup(&new_server_private_key_buf);
-    new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));
-    vsc_buffer_cleanup(&new_server_public_key_buf);
-    update_token.resize(vsc_buffer_len(&update_token_buf));
-    vsc_buffer_cleanup(&update_token_buf);
+    vsc_buffer_t* update_token_buf = vsc_buffer_new();
+    vsc_buffer_use(update_token_buf, update_token.data(), update_token.size());
+    const vsce_status_t status = vsce_phe_server_rotate_keys(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), new_server_private_key_buf, new_server_public_key_buf, update_token_buf);
+    new_server_private_key.resize(vsc_buffer_len(new_server_private_key_buf));
+    vsc_buffer_delete(new_server_private_key_buf);
+    new_server_public_key.resize(vsc_buffer_len(new_server_public_key_buf));
+    vsc_buffer_delete(new_server_public_key_buf);
+    update_token.resize(vsc_buffer_len(update_token_buf));
+    vsc_buffer_delete(update_token_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

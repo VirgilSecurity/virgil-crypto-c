@@ -38,7 +38,6 @@
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/foundation/entropy_source.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -104,12 +103,11 @@ void CtrDrbg::set_entropy_len(std::size_t len) {
 
 tl::expected<std::vector<uint8_t>, Error> CtrDrbg::random(std::size_t data_len) const {
     std::vector<uint8_t> data(data_len);
-    vsc_buffer_t data_buf;
-    vsc_buffer_init(&data_buf);
-    vsc_buffer_use(&data_buf, data.data(), data.size());
-    const vscf_status_t status = vscf_ctr_drbg_random(c_ctx_, data_len, &data_buf);
-    data.resize(vsc_buffer_len(&data_buf));
-    vsc_buffer_cleanup(&data_buf);
+    vsc_buffer_t* data_buf = vsc_buffer_new();
+    vsc_buffer_use(data_buf, data.data(), data.size());
+    const vscf_status_t status = vscf_ctr_drbg_random(c_ctx_, data_len, data_buf);
+    data.resize(vsc_buffer_len(data_buf));
+    vsc_buffer_delete(data_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

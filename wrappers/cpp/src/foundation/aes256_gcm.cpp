@@ -48,7 +48,6 @@
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -103,12 +102,11 @@ tl::expected<void, Error> Aes256Gcm::restore_alg_info(const AlgInfo& alg_info) {
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Gcm::encrypt(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->encrypted_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_gcm_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_gcm_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -127,12 +125,11 @@ std::size_t Aes256Gcm::precise_encrypted_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Gcm::decrypt(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->decrypted_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_gcm_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_gcm_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -162,12 +159,11 @@ void Aes256Gcm::start_decryption() {
 
 std::vector<uint8_t> Aes256Gcm::update(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->out_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_aes256_gcm_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    vscf_aes256_gcm_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     return out;
 }
 
@@ -188,12 +184,11 @@ std::size_t Aes256Gcm::decrypted_out_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Gcm::finish() {
     std::vector<uint8_t> out(this->out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_gcm_finish(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_gcm_finish(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -202,18 +197,16 @@ tl::expected<std::vector<uint8_t>, Error> Aes256Gcm::finish() {
 
 tl::expected<AuthEncryptAuthEncryptResult, Error> Aes256Gcm::auth_encrypt(std::span<const uint8_t> data, std::span<const uint8_t> auth_data) {
     std::vector<uint8_t> out(this->auth_encrypted_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
     std::vector<uint8_t> tag(this->AUTH_TAG_LEN);
-    vsc_buffer_t tag_buf;
-    vsc_buffer_init(&tag_buf);
-    vsc_buffer_use(&tag_buf, tag.data(), tag.size());
-    const vscf_status_t status = vscf_aes256_gcm_auth_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), auth_data.empty() ? vsc_data_empty() : vsc_data(auth_data.data(), auth_data.size()), &out_buf, &tag_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
-    tag.resize(vsc_buffer_len(&tag_buf));
-    vsc_buffer_cleanup(&tag_buf);
+    vsc_buffer_t* tag_buf = vsc_buffer_new();
+    vsc_buffer_use(tag_buf, tag.data(), tag.size());
+    const vscf_status_t status = vscf_aes256_gcm_auth_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), auth_data.empty() ? vsc_data_empty() : vsc_data(auth_data.data(), auth_data.size()), out_buf, tag_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
+    tag.resize(vsc_buffer_len(tag_buf));
+    vsc_buffer_delete(tag_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -227,12 +220,11 @@ std::size_t Aes256Gcm::auth_encrypted_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Gcm::auth_decrypt(std::span<const uint8_t> data, std::span<const uint8_t> auth_data, std::span<const uint8_t> tag) {
     std::vector<uint8_t> out(this->auth_decrypted_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_gcm_auth_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), auth_data.empty() ? vsc_data_empty() : vsc_data(auth_data.data(), auth_data.size()), tag.empty() ? vsc_data_empty() : vsc_data(tag.data(), tag.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_gcm_auth_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), auth_data.empty() ? vsc_data_empty() : vsc_data(auth_data.data(), auth_data.size()), tag.empty() ? vsc_data_empty() : vsc_data(tag.data(), tag.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -250,18 +242,16 @@ void Aes256Gcm::set_auth_data(std::span<const uint8_t> auth_data) {
 
 tl::expected<CipherAuthFinishAuthEncryptionResult, Error> Aes256Gcm::finish_auth_encryption() {
     std::vector<uint8_t> out(this->out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
     std::vector<uint8_t> tag(this->AUTH_TAG_LEN);
-    vsc_buffer_t tag_buf;
-    vsc_buffer_init(&tag_buf);
-    vsc_buffer_use(&tag_buf, tag.data(), tag.size());
-    const vscf_status_t status = vscf_aes256_gcm_finish_auth_encryption(c_ctx_, &out_buf, &tag_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
-    tag.resize(vsc_buffer_len(&tag_buf));
-    vsc_buffer_cleanup(&tag_buf);
+    vsc_buffer_t* tag_buf = vsc_buffer_new();
+    vsc_buffer_use(tag_buf, tag.data(), tag.size());
+    const vscf_status_t status = vscf_aes256_gcm_finish_auth_encryption(c_ctx_, out_buf, tag_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
+    tag.resize(vsc_buffer_len(tag_buf));
+    vsc_buffer_delete(tag_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -270,12 +260,11 @@ tl::expected<CipherAuthFinishAuthEncryptionResult, Error> Aes256Gcm::finish_auth
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Gcm::finish_auth_decryption(std::span<const uint8_t> tag) {
     std::vector<uint8_t> out(this->out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_gcm_finish_auth_decryption(c_ctx_, tag.empty() ? vsc_data_empty() : vsc_data(tag.data(), tag.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_gcm_finish_auth_decryption(c_ctx_, tag.empty() ? vsc_data_empty() : vsc_data(tag.data(), tag.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

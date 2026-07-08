@@ -42,7 +42,6 @@
 #include <virgil/crypto/foundation/message_info.hpp>
 #include <virgil/crypto/foundation/message_info_footer.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -98,12 +97,11 @@ std::size_t MessageInfoDerSerializer::serialized_len(const MessageInfo& message_
 
 std::vector<uint8_t> MessageInfoDerSerializer::serialize(const MessageInfo& message_info) {
     std::vector<uint8_t> out(this->serialized_len(message_info));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_message_info_der_serializer_serialize(c_ctx_, message_info.c_ctx(), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    vscf_message_info_der_serializer_serialize(c_ctx_, message_info.c_ctx(), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     return out;
 }
 
@@ -129,12 +127,11 @@ std::size_t MessageInfoDerSerializer::serialized_footer_len(const MessageInfoFoo
 
 std::vector<uint8_t> MessageInfoDerSerializer::serialize_footer(const MessageInfoFooter& message_info_footer) {
     std::vector<uint8_t> out(this->serialized_footer_len(message_info_footer));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_message_info_der_serializer_serialize_footer(c_ctx_, message_info_footer.c_ctx(), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    vscf_message_info_der_serializer_serialize_footer(c_ctx_, message_info_footer.c_ctx(), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     return out;
 }
 

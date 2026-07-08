@@ -41,7 +41,6 @@
 #include <virgil/crypto/foundation/public_key.hpp>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -122,12 +121,11 @@ std::size_t GroupSession::decrypt_len(const GroupSessionMessage& message) {
 
 tl::expected<std::vector<uint8_t>, Error> GroupSession::decrypt(const GroupSessionMessage& message, const PublicKey& public_key) {
     std::vector<uint8_t> plain_text(this->decrypt_len(message));
-    vsc_buffer_t plain_text_buf;
-    vsc_buffer_init(&plain_text_buf);
-    vsc_buffer_use(&plain_text_buf, plain_text.data(), plain_text.size());
-    const vscf_status_t status = vscf_group_session_decrypt(c_ctx_, message.c_ctx(), public_key.impl(), &plain_text_buf);
-    plain_text.resize(vsc_buffer_len(&plain_text_buf));
-    vsc_buffer_cleanup(&plain_text_buf);
+    vsc_buffer_t* plain_text_buf = vsc_buffer_new();
+    vsc_buffer_use(plain_text_buf, plain_text.data(), plain_text.size());
+    const vscf_status_t status = vscf_group_session_decrypt(c_ctx_, message.c_ctx(), public_key.impl(), plain_text_buf);
+    plain_text.resize(vsc_buffer_len(plain_text_buf));
+    vsc_buffer_delete(plain_text_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

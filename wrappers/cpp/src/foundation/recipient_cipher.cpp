@@ -47,7 +47,6 @@
 #include <virgil/crypto/foundation/signer_info.hpp>
 #include <virgil/crypto/foundation/signer_info_list.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -162,12 +161,11 @@ std::size_t RecipientCipher::message_info_len() const {
 
 std::vector<uint8_t> RecipientCipher::pack_message_info() {
     std::vector<uint8_t> message_info(this->message_info_len());
-    vsc_buffer_t message_info_buf;
-    vsc_buffer_init(&message_info_buf);
-    vsc_buffer_use(&message_info_buf, message_info.data(), message_info.size());
-    vscf_recipient_cipher_pack_message_info(c_ctx_, &message_info_buf);
-    message_info.resize(vsc_buffer_len(&message_info_buf));
-    vsc_buffer_cleanup(&message_info_buf);
+    vsc_buffer_t* message_info_buf = vsc_buffer_new();
+    vsc_buffer_use(message_info_buf, message_info.data(), message_info.size());
+    vscf_recipient_cipher_pack_message_info(c_ctx_, message_info_buf);
+    message_info.resize(vsc_buffer_len(message_info_buf));
+    vsc_buffer_delete(message_info_buf);
     return message_info;
 }
 
@@ -178,12 +176,11 @@ std::size_t RecipientCipher::encryption_out_len(std::size_t data_len) {
 
 tl::expected<std::vector<uint8_t>, Error> RecipientCipher::process_encryption(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->encryption_out_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_process_encryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_recipient_cipher_process_encryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -192,12 +189,11 @@ tl::expected<std::vector<uint8_t>, Error> RecipientCipher::process_encryption(st
 
 tl::expected<std::vector<uint8_t>, Error> RecipientCipher::finish_encryption() {
     std::vector<uint8_t> out(this->encryption_out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_finish_encryption(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_recipient_cipher_finish_encryption(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -235,12 +231,11 @@ std::size_t RecipientCipher::decryption_out_len(std::size_t data_len) {
 
 tl::expected<std::vector<uint8_t>, Error> RecipientCipher::process_decryption(std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->decryption_out_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_process_decryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_recipient_cipher_process_decryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -249,12 +244,11 @@ tl::expected<std::vector<uint8_t>, Error> RecipientCipher::process_decryption(st
 
 tl::expected<std::vector<uint8_t>, Error> RecipientCipher::finish_decryption() {
     std::vector<uint8_t> out(this->decryption_out_len(0));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_finish_decryption(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_recipient_cipher_finish_decryption(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -283,12 +277,11 @@ std::size_t RecipientCipher::message_info_footer_len() const {
 
 tl::expected<std::vector<uint8_t>, Error> RecipientCipher::pack_message_info_footer() {
     std::vector<uint8_t> out(this->message_info_footer_len());
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_pack_message_info_footer(c_ctx_, &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_recipient_cipher_pack_message_info_footer(c_ctx_, out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

@@ -174,14 +174,19 @@ class ClassGenerationTests(unittest.TestCase):
         for path, content in self.files.items():
             self.assertNotIn(".value()", content, path)
 
-    def test_buffer_output_uses_stack_buffer(self) -> None:
-        # Output buffers are stack-allocated (init/use/cleanup), not heap (new/delete).
+    def test_buffer_output_uses_heap_buffer(self) -> None:
+        # Output buffers use the public vsc_buffer_new()/_delete() heap API; stack
+        # allocation would require the internal private/vsc_buffer_defs.h whose _Atomic
+        # refcnt is not valid C++ (g++/clang++), so it is deliberately avoided.
         joined = "\n".join(v for k, v in self.files.items() if k.endswith(".cpp"))
-        self.assertIn("vsc_buffer_t ", joined)       # value, not pointer
-        self.assertIn("vsc_buffer_init(&", joined)
-        self.assertIn("vsc_buffer_use(&", joined)
-        self.assertIn(".resize(vsc_buffer_len(&", joined)
-        self.assertIn("vsc_buffer_cleanup(&", joined)
+        self.assertIn("vsc_buffer_t* ", joined)
+        self.assertIn("= vsc_buffer_new();", joined)
+        self.assertIn("vsc_buffer_use(", joined)
+        self.assertIn(".resize(vsc_buffer_len(", joined)
+        self.assertIn("vsc_buffer_delete(", joined)
+        # The internal private header must not be included in any generated file.
+        for path, content in self.files.items():
+            self.assertNotIn("private/vsc_buffer_defs.h", content, path)
 
     def test_static_class_has_no_handle(self) -> None:
         # A context="none" class (e.g. base64) is emitted with static methods and

@@ -41,7 +41,6 @@
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -96,12 +95,11 @@ tl::expected<void, Error> Sha224::restore_alg_info(const AlgInfo& alg_info) {
 
 std::vector<uint8_t> Sha224::hash(std::span<const uint8_t> data) {
     std::vector<uint8_t> digest(Sha224::DIGEST_LEN);
-    vsc_buffer_t digest_buf;
-    vsc_buffer_init(&digest_buf);
-    vsc_buffer_use(&digest_buf, digest.data(), digest.size());
-    vscf_sha224_hash(data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &digest_buf);
-    digest.resize(vsc_buffer_len(&digest_buf));
-    vsc_buffer_cleanup(&digest_buf);
+    vsc_buffer_t* digest_buf = vsc_buffer_new();
+    vsc_buffer_use(digest_buf, digest.data(), digest.size());
+    vscf_sha224_hash(data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), digest_buf);
+    digest.resize(vsc_buffer_len(digest_buf));
+    vsc_buffer_delete(digest_buf);
     return digest;
 }
 
@@ -115,12 +113,11 @@ void Sha224::update(std::span<const uint8_t> data) {
 
 std::vector<uint8_t> Sha224::finish() {
     std::vector<uint8_t> digest(this->DIGEST_LEN);
-    vsc_buffer_t digest_buf;
-    vsc_buffer_init(&digest_buf);
-    vsc_buffer_use(&digest_buf, digest.data(), digest.size());
-    vscf_sha224_finish(c_ctx_, &digest_buf);
-    digest.resize(vsc_buffer_len(&digest_buf));
-    vsc_buffer_cleanup(&digest_buf);
+    vsc_buffer_t* digest_buf = vsc_buffer_new();
+    vsc_buffer_use(digest_buf, digest.data(), digest.size());
+    vscf_sha224_finish(c_ctx_, digest_buf);
+    digest.resize(vsc_buffer_len(digest_buf));
+    vsc_buffer_delete(digest_buf);
     return digest;
 }
 

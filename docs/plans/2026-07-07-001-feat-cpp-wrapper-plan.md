@@ -310,7 +310,9 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** `cmake -Cconfigs/cpp-config.cmake -DVIRGIL_WRAP_CPP=ON -Bbuild -S.` then `cmake --build build` produces `foundation-cpp`/`ratchet-cpp`/`phe-cpp` on macOS/Linux.
 
-**Note (header+cpp split):** conforming to the "static per-library (generated `.cpp` bodies)" decision above, the generators now emit a lean declaration `.hpp` (forward-declaring the C handle, so consumers don't pull the C library headers) plus a definition `.cpp` per class/impl. This unlocked **stack-allocated output buffers** (the `.cpp` includes the internal `private/vsc_buffer_defs.h`, never exposed to consumers) — no per-call heap alloc. All three libraries are STATIC. Units 2–4 had emitted an interim header-only inline form; this revises them to the planned shape. Interfaces/enums/`Error`/dispatch header stay header-only.
+**Note (header+cpp split):** conforming to the "static per-library (generated `.cpp` bodies)" decision above, the generators now emit a lean declaration `.hpp` (forward-declaring the C handle, so consumers don't pull the C library headers) plus a definition `.cpp` per class/impl. All three libraries are STATIC. Units 2–4 had emitted an interim header-only inline form; this revises them to the planned shape. Interfaces/enums/`Error`/dispatch header stay header-only.
+
+Output buffers use the **public heap API** (`vsc_buffer_new()`/`vsc_buffer_delete()`). Stack-allocating the control block was explored but reverted: it requires the complete `vsc_buffer_t` from the internal `private/vsc_buffer_defs.h`, whose refcount member uses the C11 `_Atomic` keyword — **not valid C++** under g++/clang++ (only AppleClang/MSVC tolerated it, so it slipped past local + Windows CI and broke the Linux GCC/Clang jobs). The per-call heap allocation of the small control block is negligible next to the crypto work.
 
 - [x] **Unit 6: Third-party deps via FetchContent (tl::expected, GSL)**
 

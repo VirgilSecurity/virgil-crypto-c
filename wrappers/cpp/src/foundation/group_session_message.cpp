@@ -37,7 +37,6 @@
 #include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/group_msg_type.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -92,12 +91,11 @@ std::size_t GroupSessionMessage::serialize_len() const {
 
 std::vector<uint8_t> GroupSessionMessage::serialize() const {
     std::vector<uint8_t> output(this->serialize_len());
-    vsc_buffer_t output_buf;
-    vsc_buffer_init(&output_buf);
-    vsc_buffer_use(&output_buf, output.data(), output.size());
-    vscf_group_session_message_serialize(c_ctx_, &output_buf);
-    output.resize(vsc_buffer_len(&output_buf));
-    vsc_buffer_cleanup(&output_buf);
+    vsc_buffer_t* output_buf = vsc_buffer_new();
+    vsc_buffer_use(output_buf, output.data(), output.size());
+    vscf_group_session_message_serialize(c_ctx_, output_buf);
+    output.resize(vsc_buffer_len(output_buf));
+    vsc_buffer_delete(output_buf);
     return output;
 }
 

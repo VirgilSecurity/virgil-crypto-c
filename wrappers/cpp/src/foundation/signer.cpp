@@ -39,7 +39,6 @@
 #include <virgil/crypto/foundation/private_key.hpp>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -97,12 +96,11 @@ std::size_t Signer::signature_len(const PrivateKey& private_key) const {
 
 tl::expected<std::vector<uint8_t>, Error> Signer::sign(const PrivateKey& private_key) const {
     std::vector<uint8_t> signature(this->signature_len(private_key));
-    vsc_buffer_t signature_buf;
-    vsc_buffer_init(&signature_buf);
-    vsc_buffer_use(&signature_buf, signature.data(), signature.size());
-    const vscf_status_t status = vscf_signer_sign(c_ctx_, private_key.impl(), &signature_buf);
-    signature.resize(vsc_buffer_len(&signature_buf));
-    vsc_buffer_cleanup(&signature_buf);
+    vsc_buffer_t* signature_buf = vsc_buffer_new();
+    vsc_buffer_use(signature_buf, signature.data(), signature.size());
+    const vscf_status_t status = vscf_signer_sign(c_ctx_, private_key.impl(), signature_buf);
+    signature.resize(vsc_buffer_len(signature_buf));
+    vsc_buffer_delete(signature_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

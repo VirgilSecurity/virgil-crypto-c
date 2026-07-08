@@ -604,7 +604,7 @@ def _c_call_args(project_ir, entity_name, method, is_static):
             continue
         local = cpp_method_name(arg.name)
         if _arg_is_buffer_output(arg):
-            parts.append(f"&{local}_buf")
+            parts.append(f"{local}_buf")
         elif arg.class_name == "data":
             # An empty std::span/vector may have data()==nullptr, but vsc_data asserts
             # a non-null pointer even for length 0 — use vsc_data_empty() when empty
@@ -688,12 +688,12 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
         local = cpp_method_name(buf.name)
         cap = _buffer_capacity_expr(project_ir, entity_name, buf, is_static, call_entity)
         lines.append(f"{ind}std::vector<uint8_t> {local}({cap});")
-        # The buffer control block wraps external (vector) memory, so it lives on the
-        # stack — no heap allocation. This needs the complete vsc_buffer_t type, which
-        # the .cpp pulls from private/vsc_buffer_defs.h (never exposed to consumers).
-        lines.append(f"{ind}vsc_buffer_t {local}_buf;")
-        lines.append(f"{ind}vsc_buffer_init(&{local}_buf);")
-        lines.append(f"{ind}vsc_buffer_use(&{local}_buf, {local}.data(), {local}.size());")
+        # Heap-allocate the buffer control block via the public API. Stack allocation
+        # (vsc_buffer_init on a value) would require the complete vsc_buffer_t from the
+        # internal private/vsc_buffer_defs.h, which is not C++-portable: its refcnt uses
+        # the C11 _Atomic keyword, rejected by g++/clang++ in C++ mode.
+        lines.append(f"{ind}vsc_buffer_t* {local}_buf = vsc_buffer_new();")
+        lines.append(f"{ind}vsc_buffer_use({local}_buf, {local}.data(), {local}.size());")
 
     # ``disown`` object arguments: the callee adopts (and nulls) a ``vscf_*_t **`` handle.
     # Hand it a shallow copy so the caller's wrapper keeps ownership of its own object.
@@ -723,8 +723,8 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
 
     for buf in buffers:
         local = cpp_method_name(buf.name)
-        lines.append(f"{ind}{local}.resize(vsc_buffer_len(&{local}_buf));")
-        lines.append(f"{ind}vsc_buffer_cleanup(&{local}_buf);")
+        lines.append(f"{ind}{local}.resize(vsc_buffer_len({local}_buf));")
+        lines.append(f"{ind}vsc_buffer_delete({local}_buf);")
 
     if has_status:
         lines.append(f"{ind}if (status != {prefix}_status_SUCCESS) {{")
@@ -796,7 +796,7 @@ def _cpp_constant_type(const) -> str:
 
 def _uses_output_buffer(methods) -> bool:
     """Whether any method needs the vsc_buffer API in its body — either a buffer
-    output argument (init/use/cleanup) or a ``vsc_buffer_t*`` return (bytes/len/delete)."""
+    output argument (new/use/delete) or a ``vsc_buffer_t*`` return (bytes/len/delete)."""
     for m in methods:
         if any(_arg_is_buffer_output(a) for a in m.arguments):
             return True
@@ -805,10 +805,12 @@ def _uses_output_buffer(methods) -> bool:
     return False
 
 
+# Only the public vsc_buffer.h — the wrapper heap-allocates the control block via
+# vsc_buffer_new()/_delete(), so it never needs the internal private/vsc_buffer_defs.h
+# (whose _Atomic refcnt is not valid C++ under g++/clang++).
 _COMMON_NS_PATH = "virgil/crypto/common"
 _BUFFER_DEF_INCLUDES = [
     f"<{_COMMON_NS_PATH}/vsc_buffer.h>",
-    f"<{_COMMON_NS_PATH}/private/vsc_buffer_defs.h>",
 ]
 
 

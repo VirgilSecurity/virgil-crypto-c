@@ -49,7 +49,6 @@
 #include <virgil/crypto/foundation/raw_public_key.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -187,12 +186,11 @@ std::size_t CompoundKeyAlg::encrypted_len(const PublicKey& public_key, std::size
 
 tl::expected<std::vector<uint8_t>, Error> CompoundKeyAlg::encrypt(const PublicKey& public_key, std::span<const uint8_t> data) const {
     std::vector<uint8_t> out(this->encrypted_len(public_key, data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_compound_key_alg_encrypt(c_ctx_, public_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_compound_key_alg_encrypt(c_ctx_, public_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -211,12 +209,11 @@ std::size_t CompoundKeyAlg::decrypted_len(const PrivateKey& private_key, std::si
 
 tl::expected<std::vector<uint8_t>, Error> CompoundKeyAlg::decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) const {
     std::vector<uint8_t> out(this->decrypted_len(private_key, data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_compound_key_alg_decrypt(c_ctx_, private_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_compound_key_alg_decrypt(c_ctx_, private_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -235,12 +232,11 @@ std::size_t CompoundKeyAlg::signature_len(const PrivateKey& private_key) const {
 
 tl::expected<std::vector<uint8_t>, Error> CompoundKeyAlg::sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const {
     std::vector<uint8_t> signature(this->signature_len(private_key));
-    vsc_buffer_t signature_buf;
-    vsc_buffer_init(&signature_buf);
-    vsc_buffer_use(&signature_buf, signature.data(), signature.size());
-    const vscf_status_t status = vscf_compound_key_alg_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), &signature_buf);
-    signature.resize(vsc_buffer_len(&signature_buf));
-    vsc_buffer_cleanup(&signature_buf);
+    vsc_buffer_t* signature_buf = vsc_buffer_new();
+    vsc_buffer_use(signature_buf, signature.data(), signature.size());
+    const vscf_status_t status = vscf_compound_key_alg_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), signature_buf);
+    signature.resize(vsc_buffer_len(signature_buf));
+    vsc_buffer_delete(signature_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

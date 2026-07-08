@@ -41,7 +41,6 @@
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -106,12 +105,11 @@ std::size_t Aes256Kw::unwrapped_len(std::size_t data_len) const {
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Kw::wrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->wrapped_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_kw_wrap(c_ctx_, kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_kw_wrap(c_ctx_, kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -120,12 +118,11 @@ tl::expected<std::vector<uint8_t>, Error> Aes256Kw::wrap(std::span<const uint8_t
 
 tl::expected<std::vector<uint8_t>, Error> Aes256Kw::unwrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) {
     std::vector<uint8_t> out(this->unwrapped_len(data.size()));
-    vsc_buffer_t out_buf;
-    vsc_buffer_init(&out_buf);
-    vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_kw_unwrap(c_ctx_, kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
-    out.resize(vsc_buffer_len(&out_buf));
-    vsc_buffer_cleanup(&out_buf);
+    vsc_buffer_t* out_buf = vsc_buffer_new();
+    vsc_buffer_use(out_buf, out.data(), out.size());
+    const vscf_status_t status = vscf_aes256_kw_unwrap(c_ctx_, kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), out_buf);
+    out.resize(vsc_buffer_len(out_buf));
+    vsc_buffer_delete(out_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

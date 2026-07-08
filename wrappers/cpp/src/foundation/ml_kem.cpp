@@ -48,7 +48,6 @@
 #include <virgil/crypto/foundation/raw_public_key.hpp>
 #include <virgil/crypto/foundation/foundation_implementation.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::foundation {
 
@@ -186,18 +185,16 @@ std::size_t MlKem::kem_encapsulated_key_len(const PublicKey& public_key) const {
 
 tl::expected<KemKemEncapsulateResult, Error> MlKem::kem_encapsulate(const PublicKey& public_key) const {
     std::vector<uint8_t> shared_key(this->kem_shared_key_len(public_key));
-    vsc_buffer_t shared_key_buf;
-    vsc_buffer_init(&shared_key_buf);
-    vsc_buffer_use(&shared_key_buf, shared_key.data(), shared_key.size());
+    vsc_buffer_t* shared_key_buf = vsc_buffer_new();
+    vsc_buffer_use(shared_key_buf, shared_key.data(), shared_key.size());
     std::vector<uint8_t> encapsulated_key(this->kem_encapsulated_key_len(public_key));
-    vsc_buffer_t encapsulated_key_buf;
-    vsc_buffer_init(&encapsulated_key_buf);
-    vsc_buffer_use(&encapsulated_key_buf, encapsulated_key.data(), encapsulated_key.size());
-    const vscf_status_t status = vscf_ml_kem_kem_encapsulate(c_ctx_, public_key.impl(), &shared_key_buf, &encapsulated_key_buf);
-    shared_key.resize(vsc_buffer_len(&shared_key_buf));
-    vsc_buffer_cleanup(&shared_key_buf);
-    encapsulated_key.resize(vsc_buffer_len(&encapsulated_key_buf));
-    vsc_buffer_cleanup(&encapsulated_key_buf);
+    vsc_buffer_t* encapsulated_key_buf = vsc_buffer_new();
+    vsc_buffer_use(encapsulated_key_buf, encapsulated_key.data(), encapsulated_key.size());
+    const vscf_status_t status = vscf_ml_kem_kem_encapsulate(c_ctx_, public_key.impl(), shared_key_buf, encapsulated_key_buf);
+    shared_key.resize(vsc_buffer_len(shared_key_buf));
+    vsc_buffer_delete(shared_key_buf);
+    encapsulated_key.resize(vsc_buffer_len(encapsulated_key_buf));
+    vsc_buffer_delete(encapsulated_key_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -206,12 +203,11 @@ tl::expected<KemKemEncapsulateResult, Error> MlKem::kem_encapsulate(const Public
 
 tl::expected<std::vector<uint8_t>, Error> MlKem::kem_decapsulate(std::span<const uint8_t> encapsulated_key, const PrivateKey& private_key) const {
     std::vector<uint8_t> shared_key(this->kem_shared_key_len(private_key));
-    vsc_buffer_t shared_key_buf;
-    vsc_buffer_init(&shared_key_buf);
-    vsc_buffer_use(&shared_key_buf, shared_key.data(), shared_key.size());
-    const vscf_status_t status = vscf_ml_kem_kem_decapsulate(c_ctx_, encapsulated_key.empty() ? vsc_data_empty() : vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
-    shared_key.resize(vsc_buffer_len(&shared_key_buf));
-    vsc_buffer_cleanup(&shared_key_buf);
+    vsc_buffer_t* shared_key_buf = vsc_buffer_new();
+    vsc_buffer_use(shared_key_buf, shared_key.data(), shared_key.size());
+    const vscf_status_t status = vscf_ml_kem_kem_decapsulate(c_ctx_, encapsulated_key.empty() ? vsc_data_empty() : vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), shared_key_buf);
+    shared_key.resize(vsc_buffer_len(shared_key_buf));
+    vsc_buffer_delete(shared_key_buf);
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

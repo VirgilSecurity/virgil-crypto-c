@@ -36,7 +36,6 @@
 #include <virgil/crypto/phe/vsce_phe_cipher.h>
 #include <virgil/crypto/foundation/random.hpp>
 #include <virgil/crypto/common/vsc_buffer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 namespace virgil::crypto::phe {
 
@@ -94,12 +93,11 @@ std::size_t PheCipher::decrypt_len(std::size_t cipher_text_len) {
 
 tl::expected<std::vector<uint8_t>, Error> PheCipher::encrypt(std::span<const uint8_t> plain_text, std::span<const uint8_t> account_key) {
     std::vector<uint8_t> cipher_text(this->encrypt_len(plain_text.size()));
-    vsc_buffer_t cipher_text_buf;
-    vsc_buffer_init(&cipher_text_buf);
-    vsc_buffer_use(&cipher_text_buf, cipher_text.data(), cipher_text.size());
-    const vsce_status_t status = vsce_phe_cipher_encrypt(c_ctx_, plain_text.empty() ? vsc_data_empty() : vsc_data(plain_text.data(), plain_text.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), &cipher_text_buf);
-    cipher_text.resize(vsc_buffer_len(&cipher_text_buf));
-    vsc_buffer_cleanup(&cipher_text_buf);
+    vsc_buffer_t* cipher_text_buf = vsc_buffer_new();
+    vsc_buffer_use(cipher_text_buf, cipher_text.data(), cipher_text.size());
+    const vsce_status_t status = vsce_phe_cipher_encrypt(c_ctx_, plain_text.empty() ? vsc_data_empty() : vsc_data(plain_text.data(), plain_text.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), cipher_text_buf);
+    cipher_text.resize(vsc_buffer_len(cipher_text_buf));
+    vsc_buffer_delete(cipher_text_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -108,12 +106,11 @@ tl::expected<std::vector<uint8_t>, Error> PheCipher::encrypt(std::span<const uin
 
 tl::expected<std::vector<uint8_t>, Error> PheCipher::decrypt(std::span<const uint8_t> cipher_text, std::span<const uint8_t> account_key) {
     std::vector<uint8_t> plain_text(this->decrypt_len(cipher_text.size()));
-    vsc_buffer_t plain_text_buf;
-    vsc_buffer_init(&plain_text_buf);
-    vsc_buffer_use(&plain_text_buf, plain_text.data(), plain_text.size());
-    const vsce_status_t status = vsce_phe_cipher_decrypt(c_ctx_, cipher_text.empty() ? vsc_data_empty() : vsc_data(cipher_text.data(), cipher_text.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), &plain_text_buf);
-    plain_text.resize(vsc_buffer_len(&plain_text_buf));
-    vsc_buffer_cleanup(&plain_text_buf);
+    vsc_buffer_t* plain_text_buf = vsc_buffer_new();
+    vsc_buffer_use(plain_text_buf, plain_text.data(), plain_text.size());
+    const vsce_status_t status = vsce_phe_cipher_decrypt(c_ctx_, cipher_text.empty() ? vsc_data_empty() : vsc_data(cipher_text.data(), cipher_text.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), plain_text_buf);
+    plain_text.resize(vsc_buffer_len(plain_text_buf));
+    vsc_buffer_delete(plain_text_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -122,12 +119,11 @@ tl::expected<std::vector<uint8_t>, Error> PheCipher::decrypt(std::span<const uin
 
 tl::expected<std::vector<uint8_t>, Error> PheCipher::auth_encrypt(std::span<const uint8_t> plain_text, std::span<const uint8_t> additional_data, std::span<const uint8_t> account_key) {
     std::vector<uint8_t> cipher_text(this->encrypt_len(plain_text.size()));
-    vsc_buffer_t cipher_text_buf;
-    vsc_buffer_init(&cipher_text_buf);
-    vsc_buffer_use(&cipher_text_buf, cipher_text.data(), cipher_text.size());
-    const vsce_status_t status = vsce_phe_cipher_auth_encrypt(c_ctx_, plain_text.empty() ? vsc_data_empty() : vsc_data(plain_text.data(), plain_text.size()), additional_data.empty() ? vsc_data_empty() : vsc_data(additional_data.data(), additional_data.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), &cipher_text_buf);
-    cipher_text.resize(vsc_buffer_len(&cipher_text_buf));
-    vsc_buffer_cleanup(&cipher_text_buf);
+    vsc_buffer_t* cipher_text_buf = vsc_buffer_new();
+    vsc_buffer_use(cipher_text_buf, cipher_text.data(), cipher_text.size());
+    const vsce_status_t status = vsce_phe_cipher_auth_encrypt(c_ctx_, plain_text.empty() ? vsc_data_empty() : vsc_data(plain_text.data(), plain_text.size()), additional_data.empty() ? vsc_data_empty() : vsc_data(additional_data.data(), additional_data.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), cipher_text_buf);
+    cipher_text.resize(vsc_buffer_len(cipher_text_buf));
+    vsc_buffer_delete(cipher_text_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -136,12 +132,11 @@ tl::expected<std::vector<uint8_t>, Error> PheCipher::auth_encrypt(std::span<cons
 
 tl::expected<std::vector<uint8_t>, Error> PheCipher::auth_decrypt(std::span<const uint8_t> cipher_text, std::span<const uint8_t> additional_data, std::span<const uint8_t> account_key) {
     std::vector<uint8_t> plain_text(this->decrypt_len(cipher_text.size()));
-    vsc_buffer_t plain_text_buf;
-    vsc_buffer_init(&plain_text_buf);
-    vsc_buffer_use(&plain_text_buf, plain_text.data(), plain_text.size());
-    const vsce_status_t status = vsce_phe_cipher_auth_decrypt(c_ctx_, cipher_text.empty() ? vsc_data_empty() : vsc_data(cipher_text.data(), cipher_text.size()), additional_data.empty() ? vsc_data_empty() : vsc_data(additional_data.data(), additional_data.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), &plain_text_buf);
-    plain_text.resize(vsc_buffer_len(&plain_text_buf));
-    vsc_buffer_cleanup(&plain_text_buf);
+    vsc_buffer_t* plain_text_buf = vsc_buffer_new();
+    vsc_buffer_use(plain_text_buf, plain_text.data(), plain_text.size());
+    const vsce_status_t status = vsce_phe_cipher_auth_decrypt(c_ctx_, cipher_text.empty() ? vsc_data_empty() : vsc_data(cipher_text.data(), cipher_text.size()), additional_data.empty() ? vsc_data_empty() : vsc_data(additional_data.data(), additional_data.size()), account_key.empty() ? vsc_data_empty() : vsc_data(account_key.data(), account_key.size()), plain_text_buf);
+    plain_text.resize(vsc_buffer_len(plain_text_buf));
+    vsc_buffer_delete(plain_text_buf);
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
