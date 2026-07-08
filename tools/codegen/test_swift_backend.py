@@ -73,13 +73,18 @@ def _legacy_content(rel_path: str) -> str:
     return (REPO_ROOT / rel_path).read_text()
 
 
+# The committed Swift files carry the license header, so parity checks must generate
+# with the same license text the release pipeline uses (read from the repo LICENSE).
+_LICENSE = (REPO_ROOT / "LICENSE").read_text()
+
+
 class FoundationEnumParityTests(unittest.TestCase):
     """Generated Swift enum files must be byte-identical to legacy output."""
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.ir = _load_foundation_ir()
-        cls.files = dict(generate_swift_files(cls.ir, repo_root=str(REPO_ROOT)))
+        cls.files = dict(generate_swift_files(cls.ir, license_text=_LICENSE, repo_root=str(REPO_ROOT)))
 
     def _assert_parity(self, rel_path: str) -> None:
         legacy = _legacy_content(rel_path)
@@ -119,7 +124,7 @@ class FoundationFileCountTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.ir = _load_foundation_ir()
-        cls.files = generate_swift_files(cls.ir, repo_root=str(REPO_ROOT))
+        cls.files = generate_swift_files(cls.ir, license_text=_LICENSE, repo_root=str(REPO_ROOT))
 
     def test_foundation_total_file_count(self) -> None:
         # Foundation has 131 Swift files total (enums + protocols + classes + infrastructure);
@@ -154,7 +159,7 @@ class RatchetEnumParityTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         src = load_named_project_source("ratchet", str(REPO_ROOT))
         cls.ir = project_to_ir(src)
-        cls.files = dict(generate_swift_files(cls.ir, repo_root=str(REPO_ROOT)))
+        cls.files = dict(generate_swift_files(cls.ir, license_text=_LICENSE, repo_root=str(REPO_ROOT)))
 
     def test_msg_type_parity(self) -> None:
         rel = "wrappers/swift/VirgilCrypto/VirgilCryptoRatchet/MsgType.swift"
