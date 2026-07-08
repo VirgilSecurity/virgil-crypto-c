@@ -99,7 +99,7 @@ std::vector<uint8_t> Sha224::hash(std::span<const uint8_t> data) {
     vsc_buffer_t digest_buf;
     vsc_buffer_init(&digest_buf);
     vsc_buffer_use(&digest_buf, digest.data(), digest.size());
-    vscf_sha224_hash(vsc_data(data.data(), data.size()), &digest_buf);
+    vscf_sha224_hash(data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &digest_buf);
     digest.resize(vsc_buffer_len(&digest_buf));
     vsc_buffer_cleanup(&digest_buf);
     return digest;
@@ -110,7 +110,7 @@ void Sha224::start() {
 }
 
 void Sha224::update(std::span<const uint8_t> data) {
-    vscf_sha224_update(c_ctx_, vsc_data(data.data(), data.size()));
+    vscf_sha224_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
 }
 
 std::vector<uint8_t> Sha224::finish() {

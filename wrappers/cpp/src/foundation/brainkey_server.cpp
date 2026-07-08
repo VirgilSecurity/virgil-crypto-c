@@ -107,7 +107,7 @@ tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::harden(std::span<const
     vsc_buffer_t hardened_point_buf;
     vsc_buffer_init(&hardened_point_buf);
     vsc_buffer_use(&hardened_point_buf, hardened_point.data(), hardened_point.size());
-    const vscf_status_t status = vscf_brainkey_server_harden(c_ctx_, vsc_data(identity_secret.data(), identity_secret.size()), vsc_data(blinded_point.data(), blinded_point.size()), &hardened_point_buf);
+    const vscf_status_t status = vscf_brainkey_server_harden(c_ctx_, identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), &hardened_point_buf);
     hardened_point.resize(vsc_buffer_len(&hardened_point_buf));
     vsc_buffer_cleanup(&hardened_point_buf);
     if (status != vscf_status_SUCCESS) {
@@ -121,7 +121,7 @@ tl::expected<std::vector<uint8_t>, Error> BrainkeyServer::compute_public_key(std
     vsc_buffer_t public_key_buf;
     vsc_buffer_init(&public_key_buf);
     vsc_buffer_use(&public_key_buf, public_key.data(), public_key.size());
-    const vscf_status_t status = vscf_brainkey_server_compute_public_key(c_ctx_, vsc_data(identity_secret.data(), identity_secret.size()), &public_key_buf);
+    const vscf_status_t status = vscf_brainkey_server_compute_public_key(c_ctx_, identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), &public_key_buf);
     public_key.resize(vsc_buffer_len(&public_key_buf));
     vsc_buffer_cleanup(&public_key_buf);
     if (status != vscf_status_SUCCESS) {
@@ -141,7 +141,7 @@ tl::expected<BrainkeyServerProveResult, Error> BrainkeyServer::prove(std::span<c
     vsc_buffer_t proof_value_s_buf;
     vsc_buffer_init(&proof_value_s_buf);
     vsc_buffer_use(&proof_value_s_buf, proof_value_s.data(), proof_value_s.size());
-    auto proxy_result = vscf_brainkey_server_prove(c_ctx_, vsc_data(blinded_point.data(), blinded_point.size()), vsc_data(hardened_point.data(), hardened_point.size()), vsc_data(identity_secret.data(), identity_secret.size()), vsc_data(server_public_key.data(), server_public_key.size()), &proof_value_c_buf, &proof_value_s_buf, &error);
+    auto proxy_result = vscf_brainkey_server_prove(c_ctx_, blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), identity_secret.empty() ? vsc_data_empty() : vsc_data(identity_secret.data(), identity_secret.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), &proof_value_c_buf, &proof_value_s_buf, &error);
     proof_value_c.resize(vsc_buffer_len(&proof_value_c_buf));
     vsc_buffer_cleanup(&proof_value_c_buf);
     proof_value_s.resize(vsc_buffer_len(&proof_value_s_buf));

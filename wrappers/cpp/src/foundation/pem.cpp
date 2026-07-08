@@ -50,7 +50,7 @@ std::vector<uint8_t> Pem::wrap(std::string_view title, std::span<const uint8_t> 
     vsc_buffer_t pem_buf;
     vsc_buffer_init(&pem_buf);
     vsc_buffer_use(&pem_buf, pem.data(), pem.size());
-    vscf_pem_wrap(std::string(title).c_str(), vsc_data(data.data(), data.size()), &pem_buf);
+    vscf_pem_wrap(std::string(title).c_str(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &pem_buf);
     pem.resize(vsc_buffer_len(&pem_buf));
     vsc_buffer_cleanup(&pem_buf);
     return pem;
@@ -66,7 +66,7 @@ tl::expected<std::vector<uint8_t>, Error> Pem::unwrap(std::span<const uint8_t> p
     vsc_buffer_t data_buf;
     vsc_buffer_init(&data_buf);
     vsc_buffer_use(&data_buf, data.data(), data.size());
-    const vscf_status_t status = vscf_pem_unwrap(vsc_data(pem.data(), pem.size()), &data_buf);
+    const vscf_status_t status = vscf_pem_unwrap(pem.empty() ? vsc_data_empty() : vsc_data(pem.data(), pem.size()), &data_buf);
     data.resize(vsc_buffer_len(&data_buf));
     vsc_buffer_cleanup(&data_buf);
     if (status != vscf_status_SUCCESS) {
@@ -76,7 +76,7 @@ tl::expected<std::vector<uint8_t>, Error> Pem::unwrap(std::span<const uint8_t> p
 }
 
 std::vector<uint8_t> Pem::title(std::span<const uint8_t> pem) {
-    auto proxy_result = vscf_pem_title(vsc_data(pem.data(), pem.size()));
+    auto proxy_result = vscf_pem_title(pem.empty() ? vsc_data_empty() : vsc_data(pem.data(), pem.size()));
     return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
 }
 

@@ -105,7 +105,7 @@ std::vector<uint8_t> Kdf1::derive(std::span<const uint8_t> data, std::size_t key
     vsc_buffer_t key_buf;
     vsc_buffer_init(&key_buf);
     vsc_buffer_use(&key_buf, key.data(), key.size());
-    vscf_kdf1_derive(c_ctx_, vsc_data(data.data(), data.size()), key_len, &key_buf);
+    vscf_kdf1_derive(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), key_len, &key_buf);
     key.resize(vsc_buffer_len(&key_buf));
     vsc_buffer_cleanup(&key_buf);
     return key;

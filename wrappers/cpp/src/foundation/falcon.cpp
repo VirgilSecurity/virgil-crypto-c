@@ -189,7 +189,7 @@ tl::expected<std::vector<uint8_t>, Error> Falcon::sign_hash(const PrivateKey& pr
     vsc_buffer_t signature_buf;
     vsc_buffer_init(&signature_buf);
     vsc_buffer_use(&signature_buf, signature.data(), signature.size());
-    const vscf_status_t status = vscf_falcon_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), &signature_buf);
+    const vscf_status_t status = vscf_falcon_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), &signature_buf);
     signature.resize(vsc_buffer_len(&signature_buf));
     vsc_buffer_cleanup(&signature_buf);
     if (status != vscf_status_SUCCESS) {
@@ -204,7 +204,7 @@ bool Falcon::can_verify(const PublicKey& public_key) const {
 }
 
 bool Falcon::verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const {
-    auto proxy_result = vscf_falcon_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), vsc_data(signature.data(), signature.size()));
+    auto proxy_result = vscf_falcon_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), signature.empty() ? vsc_data_empty() : vsc_data(signature.data(), signature.size()));
     return proxy_result;
 }
 

@@ -125,7 +125,7 @@ void RandomPadding::start_data_processing() {
 }
 
 std::vector<uint8_t> RandomPadding::process_data(std::span<const uint8_t> data) {
-    auto proxy_result = vscf_random_padding_process_data(c_ctx_, vsc_data(data.data(), data.size()));
+    auto proxy_result = vscf_random_padding_process_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
     return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
 }
 
@@ -152,7 +152,7 @@ std::vector<uint8_t> RandomPadding::process_padded_data(std::span<const uint8_t>
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_random_padding_process_padded_data(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    vscf_random_padding_process_padded_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     return out;

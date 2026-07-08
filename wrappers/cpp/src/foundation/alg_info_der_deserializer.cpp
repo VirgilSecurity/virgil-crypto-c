@@ -95,7 +95,7 @@ tl::expected<std::unique_ptr<AlgInfo>, Error> AlgInfoDerDeserializer::deserializ
 tl::expected<std::unique_ptr<AlgInfo>, Error> AlgInfoDerDeserializer::deserialize(std::span<const uint8_t> data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_alg_info_der_deserializer_deserialize(c_ctx_, vsc_data(data.data(), data.size()), &error);
+    auto proxy_result = vscf_alg_info_der_deserializer_deserialize(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

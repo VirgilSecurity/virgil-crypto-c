@@ -89,7 +89,7 @@ tl::expected<void, Error> UokmsClient::setup_defaults() {
 }
 
 tl::expected<void, Error> UokmsClient::set_keys_oneparty(std::span<const uint8_t> client_private_key) {
-    const vsce_status_t status = vsce_uokms_client_set_keys_oneparty(c_ctx_, vsc_data(client_private_key.data(), client_private_key.size()));
+    const vsce_status_t status = vsce_uokms_client_set_keys_oneparty(c_ctx_, client_private_key.empty() ? vsc_data_empty() : vsc_data(client_private_key.data(), client_private_key.size()));
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -97,7 +97,7 @@ tl::expected<void, Error> UokmsClient::set_keys_oneparty(std::span<const uint8_t
 }
 
 tl::expected<void, Error> UokmsClient::set_keys(std::span<const uint8_t> client_private_key, std::span<const uint8_t> server_public_key) {
-    const vsce_status_t status = vsce_uokms_client_set_keys(c_ctx_, vsc_data(client_private_key.data(), client_private_key.size()), vsc_data(server_public_key.data(), server_public_key.size()));
+    const vsce_status_t status = vsce_uokms_client_set_keys(c_ctx_, client_private_key.empty() ? vsc_data_empty() : vsc_data(client_private_key.data(), client_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()));
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -143,7 +143,7 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::decrypt_oneparty(std::spa
     vsc_buffer_t encryption_key_buf;
     vsc_buffer_init(&encryption_key_buf);
     vsc_buffer_use(&encryption_key_buf, encryption_key.data(), encryption_key.size());
-    const vsce_status_t status = vsce_uokms_client_decrypt_oneparty(c_ctx_, vsc_data(wrap.data(), wrap.size()), encryption_key_len, &encryption_key_buf);
+    const vsce_status_t status = vsce_uokms_client_decrypt_oneparty(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), encryption_key_len, &encryption_key_buf);
     encryption_key.resize(vsc_buffer_len(&encryption_key_buf));
     vsc_buffer_cleanup(&encryption_key_buf);
     if (status != vsce_status_SUCCESS) {
@@ -161,7 +161,7 @@ tl::expected<UokmsClientGenerateDecryptRequestResult, Error> UokmsClient::genera
     vsc_buffer_t decrypt_request_buf;
     vsc_buffer_init(&decrypt_request_buf);
     vsc_buffer_use(&decrypt_request_buf, decrypt_request.data(), decrypt_request.size());
-    const vsce_status_t status = vsce_uokms_client_generate_decrypt_request(c_ctx_, vsc_data(wrap.data(), wrap.size()), &deblind_factor_buf, &decrypt_request_buf);
+    const vsce_status_t status = vsce_uokms_client_generate_decrypt_request(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), &deblind_factor_buf, &decrypt_request_buf);
     deblind_factor.resize(vsc_buffer_len(&deblind_factor_buf));
     vsc_buffer_cleanup(&deblind_factor_buf);
     decrypt_request.resize(vsc_buffer_len(&decrypt_request_buf));
@@ -177,7 +177,7 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::process_decrypt_response(
     vsc_buffer_t encryption_key_buf;
     vsc_buffer_init(&encryption_key_buf);
     vsc_buffer_use(&encryption_key_buf, encryption_key.data(), encryption_key.size());
-    const vsce_status_t status = vsce_uokms_client_process_decrypt_response(c_ctx_, vsc_data(wrap.data(), wrap.size()), vsc_data(decrypt_request.data(), decrypt_request.size()), vsc_data(decrypt_response.data(), decrypt_response.size()), vsc_data(deblind_factor.data(), deblind_factor.size()), encryption_key_len, &encryption_key_buf);
+    const vsce_status_t status = vsce_uokms_client_process_decrypt_response(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), decrypt_request.empty() ? vsc_data_empty() : vsc_data(decrypt_request.data(), decrypt_request.size()), decrypt_response.empty() ? vsc_data_empty() : vsc_data(decrypt_response.data(), decrypt_response.size()), deblind_factor.empty() ? vsc_data_empty() : vsc_data(deblind_factor.data(), deblind_factor.size()), encryption_key_len, &encryption_key_buf);
     encryption_key.resize(vsc_buffer_len(&encryption_key_buf));
     vsc_buffer_cleanup(&encryption_key_buf);
     if (status != vsce_status_SUCCESS) {
@@ -191,7 +191,7 @@ tl::expected<std::vector<uint8_t>, Error> UokmsClient::rotate_keys_oneparty(std:
     vsc_buffer_t new_client_private_key_buf;
     vsc_buffer_init(&new_client_private_key_buf);
     vsc_buffer_use(&new_client_private_key_buf, new_client_private_key.data(), new_client_private_key.size());
-    const vsce_status_t status = vsce_uokms_client_rotate_keys_oneparty(c_ctx_, vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf);
+    const vsce_status_t status = vsce_uokms_client_rotate_keys_oneparty(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf);
     new_client_private_key.resize(vsc_buffer_len(&new_client_private_key_buf));
     vsc_buffer_cleanup(&new_client_private_key_buf);
     if (status != vsce_status_SUCCESS) {
@@ -223,7 +223,7 @@ tl::expected<UokmsClientRotateKeysResult, Error> UokmsClient::rotate_keys(std::s
     vsc_buffer_t new_server_public_key_buf;
     vsc_buffer_init(&new_server_public_key_buf);
     vsc_buffer_use(&new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
-    const vsce_status_t status = vsce_uokms_client_rotate_keys(c_ctx_, vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf, &new_server_public_key_buf);
+    const vsce_status_t status = vsce_uokms_client_rotate_keys(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf, &new_server_public_key_buf);
     new_client_private_key.resize(vsc_buffer_len(&new_client_private_key_buf));
     vsc_buffer_cleanup(&new_client_private_key_buf);
     new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));

@@ -73,7 +73,7 @@ vscf_seed_entropy_source_t* SeedEntropySource::c_ctx() const noexcept { return c
 vscf_impl_t* SeedEntropySource::impl() const noexcept { return vscf_seed_entropy_source_impl(c_ctx_); }
 
 void SeedEntropySource::reset_seed(std::span<const uint8_t> seed) {
-    vscf_seed_entropy_source_reset_seed(c_ctx_, vsc_data(seed.data(), seed.size()));
+    vscf_seed_entropy_source_reset_seed(c_ctx_, seed.empty() ? vsc_data_empty() : vsc_data(seed.data(), seed.size()));
 }
 
 bool SeedEntropySource::is_strong() {

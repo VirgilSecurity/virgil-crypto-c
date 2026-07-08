@@ -46,7 +46,7 @@ std::vector<uint8_t> Oid::from_alg_id(AlgId alg_id) {
 }
 
 AlgId Oid::to_alg_id(std::span<const uint8_t> oid) {
-    auto proxy_result = vscf_oid_to_alg_id(vsc_data(oid.data(), oid.size()));
+    auto proxy_result = vscf_oid_to_alg_id(oid.empty() ? vsc_data_empty() : vsc_data(oid.data(), oid.size()));
     return static_cast<AlgId>(proxy_result);
 }
 
@@ -56,7 +56,7 @@ std::vector<uint8_t> Oid::from_id(OidId oid_id) {
 }
 
 OidId Oid::to_id(std::span<const uint8_t> oid) {
-    auto proxy_result = vscf_oid_to_id(vsc_data(oid.data(), oid.size()));
+    auto proxy_result = vscf_oid_to_id(oid.empty() ? vsc_data_empty() : vsc_data(oid.data(), oid.size()));
     return static_cast<OidId>(proxy_result);
 }
 
@@ -66,7 +66,7 @@ AlgId Oid::id_to_alg_id(OidId oid_id) {
 }
 
 bool Oid::equal(std::span<const uint8_t> lhs, std::span<const uint8_t> rhs) {
-    auto proxy_result = vscf_oid_equal(vsc_data(lhs.data(), lhs.size()), vsc_data(rhs.data(), rhs.size()));
+    auto proxy_result = vscf_oid_equal(lhs.empty() ? vsc_data_empty() : vsc_data(lhs.data(), lhs.size()), rhs.empty() ? vsc_data_empty() : vsc_data(rhs.data(), rhs.size()));
     return proxy_result;
 }
 

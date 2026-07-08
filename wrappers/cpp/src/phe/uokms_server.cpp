@@ -118,7 +118,7 @@ tl::expected<std::vector<uint8_t>, Error> UokmsServer::process_decrypt_request(s
     vsc_buffer_t decrypt_response_buf;
     vsc_buffer_init(&decrypt_response_buf);
     vsc_buffer_use(&decrypt_response_buf, decrypt_response.data(), decrypt_response.size());
-    const vsce_status_t status = vsce_uokms_server_process_decrypt_request(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), vsc_data(decrypt_request.data(), decrypt_request.size()), &decrypt_response_buf);
+    const vsce_status_t status = vsce_uokms_server_process_decrypt_request(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), decrypt_request.empty() ? vsc_data_empty() : vsc_data(decrypt_request.data(), decrypt_request.size()), &decrypt_response_buf);
     decrypt_response.resize(vsc_buffer_len(&decrypt_response_buf));
     vsc_buffer_cleanup(&decrypt_response_buf);
     if (status != vsce_status_SUCCESS) {
@@ -140,7 +140,7 @@ tl::expected<UokmsServerRotateKeysResult, Error> UokmsServer::rotate_keys(std::s
     vsc_buffer_t update_token_buf;
     vsc_buffer_init(&update_token_buf);
     vsc_buffer_use(&update_token_buf, update_token.data(), update_token.size());
-    const vsce_status_t status = vsce_uokms_server_rotate_keys(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), &new_server_private_key_buf, &new_server_public_key_buf, &update_token_buf);
+    const vsce_status_t status = vsce_uokms_server_rotate_keys(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), &new_server_private_key_buf, &new_server_public_key_buf, &update_token_buf);
     new_server_private_key.resize(vsc_buffer_len(&new_server_private_key_buf));
     vsc_buffer_cleanup(&new_server_private_key_buf);
     new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));

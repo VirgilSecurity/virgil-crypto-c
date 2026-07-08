@@ -170,7 +170,7 @@ tl::expected<std::vector<uint8_t>, Error> Rsa::encrypt(const PublicKey& public_k
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_rsa_encrypt(c_ctx_, public_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_rsa_encrypt(c_ctx_, public_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -194,7 +194,7 @@ tl::expected<std::vector<uint8_t>, Error> Rsa::decrypt(const PrivateKey& private
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_rsa_decrypt(c_ctx_, private_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_rsa_decrypt(c_ctx_, private_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -218,7 +218,7 @@ tl::expected<std::vector<uint8_t>, Error> Rsa::sign_hash(const PrivateKey& priva
     vsc_buffer_t signature_buf;
     vsc_buffer_init(&signature_buf);
     vsc_buffer_use(&signature_buf, signature.data(), signature.size());
-    const vscf_status_t status = vscf_rsa_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), &signature_buf);
+    const vscf_status_t status = vscf_rsa_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), &signature_buf);
     signature.resize(vsc_buffer_len(&signature_buf));
     vsc_buffer_cleanup(&signature_buf);
     if (status != vscf_status_SUCCESS) {
@@ -233,7 +233,7 @@ bool Rsa::can_verify(const PublicKey& public_key) const {
 }
 
 bool Rsa::verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const {
-    auto proxy_result = vscf_rsa_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), vsc_data(signature.data(), signature.size()));
+    auto proxy_result = vscf_rsa_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), signature.empty() ? vsc_data_empty() : vsc_data(signature.data(), signature.size()));
     return proxy_result;
 }
 

@@ -87,7 +87,7 @@ void Signer::reset() {
 }
 
 void Signer::append_data(std::span<const uint8_t> data) {
-    vscf_signer_append_data(c_ctx_, vsc_data(data.data(), data.size()));
+    vscf_signer_append_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
 }
 
 std::size_t Signer::signature_len(const PrivateKey& private_key) const {

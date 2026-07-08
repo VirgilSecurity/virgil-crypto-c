@@ -104,7 +104,7 @@ std::vector<uint8_t> GroupSessionMessage::serialize() const {
 tl::expected<GroupSessionMessage, Error> GroupSessionMessage::deserialize(std::span<const uint8_t> input) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_group_session_message_deserialize(vsc_data(input.data(), input.size()), &error);
+    auto proxy_result = vscf_group_session_message_deserialize(input.empty() ? vsc_data_empty() : vsc_data(input.data(), input.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

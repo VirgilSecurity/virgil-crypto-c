@@ -90,7 +90,7 @@ void Pkcs5Pbes2::set_cipher(const Cipher& cipher) {
 }
 
 void Pkcs5Pbes2::reset(std::span<const uint8_t> pwd) {
-    vscf_pkcs5_pbes2_reset(c_ctx_, vsc_data(pwd.data(), pwd.size()));
+    vscf_pkcs5_pbes2_reset(c_ctx_, pwd.empty() ? vsc_data_empty() : vsc_data(pwd.data(), pwd.size()));
 }
 
 AlgId Pkcs5Pbes2::alg_id() const {
@@ -116,7 +116,7 @@ tl::expected<std::vector<uint8_t>, Error> Pkcs5Pbes2::encrypt(std::span<const ui
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_pkcs5_pbes2_encrypt(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_pkcs5_pbes2_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -140,7 +140,7 @@ tl::expected<std::vector<uint8_t>, Error> Pkcs5Pbes2::decrypt(std::span<const ui
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_pkcs5_pbes2_decrypt(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_pkcs5_pbes2_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {

@@ -103,7 +103,7 @@ tl::expected<std::vector<uint8_t>, Error> Shamir::split(std::span<const uint8_t>
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_shamir_split(c_ctx_, vsc_data(secret.data(), secret.size()), threshold, share_count, &out_buf);
+    const vscf_status_t status = vscf_shamir_split(c_ctx_, secret.empty() ? vsc_data_empty() : vsc_data(secret.data(), secret.size()), threshold, share_count, &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -117,7 +117,7 @@ tl::expected<std::vector<uint8_t>, Error> Shamir::combine(std::span<const uint8_
     vsc_buffer_t secret_buf;
     vsc_buffer_init(&secret_buf);
     vsc_buffer_use(&secret_buf, secret.data(), secret.size());
-    const vscf_status_t status = vscf_shamir_combine(c_ctx_, vsc_data(shares.data(), shares.size()), share_count, &secret_buf);
+    const vscf_status_t status = vscf_shamir_combine(c_ctx_, shares.empty() ? vsc_data_empty() : vsc_data(shares.data(), shares.size()), share_count, &secret_buf);
     secret.resize(vsc_buffer_len(&secret_buf));
     vsc_buffer_cleanup(&secret_buf);
     if (status != vscf_status_SUCCESS) {

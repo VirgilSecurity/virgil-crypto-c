@@ -86,7 +86,7 @@ tl::expected<void, Error> MessageInfoEditor::setup_defaults() {
 }
 
 tl::expected<void, Error> MessageInfoEditor::unpack(std::span<const uint8_t> message_info_data) {
-    const vscf_status_t status = vscf_message_info_editor_unpack(c_ctx_, vsc_data(message_info_data.data(), message_info_data.size()));
+    const vscf_status_t status = vscf_message_info_editor_unpack(c_ctx_, message_info_data.empty() ? vsc_data_empty() : vsc_data(message_info_data.data(), message_info_data.size()));
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -94,7 +94,7 @@ tl::expected<void, Error> MessageInfoEditor::unpack(std::span<const uint8_t> mes
 }
 
 tl::expected<void, Error> MessageInfoEditor::unlock(std::span<const uint8_t> owner_recipient_id, const PrivateKey& owner_private_key) {
-    const vscf_status_t status = vscf_message_info_editor_unlock(c_ctx_, vsc_data(owner_recipient_id.data(), owner_recipient_id.size()), owner_private_key.impl());
+    const vscf_status_t status = vscf_message_info_editor_unlock(c_ctx_, owner_recipient_id.empty() ? vsc_data_empty() : vsc_data(owner_recipient_id.data(), owner_recipient_id.size()), owner_private_key.impl());
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -102,7 +102,7 @@ tl::expected<void, Error> MessageInfoEditor::unlock(std::span<const uint8_t> own
 }
 
 tl::expected<void, Error> MessageInfoEditor::add_key_recipient(std::span<const uint8_t> recipient_id, const PublicKey& public_key) {
-    const vscf_status_t status = vscf_message_info_editor_add_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()), public_key.impl());
+    const vscf_status_t status = vscf_message_info_editor_add_key_recipient(c_ctx_, recipient_id.empty() ? vsc_data_empty() : vsc_data(recipient_id.data(), recipient_id.size()), public_key.impl());
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -110,7 +110,7 @@ tl::expected<void, Error> MessageInfoEditor::add_key_recipient(std::span<const u
 }
 
 bool MessageInfoEditor::remove_key_recipient(std::span<const uint8_t> recipient_id) {
-    auto proxy_result = vscf_message_info_editor_remove_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()));
+    auto proxy_result = vscf_message_info_editor_remove_key_recipient(c_ctx_, recipient_id.empty() ? vsc_data_empty() : vsc_data(recipient_id.data(), recipient_id.size()));
     return proxy_result;
 }
 

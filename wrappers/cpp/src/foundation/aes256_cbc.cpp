@@ -102,7 +102,7 @@ tl::expected<std::vector<uint8_t>, Error> Aes256Cbc::encrypt(std::span<const uin
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_cbc_encrypt(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_aes256_cbc_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -126,7 +126,7 @@ tl::expected<std::vector<uint8_t>, Error> Aes256Cbc::decrypt(std::span<const uin
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_cbc_decrypt(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_aes256_cbc_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -141,11 +141,11 @@ std::size_t Aes256Cbc::decrypted_len(std::size_t data_len) const {
 }
 
 void Aes256Cbc::set_nonce(std::span<const uint8_t> nonce) {
-    vscf_aes256_cbc_set_nonce(c_ctx_, vsc_data(nonce.data(), nonce.size()));
+    vscf_aes256_cbc_set_nonce(c_ctx_, nonce.empty() ? vsc_data_empty() : vsc_data(nonce.data(), nonce.size()));
 }
 
 void Aes256Cbc::set_key(std::span<const uint8_t> key) {
-    vscf_aes256_cbc_set_key(c_ctx_, vsc_data(key.data(), key.size()));
+    vscf_aes256_cbc_set_key(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()));
 }
 
 void Aes256Cbc::start_encryption() {
@@ -161,7 +161,7 @@ std::vector<uint8_t> Aes256Cbc::update(std::span<const uint8_t> data) {
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_aes256_cbc_update(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    vscf_aes256_cbc_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     return out;

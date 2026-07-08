@@ -50,7 +50,7 @@ std::vector<uint8_t> Base64::encode(std::span<const uint8_t> data) {
     vsc_buffer_t str_buf;
     vsc_buffer_init(&str_buf);
     vsc_buffer_use(&str_buf, str.data(), str.size());
-    vscf_base64_encode(vsc_data(data.data(), data.size()), &str_buf);
+    vscf_base64_encode(data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &str_buf);
     str.resize(vsc_buffer_len(&str_buf));
     vsc_buffer_cleanup(&str_buf);
     return str;
@@ -66,7 +66,7 @@ tl::expected<std::vector<uint8_t>, Error> Base64::decode(std::span<const uint8_t
     vsc_buffer_t data_buf;
     vsc_buffer_init(&data_buf);
     vsc_buffer_use(&data_buf, data.data(), data.size());
-    const vscf_status_t status = vscf_base64_decode(vsc_data(str.data(), str.size()), &data_buf);
+    const vscf_status_t status = vscf_base64_decode(str.empty() ? vsc_data_empty() : vsc_data(str.data(), str.size()), &data_buf);
     data.resize(vsc_buffer_len(&data_buf));
     vsc_buffer_cleanup(&data_buf);
     if (status != vscf_status_SUCCESS) {

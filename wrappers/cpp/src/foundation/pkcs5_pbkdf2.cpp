@@ -110,18 +110,18 @@ std::vector<uint8_t> Pkcs5Pbkdf2::derive(std::span<const uint8_t> data, std::siz
     vsc_buffer_t key_buf;
     vsc_buffer_init(&key_buf);
     vsc_buffer_use(&key_buf, key.data(), key.size());
-    vscf_pkcs5_pbkdf2_derive(c_ctx_, vsc_data(data.data(), data.size()), key_len, &key_buf);
+    vscf_pkcs5_pbkdf2_derive(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), key_len, &key_buf);
     key.resize(vsc_buffer_len(&key_buf));
     vsc_buffer_cleanup(&key_buf);
     return key;
 }
 
 void Pkcs5Pbkdf2::reset(std::span<const uint8_t> salt, std::size_t iteration_count) {
-    vscf_pkcs5_pbkdf2_reset(c_ctx_, vsc_data(salt.data(), salt.size()), iteration_count);
+    vscf_pkcs5_pbkdf2_reset(c_ctx_, salt.empty() ? vsc_data_empty() : vsc_data(salt.data(), salt.size()), iteration_count);
 }
 
 void Pkcs5Pbkdf2::set_info(std::span<const uint8_t> info) {
-    vscf_pkcs5_pbkdf2_set_info(c_ctx_, vsc_data(info.data(), info.size()));
+    vscf_pkcs5_pbkdf2_set_info(c_ctx_, info.empty() ? vsc_data_empty() : vsc_data(info.data(), info.size()));
 }
 
 }  // namespace virgil::crypto::foundation

@@ -108,7 +108,7 @@ tl::expected<void, Error> GroupSession::add_epoch(const GroupSessionMessage& mes
 tl::expected<GroupSessionMessage, Error> GroupSession::encrypt(std::span<const uint8_t> plain_text, const PrivateKey& private_key) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_group_session_encrypt(c_ctx_, vsc_data(plain_text.data(), plain_text.size()), private_key.impl(), &error);
+    auto proxy_result = vscf_group_session_encrypt(c_ctx_, plain_text.empty() ? vsc_data_empty() : vsc_data(plain_text.data(), plain_text.size()), private_key.impl(), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

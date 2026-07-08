@@ -110,18 +110,18 @@ std::vector<uint8_t> Hmac::mac(std::span<const uint8_t> key, std::span<const uin
     vsc_buffer_t mac_buf;
     vsc_buffer_init(&mac_buf);
     vsc_buffer_use(&mac_buf, mac.data(), mac.size());
-    vscf_hmac_mac(c_ctx_, vsc_data(key.data(), key.size()), vsc_data(data.data(), data.size()), &mac_buf);
+    vscf_hmac_mac(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &mac_buf);
     mac.resize(vsc_buffer_len(&mac_buf));
     vsc_buffer_cleanup(&mac_buf);
     return mac;
 }
 
 void Hmac::start(std::span<const uint8_t> key) {
-    vscf_hmac_start(c_ctx_, vsc_data(key.data(), key.size()));
+    vscf_hmac_start(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()));
 }
 
 void Hmac::update(std::span<const uint8_t> data) {
-    vscf_hmac_update(c_ctx_, vsc_data(data.data(), data.size()));
+    vscf_hmac_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
 }
 
 std::vector<uint8_t> Hmac::finish() {

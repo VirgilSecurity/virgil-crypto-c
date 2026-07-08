@@ -366,7 +366,10 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 ### Phase C — Tests & CI
 
-- [ ] **Unit 8: C++ SDK round-trip / parity tests**
+- [x] **Unit 8: C++ SDK round-trip / parity tests**
+
+**Done:** hand-written tests under `wrappers/cpp/test/` (skipped by the codegen orchestrator), a dependency-free `check.hpp` harness, three ctest cases: `foundation_cpp_test` (AES-256-GCM encrypt→decrypt round-trip; tampered ciphertext → `unexpected{Error::AuthFailed}` with no throw/abort; empty-span round-trip; SHA-256 "abc" known vector; base64 round-trip), `phe_cpp_test` (PheCipher encrypt→decrypt + wrong-key error), `ratchet_cpp_test` (RatchetSession setup + query). Surfaced and fixed a real **empty-input abort**: an empty span has `data()==nullptr` but `vsc_data` asserts non-null, so data args now route through `vsc_data_empty()` when empty (mirrors the Go backend). `setup_defaults()` (not `set_random`/`set_rng`) is used for phe/ratchet since the C API asserts the dependency is unset — setup_defaults still wires the foundation random at runtime. Guarded on `ENABLE_TESTING` (independent of `VIRGIL_C_TESTING`). All three pass locally via `ctest`.
+
 
 **Goal:** Hand-written C++ tests (guarded from codegen overwrite) proving the wrapper is functionally equivalent to the C API across representative flows.
 
@@ -391,7 +394,10 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** `ctest` passes on macOS + Linux locally; error-path test confirms `expected` (not abort) under `-fno-exceptions`.
 
-- [ ] **Unit 9: CI workflow (Linux / macOS / Windows-MSVC)**
+- [x] **Unit 9: CI workflow (Linux / macOS / Windows-MSVC)**
+
+**Done:** `.github/workflows/build-cpp.yml` — a `codegen-tests` job (C++ backend unit + no-drift parity) and a `build` matrix that configures with `cpp-config.cmake`, builds the three libraries **and** the ctest test targets, and runs `ctest -R _cpp_test` on **Linux (GCC + Clang)** and **Windows (MSVC)** — MSVC is first-class given the no-C99-VLA constraint. Linux additionally builds+runs the FetchContent smoke consumer. macOS is omitted per CLAUDE.md (macOS runners are reserved for direct prebuilt dependencies; the wrapper builds the C sources itself). `workflow_call` reuse can be layered on later for release wiring.
+
 
 **Goal:** Add `build-cpp.yml` building + testing the C++ SDK across the three OSes, including MSVC.
 

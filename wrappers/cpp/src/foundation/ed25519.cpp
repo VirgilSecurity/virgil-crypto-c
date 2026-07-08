@@ -178,7 +178,7 @@ tl::expected<std::vector<uint8_t>, Error> Ed25519::encrypt(const PublicKey& publ
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_ed25519_encrypt(c_ctx_, public_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_ed25519_encrypt(c_ctx_, public_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -202,7 +202,7 @@ tl::expected<std::vector<uint8_t>, Error> Ed25519::decrypt(const PrivateKey& pri
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_ed25519_decrypt(c_ctx_, private_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_ed25519_decrypt(c_ctx_, private_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -226,7 +226,7 @@ tl::expected<std::vector<uint8_t>, Error> Ed25519::sign_hash(const PrivateKey& p
     vsc_buffer_t signature_buf;
     vsc_buffer_init(&signature_buf);
     vsc_buffer_use(&signature_buf, signature.data(), signature.size());
-    const vscf_status_t status = vscf_ed25519_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), &signature_buf);
+    const vscf_status_t status = vscf_ed25519_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), &signature_buf);
     signature.resize(vsc_buffer_len(&signature_buf));
     vsc_buffer_cleanup(&signature_buf);
     if (status != vscf_status_SUCCESS) {
@@ -241,7 +241,7 @@ bool Ed25519::can_verify(const PublicKey& public_key) const {
 }
 
 bool Ed25519::verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const {
-    auto proxy_result = vscf_ed25519_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), vsc_data(signature.data(), signature.size()));
+    auto proxy_result = vscf_ed25519_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), digest.empty() ? vsc_data_empty() : vsc_data(digest.data(), digest.size()), signature.empty() ? vsc_data_empty() : vsc_data(signature.data(), signature.size()));
     return proxy_result;
 }
 
@@ -299,7 +299,7 @@ tl::expected<std::vector<uint8_t>, Error> Ed25519::kem_decapsulate(std::span<con
     vsc_buffer_t shared_key_buf;
     vsc_buffer_init(&shared_key_buf);
     vsc_buffer_use(&shared_key_buf, shared_key.data(), shared_key.size());
-    const vscf_status_t status = vscf_ed25519_kem_decapsulate(c_ctx_, vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
+    const vscf_status_t status = vscf_ed25519_kem_decapsulate(c_ctx_, encapsulated_key.empty() ? vsc_data_empty() : vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
     shared_key.resize(vsc_buffer_len(&shared_key_buf));
     vsc_buffer_cleanup(&shared_key_buf);
     if (status != vscf_status_SUCCESS) {

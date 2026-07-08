@@ -108,14 +108,14 @@ std::vector<uint8_t> MessageInfoDerSerializer::serialize(const MessageInfo& mess
 }
 
 std::size_t MessageInfoDerSerializer::read_prefix(std::span<const uint8_t> data) {
-    auto proxy_result = vscf_message_info_der_serializer_read_prefix(c_ctx_, vsc_data(data.data(), data.size()));
+    auto proxy_result = vscf_message_info_der_serializer_read_prefix(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
     return proxy_result;
 }
 
 tl::expected<MessageInfo, Error> MessageInfoDerSerializer::deserialize(std::span<const uint8_t> data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_message_info_der_serializer_deserialize(c_ctx_, vsc_data(data.data(), data.size()), &error);
+    auto proxy_result = vscf_message_info_der_serializer_deserialize(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }
@@ -141,7 +141,7 @@ std::vector<uint8_t> MessageInfoDerSerializer::serialize_footer(const MessageInf
 tl::expected<MessageInfoFooter, Error> MessageInfoDerSerializer::deserialize_footer(std::span<const uint8_t> data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_message_info_der_serializer_deserialize_footer(c_ctx_, vsc_data(data.data(), data.size()), &error);
+    auto proxy_result = vscf_message_info_der_serializer_deserialize_footer(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

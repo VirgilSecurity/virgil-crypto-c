@@ -118,7 +118,7 @@ tl::expected<std::vector<uint8_t>, Error> PheServer::get_enrollment(std::span<co
     vsc_buffer_t enrollment_response_buf;
     vsc_buffer_init(&enrollment_response_buf);
     vsc_buffer_use(&enrollment_response_buf, enrollment_response.data(), enrollment_response.size());
-    const vsce_status_t status = vsce_phe_server_get_enrollment(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), vsc_data(server_public_key.data(), server_public_key.size()), &enrollment_response_buf);
+    const vsce_status_t status = vsce_phe_server_get_enrollment(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), &enrollment_response_buf);
     enrollment_response.resize(vsc_buffer_len(&enrollment_response_buf));
     vsc_buffer_cleanup(&enrollment_response_buf);
     if (status != vsce_status_SUCCESS) {
@@ -137,7 +137,7 @@ tl::expected<std::vector<uint8_t>, Error> PheServer::verify_password(std::span<c
     vsc_buffer_t verify_password_response_buf;
     vsc_buffer_init(&verify_password_response_buf);
     vsc_buffer_use(&verify_password_response_buf, verify_password_response.data(), verify_password_response.size());
-    const vsce_status_t status = vsce_phe_server_verify_password(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), vsc_data(server_public_key.data(), server_public_key.size()), vsc_data(verify_password_request.data(), verify_password_request.size()), &verify_password_response_buf);
+    const vsce_status_t status = vsce_phe_server_verify_password(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), verify_password_request.empty() ? vsc_data_empty() : vsc_data(verify_password_request.data(), verify_password_request.size()), &verify_password_response_buf);
     verify_password_response.resize(vsc_buffer_len(&verify_password_response_buf));
     vsc_buffer_cleanup(&verify_password_response_buf);
     if (status != vsce_status_SUCCESS) {
@@ -164,7 +164,7 @@ tl::expected<PheServerRotateKeysResult, Error> PheServer::rotate_keys(std::span<
     vsc_buffer_t update_token_buf;
     vsc_buffer_init(&update_token_buf);
     vsc_buffer_use(&update_token_buf, update_token.data(), update_token.size());
-    const vsce_status_t status = vsce_phe_server_rotate_keys(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), &new_server_private_key_buf, &new_server_public_key_buf, &update_token_buf);
+    const vsce_status_t status = vsce_phe_server_rotate_keys(c_ctx_, server_private_key.empty() ? vsc_data_empty() : vsc_data(server_private_key.data(), server_private_key.size()), &new_server_private_key_buf, &new_server_public_key_buf, &update_token_buf);
     new_server_private_key.resize(vsc_buffer_len(&new_server_private_key_buf));
     vsc_buffer_cleanup(&new_server_private_key_buf);
     new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));

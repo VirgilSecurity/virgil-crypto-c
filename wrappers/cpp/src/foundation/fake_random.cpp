@@ -78,7 +78,7 @@ void FakeRandom::setup_source_byte(uint8_t byte_source) {
 }
 
 void FakeRandom::setup_source_data(std::span<const uint8_t> data_source) {
-    vscf_fake_random_setup_source_data(c_ctx_, vsc_data(data_source.data(), data_source.size()));
+    vscf_fake_random_setup_source_data(c_ctx_, data_source.empty() ? vsc_data_empty() : vsc_data(data_source.data(), data_source.size()));
 }
 
 tl::expected<std::vector<uint8_t>, Error> FakeRandom::random(std::size_t data_len) const {

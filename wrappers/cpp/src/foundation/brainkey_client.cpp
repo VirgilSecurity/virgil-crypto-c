@@ -97,7 +97,7 @@ tl::expected<BrainkeyClientBlindResult, Error> BrainkeyClient::blind(std::span<c
     vsc_buffer_t blinded_point_buf;
     vsc_buffer_init(&blinded_point_buf);
     vsc_buffer_use(&blinded_point_buf, blinded_point.data(), blinded_point.size());
-    const vscf_status_t status = vscf_brainkey_client_blind(c_ctx_, vsc_data(password.data(), password.size()), &deblind_factor_buf, &blinded_point_buf);
+    const vscf_status_t status = vscf_brainkey_client_blind(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), &deblind_factor_buf, &blinded_point_buf);
     deblind_factor.resize(vsc_buffer_len(&deblind_factor_buf));
     vsc_buffer_cleanup(&deblind_factor_buf);
     blinded_point.resize(vsc_buffer_len(&blinded_point_buf));
@@ -113,7 +113,7 @@ tl::expected<std::vector<uint8_t>, Error> BrainkeyClient::deblind(std::span<cons
     vsc_buffer_t seed_buf;
     vsc_buffer_init(&seed_buf);
     vsc_buffer_use(&seed_buf, seed.data(), seed.size());
-    const vscf_status_t status = vscf_brainkey_client_deblind(c_ctx_, vsc_data(password.data(), password.size()), vsc_data(hardened_point.data(), hardened_point.size()), vsc_data(deblind_factor.data(), deblind_factor.size()), vsc_data(key_name.data(), key_name.size()), &seed_buf);
+    const vscf_status_t status = vscf_brainkey_client_deblind(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), deblind_factor.empty() ? vsc_data_empty() : vsc_data(deblind_factor.data(), deblind_factor.size()), key_name.empty() ? vsc_data_empty() : vsc_data(key_name.data(), key_name.size()), &seed_buf);
     seed.resize(vsc_buffer_len(&seed_buf));
     vsc_buffer_cleanup(&seed_buf);
     if (status != vscf_status_SUCCESS) {
@@ -125,7 +125,7 @@ tl::expected<std::vector<uint8_t>, Error> BrainkeyClient::deblind(std::span<cons
 tl::expected<bool, Error> BrainkeyClient::verify(std::span<const uint8_t> blinded_point, std::span<const uint8_t> hardened_point, std::span<const uint8_t> server_public_key, std::span<const uint8_t> proof_value_c, std::span<const uint8_t> proof_value_s) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_brainkey_client_verify(c_ctx_, vsc_data(blinded_point.data(), blinded_point.size()), vsc_data(hardened_point.data(), hardened_point.size()), vsc_data(server_public_key.data(), server_public_key.size()), vsc_data(proof_value_c.data(), proof_value_c.size()), vsc_data(proof_value_s.data(), proof_value_s.size()), &error);
+    auto proxy_result = vscf_brainkey_client_verify(c_ctx_, blinded_point.empty() ? vsc_data_empty() : vsc_data(blinded_point.data(), blinded_point.size()), hardened_point.empty() ? vsc_data_empty() : vsc_data(hardened_point.data(), hardened_point.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()), proof_value_c.empty() ? vsc_data_empty() : vsc_data(proof_value_c.data(), proof_value_c.size()), proof_value_s.empty() ? vsc_data_empty() : vsc_data(proof_value_s.data(), proof_value_s.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

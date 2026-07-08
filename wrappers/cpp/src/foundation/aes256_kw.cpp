@@ -109,7 +109,7 @@ tl::expected<std::vector<uint8_t>, Error> Aes256Kw::wrap(std::span<const uint8_t
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_kw_wrap(c_ctx_, vsc_data(kek.data(), kek.size()), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_aes256_kw_wrap(c_ctx_, kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -123,7 +123,7 @@ tl::expected<std::vector<uint8_t>, Error> Aes256Kw::unwrap(std::span<const uint8
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_aes256_kw_unwrap(c_ctx_, vsc_data(kek.data(), kek.size()), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_aes256_kw_unwrap(c_ctx_, kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {

@@ -193,27 +193,27 @@ std::size_t Asn1wr::write_null() {
 }
 
 std::size_t Asn1wr::write_octet_str(std::span<const uint8_t> value) {
-    auto proxy_result = vscf_asn1wr_write_octet_str(c_ctx_, vsc_data(value.data(), value.size()));
+    auto proxy_result = vscf_asn1wr_write_octet_str(c_ctx_, value.empty() ? vsc_data_empty() : vsc_data(value.data(), value.size()));
     return proxy_result;
 }
 
 std::size_t Asn1wr::write_octet_str_as_bitstring(std::span<const uint8_t> value) {
-    auto proxy_result = vscf_asn1wr_write_octet_str_as_bitstring(c_ctx_, vsc_data(value.data(), value.size()));
+    auto proxy_result = vscf_asn1wr_write_octet_str_as_bitstring(c_ctx_, value.empty() ? vsc_data_empty() : vsc_data(value.data(), value.size()));
     return proxy_result;
 }
 
 std::size_t Asn1wr::write_data(std::span<const uint8_t> data) {
-    auto proxy_result = vscf_asn1wr_write_data(c_ctx_, vsc_data(data.data(), data.size()));
+    auto proxy_result = vscf_asn1wr_write_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
     return proxy_result;
 }
 
 std::size_t Asn1wr::write_utf8_str(std::span<const uint8_t> value) {
-    auto proxy_result = vscf_asn1wr_write_utf8_str(c_ctx_, vsc_data(value.data(), value.size()));
+    auto proxy_result = vscf_asn1wr_write_utf8_str(c_ctx_, value.empty() ? vsc_data_empty() : vsc_data(value.data(), value.size()));
     return proxy_result;
 }
 
 std::size_t Asn1wr::write_oid(std::span<const uint8_t> value) {
-    auto proxy_result = vscf_asn1wr_write_oid(c_ctx_, vsc_data(value.data(), value.size()));
+    auto proxy_result = vscf_asn1wr_write_oid(c_ctx_, value.empty() ? vsc_data_empty() : vsc_data(value.data(), value.size()));
     return proxy_result;
 }
 

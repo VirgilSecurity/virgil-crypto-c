@@ -73,7 +73,7 @@ vscf_key_material_rng_t* KeyMaterialRng::c_ctx() const noexcept { return c_ctx_;
 vscf_impl_t* KeyMaterialRng::impl() const noexcept { return vscf_key_material_rng_impl(c_ctx_); }
 
 void KeyMaterialRng::reset_key_material(std::span<const uint8_t> key_material) {
-    vscf_key_material_rng_reset_key_material(c_ctx_, vsc_data(key_material.data(), key_material.size()));
+    vscf_key_material_rng_reset_key_material(c_ctx_, key_material.empty() ? vsc_data_empty() : vsc_data(key_material.data(), key_material.size()));
 }
 
 tl::expected<std::vector<uint8_t>, Error> KeyMaterialRng::random(std::size_t data_len) const {

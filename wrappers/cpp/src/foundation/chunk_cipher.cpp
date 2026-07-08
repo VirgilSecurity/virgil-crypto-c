@@ -104,7 +104,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::process_encryption(std::s
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_process_encryption(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_chunk_cipher_process_encryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -137,7 +137,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::process_decryption(std::s
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_process_decryption(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_chunk_cipher_process_decryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -170,7 +170,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::encrypt_at(uint64_t chunk
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_encrypt_at(c_ctx_, chunk_index, is_last, vsc_data(plaintext.data(), plaintext.size()), &out_buf);
+    const vscf_status_t status = vscf_chunk_cipher_encrypt_at(c_ctx_, chunk_index, is_last, plaintext.empty() ? vsc_data_empty() : vsc_data(plaintext.data(), plaintext.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -184,7 +184,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::decrypt_at(uint64_t chunk
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_decrypt_at(c_ctx_, chunk_index, is_last, vsc_data(frame.data(), frame.size()), &out_buf);
+    const vscf_status_t status = vscf_chunk_cipher_decrypt_at(c_ctx_, chunk_index, is_last, frame.empty() ? vsc_data_empty() : vsc_data(frame.data(), frame.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -194,7 +194,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::decrypt_at(uint64_t chunk
 }
 
 void ChunkCipher::set_auth_data(std::span<const uint8_t> auth_data) {
-    vscf_chunk_cipher_set_auth_data(c_ctx_, vsc_data(auth_data.data(), auth_data.size()));
+    vscf_chunk_cipher_set_auth_data(c_ctx_, auth_data.empty() ? vsc_data_empty() : vsc_data(auth_data.data(), auth_data.size()));
 }
 
 AlgId ChunkCipher::alg_id() const {
@@ -220,7 +220,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::encrypt(std::span<const u
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_encrypt(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_chunk_cipher_encrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -244,7 +244,7 @@ tl::expected<std::vector<uint8_t>, Error> ChunkCipher::decrypt(std::span<const u
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_chunk_cipher_decrypt(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_chunk_cipher_decrypt(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -259,11 +259,11 @@ std::size_t ChunkCipher::decrypted_len(std::size_t data_len) const {
 }
 
 void ChunkCipher::set_nonce(std::span<const uint8_t> nonce) {
-    vscf_chunk_cipher_set_nonce(c_ctx_, vsc_data(nonce.data(), nonce.size()));
+    vscf_chunk_cipher_set_nonce(c_ctx_, nonce.empty() ? vsc_data_empty() : vsc_data(nonce.data(), nonce.size()));
 }
 
 void ChunkCipher::set_key(std::span<const uint8_t> key) {
-    vscf_chunk_cipher_set_key(c_ctx_, vsc_data(key.data(), key.size()));
+    vscf_chunk_cipher_set_key(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()));
 }
 
 void ChunkCipher::start_encryption() {
@@ -279,7 +279,7 @@ std::vector<uint8_t> ChunkCipher::update(std::span<const uint8_t> data) {
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    vscf_chunk_cipher_update(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    vscf_chunk_cipher_update(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     return out;

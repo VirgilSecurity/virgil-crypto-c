@@ -118,7 +118,7 @@ std::vector<uint8_t> RatchetMessage::serialize() const {
 tl::expected<RatchetMessage, Error> RatchetMessage::deserialize(std::span<const uint8_t> input) {
     vscr_error_t error;
     vscr_error_reset(&error);
-    auto proxy_result = vscr_ratchet_message_deserialize(vsc_data(input.data(), input.size()), &error);
+    auto proxy_result = vscr_ratchet_message_deserialize(input.empty() ? vsc_data_empty() : vsc_data(input.data(), input.size()), &error);
     if (vscr_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscr_error_status(&error)));
     }

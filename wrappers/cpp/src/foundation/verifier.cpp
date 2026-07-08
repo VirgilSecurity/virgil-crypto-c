@@ -69,7 +69,7 @@ Verifier::~Verifier() { vscf_verifier_delete(c_ctx_); }
 vscf_verifier_t* Verifier::c_ctx() const noexcept { return c_ctx_; }
 
 tl::expected<void, Error> Verifier::reset(std::span<const uint8_t> signature) {
-    const vscf_status_t status = vscf_verifier_reset(c_ctx_, vsc_data(signature.data(), signature.size()));
+    const vscf_status_t status = vscf_verifier_reset(c_ctx_, signature.empty() ? vsc_data_empty() : vsc_data(signature.data(), signature.size()));
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -77,7 +77,7 @@ tl::expected<void, Error> Verifier::reset(std::span<const uint8_t> signature) {
 }
 
 void Verifier::append_data(std::span<const uint8_t> data) {
-    vscf_verifier_append_data(c_ctx_, vsc_data(data.data(), data.size()));
+    vscf_verifier_append_data(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
 }
 
 bool Verifier::verify(const PublicKey& public_key) {

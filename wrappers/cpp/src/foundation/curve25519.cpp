@@ -176,7 +176,7 @@ tl::expected<std::vector<uint8_t>, Error> Curve25519::encrypt(const PublicKey& p
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_curve25519_encrypt(c_ctx_, public_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_curve25519_encrypt(c_ctx_, public_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -200,7 +200,7 @@ tl::expected<std::vector<uint8_t>, Error> Curve25519::decrypt(const PrivateKey& 
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_curve25519_decrypt(c_ctx_, private_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_curve25519_decrypt(c_ctx_, private_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -263,7 +263,7 @@ tl::expected<std::vector<uint8_t>, Error> Curve25519::kem_decapsulate(std::span<
     vsc_buffer_t shared_key_buf;
     vsc_buffer_init(&shared_key_buf);
     vsc_buffer_use(&shared_key_buf, shared_key.data(), shared_key.size());
-    const vscf_status_t status = vscf_curve25519_kem_decapsulate(c_ctx_, vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
+    const vscf_status_t status = vscf_curve25519_kem_decapsulate(c_ctx_, encapsulated_key.empty() ? vsc_data_empty() : vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
     shared_key.resize(vsc_buffer_len(&shared_key_buf));
     vsc_buffer_cleanup(&shared_key_buf);
     if (status != vscf_status_SUCCESS) {

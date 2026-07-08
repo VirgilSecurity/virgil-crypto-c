@@ -112,6 +112,20 @@ target_compile_features(phe-cpp PUBLIC cxx_std_20)
 target_link_libraries(phe-cpp PUBLIC virgil::foundation-cpp vsc::phe tl::expected)
 
 # ---------------------------------------------------------------------------
+#   Tests (hand-written round-trip / parity — never overwritten by codegen)
+# ---------------------------------------------------------------------------
+# Gated on ENABLE_TESTING (CTest infra), independent of VIRGIL_C_TESTING (the C
+# library's own suite). The test/ directory is skipped by the codegen orchestrator.
+if(ENABLE_TESTING)
+    foreach(vsc_cpp_test foundation phe ratchet)
+        add_executable(${vsc_cpp_test}_cpp_test
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/${vsc_cpp_test}_test.cpp")
+        target_link_libraries(${vsc_cpp_test}_cpp_test PRIVATE virgil::${vsc_cpp_test}-cpp)
+        add_test(NAME ${vsc_cpp_test}_cpp_test COMMAND ${vsc_cpp_test}_cpp_test)
+    endforeach()
+endif()
+
+# ---------------------------------------------------------------------------
 #   Install + CMake package export (find_package + FetchContent parity)
 # ---------------------------------------------------------------------------
 # The in-tree `virgil::<name>-cpp` ALIASes above serve add_subdirectory/FetchContent

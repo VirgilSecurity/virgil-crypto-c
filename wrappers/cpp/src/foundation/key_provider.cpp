@@ -144,7 +144,7 @@ tl::expected<std::unique_ptr<PrivateKey>, Error> KeyProvider::generate_compound_
 tl::expected<std::unique_ptr<PrivateKey>, Error> KeyProvider::import_private_key(std::span<const uint8_t> key_data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_key_provider_import_private_key(c_ctx_, vsc_data(key_data.data(), key_data.size()), &error);
+    auto proxy_result = vscf_key_provider_import_private_key(c_ctx_, key_data.empty() ? vsc_data_empty() : vsc_data(key_data.data(), key_data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }
@@ -154,7 +154,7 @@ tl::expected<std::unique_ptr<PrivateKey>, Error> KeyProvider::import_private_key
 tl::expected<std::unique_ptr<PublicKey>, Error> KeyProvider::import_public_key(std::span<const uint8_t> key_data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_key_provider_import_public_key(c_ctx_, vsc_data(key_data.data(), key_data.size()), &error);
+    auto proxy_result = vscf_key_provider_import_public_key(c_ctx_, key_data.empty() ? vsc_data_empty() : vsc_data(key_data.data(), key_data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

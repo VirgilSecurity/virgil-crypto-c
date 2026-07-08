@@ -106,16 +106,16 @@ void RecipientCipher::set_signer_hash(const Hash& signer_hash) {
 }
 
 bool RecipientCipher::has_key_recipient(std::span<const uint8_t> recipient_id) const {
-    auto proxy_result = vscf_recipient_cipher_has_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()));
+    auto proxy_result = vscf_recipient_cipher_has_key_recipient(c_ctx_, recipient_id.empty() ? vsc_data_empty() : vsc_data(recipient_id.data(), recipient_id.size()));
     return proxy_result;
 }
 
 void RecipientCipher::add_key_recipient(std::span<const uint8_t> recipient_id, const PublicKey& public_key) {
-    vscf_recipient_cipher_add_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()), public_key.impl());
+    vscf_recipient_cipher_add_key_recipient(c_ctx_, recipient_id.empty() ? vsc_data_empty() : vsc_data(recipient_id.data(), recipient_id.size()), public_key.impl());
 }
 
 void RecipientCipher::add_kek_recipient(std::span<const uint8_t> kek_id, std::span<const uint8_t> kek, const KeyWrap& key_wrap) {
-    vscf_recipient_cipher_add_kek_recipient(c_ctx_, vsc_data(kek_id.data(), kek_id.size()), vsc_data(kek.data(), kek.size()), key_wrap.impl());
+    vscf_recipient_cipher_add_kek_recipient(c_ctx_, kek_id.empty() ? vsc_data_empty() : vsc_data(kek_id.data(), kek_id.size()), kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), key_wrap.impl());
 }
 
 void RecipientCipher::clear_recipients() {
@@ -123,7 +123,7 @@ void RecipientCipher::clear_recipients() {
 }
 
 tl::expected<void, Error> RecipientCipher::add_signer(std::span<const uint8_t> signer_id, const PrivateKey& private_key) {
-    const vscf_status_t status = vscf_recipient_cipher_add_signer(c_ctx_, vsc_data(signer_id.data(), signer_id.size()), private_key.impl());
+    const vscf_status_t status = vscf_recipient_cipher_add_signer(c_ctx_, signer_id.empty() ? vsc_data_empty() : vsc_data(signer_id.data(), signer_id.size()), private_key.impl());
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -181,7 +181,7 @@ tl::expected<std::vector<uint8_t>, Error> RecipientCipher::process_encryption(st
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_process_encryption(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_recipient_cipher_process_encryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -205,7 +205,7 @@ tl::expected<std::vector<uint8_t>, Error> RecipientCipher::finish_encryption() {
 }
 
 tl::expected<void, Error> RecipientCipher::start_decryption_with_kek(std::span<const uint8_t> kek_id, std::span<const uint8_t> kek, const KeyWrap& key_wrap, std::span<const uint8_t> message_info) {
-    const vscf_status_t status = vscf_recipient_cipher_start_decryption_with_kek(c_ctx_, vsc_data(kek_id.data(), kek_id.size()), vsc_data(kek.data(), kek.size()), key_wrap.impl(), vsc_data(message_info.data(), message_info.size()));
+    const vscf_status_t status = vscf_recipient_cipher_start_decryption_with_kek(c_ctx_, kek_id.empty() ? vsc_data_empty() : vsc_data(kek_id.data(), kek_id.size()), kek.empty() ? vsc_data_empty() : vsc_data(kek.data(), kek.size()), key_wrap.impl(), message_info.empty() ? vsc_data_empty() : vsc_data(message_info.data(), message_info.size()));
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -213,7 +213,7 @@ tl::expected<void, Error> RecipientCipher::start_decryption_with_kek(std::span<c
 }
 
 tl::expected<void, Error> RecipientCipher::start_decryption_with_key(std::span<const uint8_t> recipient_id, const PrivateKey& private_key, std::span<const uint8_t> message_info) {
-    const vscf_status_t status = vscf_recipient_cipher_start_decryption_with_key(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()), private_key.impl(), vsc_data(message_info.data(), message_info.size()));
+    const vscf_status_t status = vscf_recipient_cipher_start_decryption_with_key(c_ctx_, recipient_id.empty() ? vsc_data_empty() : vsc_data(recipient_id.data(), recipient_id.size()), private_key.impl(), message_info.empty() ? vsc_data_empty() : vsc_data(message_info.data(), message_info.size()));
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -221,7 +221,7 @@ tl::expected<void, Error> RecipientCipher::start_decryption_with_key(std::span<c
 }
 
 tl::expected<void, Error> RecipientCipher::start_verified_decryption_with_key(std::span<const uint8_t> recipient_id, const PrivateKey& private_key, std::span<const uint8_t> message_info, std::span<const uint8_t> message_info_footer) {
-    const vscf_status_t status = vscf_recipient_cipher_start_verified_decryption_with_key(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()), private_key.impl(), vsc_data(message_info.data(), message_info.size()), vsc_data(message_info_footer.data(), message_info_footer.size()));
+    const vscf_status_t status = vscf_recipient_cipher_start_verified_decryption_with_key(c_ctx_, recipient_id.empty() ? vsc_data_empty() : vsc_data(recipient_id.data(), recipient_id.size()), private_key.impl(), message_info.empty() ? vsc_data_empty() : vsc_data(message_info.data(), message_info.size()), message_info_footer.empty() ? vsc_data_empty() : vsc_data(message_info_footer.data(), message_info_footer.size()));
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -238,7 +238,7 @@ tl::expected<std::vector<uint8_t>, Error> RecipientCipher::process_decryption(st
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_recipient_cipher_process_decryption(c_ctx_, vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_recipient_cipher_process_decryption(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {

@@ -86,7 +86,7 @@ tl::expected<void, Error> RatchetSession::setup_defaults() {
 }
 
 tl::expected<void, Error> RatchetSession::initiate(const virgil::crypto::foundation::PrivateKey& sender_identity_private_key, std::span<const uint8_t> sender_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_identity_public_key, std::span<const uint8_t> receiver_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_long_term_public_key, std::span<const uint8_t> receiver_long_term_key_id, const virgil::crypto::foundation::PublicKey& receiver_one_time_public_key, std::span<const uint8_t> receiver_one_time_key_id) {
-    const vscr_status_t status = vscr_ratchet_session_initiate(c_ctx_, sender_identity_private_key.impl(), vsc_data(sender_identity_key_id.data(), sender_identity_key_id.size()), receiver_identity_public_key.impl(), vsc_data(receiver_identity_key_id.data(), receiver_identity_key_id.size()), receiver_long_term_public_key.impl(), vsc_data(receiver_long_term_key_id.data(), receiver_long_term_key_id.size()), receiver_one_time_public_key.impl(), vsc_data(receiver_one_time_key_id.data(), receiver_one_time_key_id.size()));
+    const vscr_status_t status = vscr_ratchet_session_initiate(c_ctx_, sender_identity_private_key.impl(), sender_identity_key_id.empty() ? vsc_data_empty() : vsc_data(sender_identity_key_id.data(), sender_identity_key_id.size()), receiver_identity_public_key.impl(), receiver_identity_key_id.empty() ? vsc_data_empty() : vsc_data(receiver_identity_key_id.data(), receiver_identity_key_id.size()), receiver_long_term_public_key.impl(), receiver_long_term_key_id.empty() ? vsc_data_empty() : vsc_data(receiver_long_term_key_id.data(), receiver_long_term_key_id.size()), receiver_one_time_public_key.impl(), receiver_one_time_key_id.empty() ? vsc_data_empty() : vsc_data(receiver_one_time_key_id.data(), receiver_one_time_key_id.size()));
     if (status != vscr_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -94,7 +94,7 @@ tl::expected<void, Error> RatchetSession::initiate(const virgil::crypto::foundat
 }
 
 tl::expected<void, Error> RatchetSession::initiate_no_one_time_key(const virgil::crypto::foundation::PrivateKey& sender_identity_private_key, std::span<const uint8_t> sender_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_identity_public_key, std::span<const uint8_t> receiver_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_long_term_public_key, std::span<const uint8_t> receiver_long_term_key_id) {
-    const vscr_status_t status = vscr_ratchet_session_initiate_no_one_time_key(c_ctx_, sender_identity_private_key.impl(), vsc_data(sender_identity_key_id.data(), sender_identity_key_id.size()), receiver_identity_public_key.impl(), vsc_data(receiver_identity_key_id.data(), receiver_identity_key_id.size()), receiver_long_term_public_key.impl(), vsc_data(receiver_long_term_key_id.data(), receiver_long_term_key_id.size()));
+    const vscr_status_t status = vscr_ratchet_session_initiate_no_one_time_key(c_ctx_, sender_identity_private_key.impl(), sender_identity_key_id.empty() ? vsc_data_empty() : vsc_data(sender_identity_key_id.data(), sender_identity_key_id.size()), receiver_identity_public_key.impl(), receiver_identity_key_id.empty() ? vsc_data_empty() : vsc_data(receiver_identity_key_id.data(), receiver_identity_key_id.size()), receiver_long_term_public_key.impl(), receiver_long_term_key_id.empty() ? vsc_data_empty() : vsc_data(receiver_long_term_key_id.data(), receiver_long_term_key_id.size()));
     if (status != vscr_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -140,7 +140,7 @@ bool RatchetSession::receiver_has_one_time_public_key() {
 tl::expected<RatchetMessage, Error> RatchetSession::encrypt(std::span<const uint8_t> plain_text) {
     vscr_error_t error;
     vscr_error_reset(&error);
-    auto proxy_result = vscr_ratchet_session_encrypt(c_ctx_, vsc_data(plain_text.data(), plain_text.size()), &error);
+    auto proxy_result = vscr_ratchet_session_encrypt(c_ctx_, plain_text.empty() ? vsc_data_empty() : vsc_data(plain_text.data(), plain_text.size()), &error);
     if (vscr_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscr_error_status(&error)));
     }
@@ -176,7 +176,7 @@ std::vector<uint8_t> RatchetSession::serialize() {
 tl::expected<RatchetSession, Error> RatchetSession::deserialize(std::span<const uint8_t> input) {
     vscr_error_t error;
     vscr_error_reset(&error);
-    auto proxy_result = vscr_ratchet_session_deserialize(vsc_data(input.data(), input.size()), &error);
+    auto proxy_result = vscr_ratchet_session_deserialize(input.empty() ? vsc_data_empty() : vsc_data(input.data(), input.size()), &error);
     if (vscr_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscr_error_status(&error)));
     }

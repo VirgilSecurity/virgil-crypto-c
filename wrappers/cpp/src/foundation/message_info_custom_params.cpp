@@ -68,15 +68,15 @@ MessageInfoCustomParams::~MessageInfoCustomParams() { vscf_message_info_custom_p
 vscf_message_info_custom_params_t* MessageInfoCustomParams::c_ctx() const noexcept { return c_ctx_; }
 
 void MessageInfoCustomParams::add_int(std::span<const uint8_t> key, int32_t value) {
-    vscf_message_info_custom_params_add_int(c_ctx_, vsc_data(key.data(), key.size()), value);
+    vscf_message_info_custom_params_add_int(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), value);
 }
 
 void MessageInfoCustomParams::add_string(std::span<const uint8_t> key, std::span<const uint8_t> value) {
-    vscf_message_info_custom_params_add_string(c_ctx_, vsc_data(key.data(), key.size()), vsc_data(value.data(), value.size()));
+    vscf_message_info_custom_params_add_string(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), value.empty() ? vsc_data_empty() : vsc_data(value.data(), value.size()));
 }
 
 void MessageInfoCustomParams::add_data(std::span<const uint8_t> key, std::span<const uint8_t> value) {
-    vscf_message_info_custom_params_add_data(c_ctx_, vsc_data(key.data(), key.size()), vsc_data(value.data(), value.size()));
+    vscf_message_info_custom_params_add_data(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), value.empty() ? vsc_data_empty() : vsc_data(value.data(), value.size()));
 }
 
 void MessageInfoCustomParams::clear() {
@@ -86,7 +86,7 @@ void MessageInfoCustomParams::clear() {
 tl::expected<int32_t, Error> MessageInfoCustomParams::find_int(std::span<const uint8_t> key) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_message_info_custom_params_find_int(c_ctx_, vsc_data(key.data(), key.size()), &error);
+    auto proxy_result = vscf_message_info_custom_params_find_int(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }
@@ -96,7 +96,7 @@ tl::expected<int32_t, Error> MessageInfoCustomParams::find_int(std::span<const u
 tl::expected<std::vector<uint8_t>, Error> MessageInfoCustomParams::find_string(std::span<const uint8_t> key) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_message_info_custom_params_find_string(c_ctx_, vsc_data(key.data(), key.size()), &error);
+    auto proxy_result = vscf_message_info_custom_params_find_string(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }
@@ -106,7 +106,7 @@ tl::expected<std::vector<uint8_t>, Error> MessageInfoCustomParams::find_string(s
 tl::expected<std::vector<uint8_t>, Error> MessageInfoCustomParams::find_data(std::span<const uint8_t> key) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_message_info_custom_params_find_data(c_ctx_, vsc_data(key.data(), key.size()), &error);
+    auto proxy_result = vscf_message_info_custom_params_find_data(c_ctx_, key.empty() ? vsc_data_empty() : vsc_data(key.data(), key.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

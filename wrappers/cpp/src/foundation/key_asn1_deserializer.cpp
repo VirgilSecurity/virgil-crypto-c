@@ -105,7 +105,7 @@ tl::expected<RawPrivateKey, Error> KeyAsn1Deserializer::deserialize_private_key_
 tl::expected<RawPublicKey, Error> KeyAsn1Deserializer::deserialize_public_key(std::span<const uint8_t> public_key_data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_key_asn1_deserializer_deserialize_public_key(c_ctx_, vsc_data(public_key_data.data(), public_key_data.size()), &error);
+    auto proxy_result = vscf_key_asn1_deserializer_deserialize_public_key(c_ctx_, public_key_data.empty() ? vsc_data_empty() : vsc_data(public_key_data.data(), public_key_data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }
@@ -115,7 +115,7 @@ tl::expected<RawPublicKey, Error> KeyAsn1Deserializer::deserialize_public_key(st
 tl::expected<RawPrivateKey, Error> KeyAsn1Deserializer::deserialize_private_key(std::span<const uint8_t> private_key_data) {
     vscf_error_t error;
     vscf_error_reset(&error);
-    auto proxy_result = vscf_key_asn1_deserializer_deserialize_private_key(c_ctx_, vsc_data(private_key_data.data(), private_key_data.size()), &error);
+    auto proxy_result = vscf_key_asn1_deserializer_deserialize_private_key(c_ctx_, private_key_data.empty() ? vsc_data_empty() : vsc_data(private_key_data.data(), private_key_data.size()), &error);
     if (vscf_error_has_error(&error)) {
         return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
     }

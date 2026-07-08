@@ -131,7 +131,7 @@ tl::expected<std::vector<uint8_t>, Error> Ecies::encrypt(const PublicKey& public
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_ecies_encrypt(c_ctx_, public_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_ecies_encrypt(c_ctx_, public_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {
@@ -150,7 +150,7 @@ tl::expected<std::vector<uint8_t>, Error> Ecies::decrypt(const PrivateKey& priva
     vsc_buffer_t out_buf;
     vsc_buffer_init(&out_buf);
     vsc_buffer_use(&out_buf, out.data(), out.size());
-    const vscf_status_t status = vscf_ecies_decrypt(c_ctx_, private_key.impl(), vsc_data(data.data(), data.size()), &out_buf);
+    const vscf_status_t status = vscf_ecies_decrypt(c_ctx_, private_key.impl(), data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()), &out_buf);
     out.resize(vsc_buffer_len(&out_buf));
     vsc_buffer_cleanup(&out_buf);
     if (status != vscf_status_SUCCESS) {

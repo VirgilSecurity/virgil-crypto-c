@@ -89,7 +89,7 @@ tl::expected<void, Error> PheClient::setup_defaults() {
 }
 
 tl::expected<void, Error> PheClient::set_keys(std::span<const uint8_t> client_private_key, std::span<const uint8_t> server_public_key) {
-    const vsce_status_t status = vsce_phe_client_set_keys(c_ctx_, vsc_data(client_private_key.data(), client_private_key.size()), vsc_data(server_public_key.data(), server_public_key.size()));
+    const vsce_status_t status = vsce_phe_client_set_keys(c_ctx_, client_private_key.empty() ? vsc_data_empty() : vsc_data(client_private_key.data(), client_private_key.size()), server_public_key.empty() ? vsc_data_empty() : vsc_data(server_public_key.data(), server_public_key.size()));
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -124,7 +124,7 @@ tl::expected<PheClientEnrollAccountResult, Error> PheClient::enroll_account(std:
     vsc_buffer_t account_key_buf;
     vsc_buffer_init(&account_key_buf);
     vsc_buffer_use(&account_key_buf, account_key.data(), account_key.size());
-    const vsce_status_t status = vsce_phe_client_enroll_account(c_ctx_, vsc_data(enrollment_response.data(), enrollment_response.size()), vsc_data(password.data(), password.size()), &enrollment_record_buf, &account_key_buf);
+    const vsce_status_t status = vsce_phe_client_enroll_account(c_ctx_, enrollment_response.empty() ? vsc_data_empty() : vsc_data(enrollment_response.data(), enrollment_response.size()), password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), &enrollment_record_buf, &account_key_buf);
     enrollment_record.resize(vsc_buffer_len(&enrollment_record_buf));
     vsc_buffer_cleanup(&enrollment_record_buf);
     account_key.resize(vsc_buffer_len(&account_key_buf));
@@ -145,7 +145,7 @@ tl::expected<std::vector<uint8_t>, Error> PheClient::create_verify_password_requ
     vsc_buffer_t verify_password_request_buf;
     vsc_buffer_init(&verify_password_request_buf);
     vsc_buffer_use(&verify_password_request_buf, verify_password_request.data(), verify_password_request.size());
-    const vsce_status_t status = vsce_phe_client_create_verify_password_request(c_ctx_, vsc_data(password.data(), password.size()), vsc_data(enrollment_record.data(), enrollment_record.size()), &verify_password_request_buf);
+    const vsce_status_t status = vsce_phe_client_create_verify_password_request(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), &verify_password_request_buf);
     verify_password_request.resize(vsc_buffer_len(&verify_password_request_buf));
     vsc_buffer_cleanup(&verify_password_request_buf);
     if (status != vsce_status_SUCCESS) {
@@ -159,7 +159,7 @@ tl::expected<std::vector<uint8_t>, Error> PheClient::check_response_and_decrypt(
     vsc_buffer_t account_key_buf;
     vsc_buffer_init(&account_key_buf);
     vsc_buffer_use(&account_key_buf, account_key.data(), account_key.size());
-    const vsce_status_t status = vsce_phe_client_check_response_and_decrypt(c_ctx_, vsc_data(password.data(), password.size()), vsc_data(enrollment_record.data(), enrollment_record.size()), vsc_data(verify_password_response.data(), verify_password_response.size()), &account_key_buf);
+    const vsce_status_t status = vsce_phe_client_check_response_and_decrypt(c_ctx_, password.empty() ? vsc_data_empty() : vsc_data(password.data(), password.size()), enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), verify_password_response.empty() ? vsc_data_empty() : vsc_data(verify_password_response.data(), verify_password_response.size()), &account_key_buf);
     account_key.resize(vsc_buffer_len(&account_key_buf));
     vsc_buffer_cleanup(&account_key_buf);
     if (status != vsce_status_SUCCESS) {
@@ -177,7 +177,7 @@ tl::expected<PheClientRotateKeysResult, Error> PheClient::rotate_keys(std::span<
     vsc_buffer_t new_server_public_key_buf;
     vsc_buffer_init(&new_server_public_key_buf);
     vsc_buffer_use(&new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
-    const vsce_status_t status = vsce_phe_client_rotate_keys(c_ctx_, vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf, &new_server_public_key_buf);
+    const vsce_status_t status = vsce_phe_client_rotate_keys(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_client_private_key_buf, &new_server_public_key_buf);
     new_client_private_key.resize(vsc_buffer_len(&new_client_private_key_buf));
     vsc_buffer_cleanup(&new_client_private_key_buf);
     new_server_public_key.resize(vsc_buffer_len(&new_server_public_key_buf));
@@ -193,7 +193,7 @@ tl::expected<std::vector<uint8_t>, Error> PheClient::update_enrollment_record(st
     vsc_buffer_t new_enrollment_record_buf;
     vsc_buffer_init(&new_enrollment_record_buf);
     vsc_buffer_use(&new_enrollment_record_buf, new_enrollment_record.data(), new_enrollment_record.size());
-    const vsce_status_t status = vsce_phe_client_update_enrollment_record(c_ctx_, vsc_data(enrollment_record.data(), enrollment_record.size()), vsc_data(update_token.data(), update_token.size()), &new_enrollment_record_buf);
+    const vsce_status_t status = vsce_phe_client_update_enrollment_record(c_ctx_, enrollment_record.empty() ? vsc_data_empty() : vsc_data(enrollment_record.data(), enrollment_record.size()), update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()), &new_enrollment_record_buf);
     new_enrollment_record.resize(vsc_buffer_len(&new_enrollment_record_buf));
     vsc_buffer_cleanup(&new_enrollment_record_buf);
     if (status != vsce_status_SUCCESS) {

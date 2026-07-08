@@ -84,7 +84,7 @@ tl::expected<void, Error> UokmsWrapRotation::setup_defaults() {
 }
 
 tl::expected<void, Error> UokmsWrapRotation::set_update_token(std::span<const uint8_t> update_token) {
-    const vsce_status_t status = vsce_uokms_wrap_rotation_set_update_token(c_ctx_, vsc_data(update_token.data(), update_token.size()));
+    const vsce_status_t status = vsce_uokms_wrap_rotation_set_update_token(c_ctx_, update_token.empty() ? vsc_data_empty() : vsc_data(update_token.data(), update_token.size()));
     if (status != vsce_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }
@@ -96,7 +96,7 @@ tl::expected<std::vector<uint8_t>, Error> UokmsWrapRotation::update_wrap(std::sp
     vsc_buffer_t new_wrap_buf;
     vsc_buffer_init(&new_wrap_buf);
     vsc_buffer_use(&new_wrap_buf, new_wrap.data(), new_wrap.size());
-    const vsce_status_t status = vsce_uokms_wrap_rotation_update_wrap(c_ctx_, vsc_data(wrap.data(), wrap.size()), &new_wrap_buf);
+    const vsce_status_t status = vsce_uokms_wrap_rotation_update_wrap(c_ctx_, wrap.empty() ? vsc_data_empty() : vsc_data(wrap.data(), wrap.size()), &new_wrap_buf);
     new_wrap.resize(vsc_buffer_len(&new_wrap_buf));
     vsc_buffer_cleanup(&new_wrap_buf);
     if (status != vsce_status_SUCCESS) {

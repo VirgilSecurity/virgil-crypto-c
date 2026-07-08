@@ -83,7 +83,7 @@ tl::expected<void, Error> GroupSessionTicket::setup_defaults() {
 }
 
 tl::expected<void, Error> GroupSessionTicket::setup_ticket_as_new(std::span<const uint8_t> session_id) {
-    const vscf_status_t status = vscf_group_session_ticket_setup_ticket_as_new(c_ctx_, vsc_data(session_id.data(), session_id.size()));
+    const vscf_status_t status = vscf_group_session_ticket_setup_ticket_as_new(c_ctx_, session_id.empty() ? vsc_data_empty() : vsc_data(session_id.data(), session_id.size()));
     if (status != vscf_status_SUCCESS) {
         return tl::unexpected(static_cast<Error>(status));
     }

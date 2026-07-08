@@ -606,7 +606,11 @@ def _c_call_args(project_ir, entity_name, method, is_static):
         if _arg_is_buffer_output(arg):
             parts.append(f"&{local}_buf")
         elif arg.class_name == "data":
-            parts.append(f"vsc_data({local}.data(), {local}.size())")
+            # An empty std::span/vector may have data()==nullptr, but vsc_data asserts
+            # a non-null pointer even for length 0 — use vsc_data_empty() when empty
+            # (mirrors the Go backend) so empty input never aborts.
+            parts.append(f"{local}.empty() ? vsc_data_empty() : "
+                         f"vsc_data({local}.data(), {local}.size())")
         elif arg.interface_name:
             # A ``disown`` object argument transfers ownership: the C signature is
             # ``vscf_impl_t **`` and the callee steals + nulls the handle. Pass the

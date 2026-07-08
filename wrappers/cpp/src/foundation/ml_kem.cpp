@@ -209,7 +209,7 @@ tl::expected<std::vector<uint8_t>, Error> MlKem::kem_decapsulate(std::span<const
     vsc_buffer_t shared_key_buf;
     vsc_buffer_init(&shared_key_buf);
     vsc_buffer_use(&shared_key_buf, shared_key.data(), shared_key.size());
-    const vscf_status_t status = vscf_ml_kem_kem_decapsulate(c_ctx_, vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
+    const vscf_status_t status = vscf_ml_kem_kem_decapsulate(c_ctx_, encapsulated_key.empty() ? vsc_data_empty() : vsc_data(encapsulated_key.data(), encapsulated_key.size()), private_key.impl(), &shared_key_buf);
     shared_key.resize(vsc_buffer_len(&shared_key_buf));
     vsc_buffer_cleanup(&shared_key_buf);
     if (status != vscf_status_SUCCESS) {

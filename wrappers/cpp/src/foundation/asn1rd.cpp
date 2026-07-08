@@ -71,7 +71,7 @@ vscf_asn1rd_t* Asn1rd::c_ctx() const noexcept { return c_ctx_; }
 vscf_impl_t* Asn1rd::impl() const noexcept { return vscf_asn1rd_impl(c_ctx_); }
 
 void Asn1rd::reset(std::span<const uint8_t> data) {
-    vscf_asn1rd_reset(c_ctx_, vsc_data(data.data(), data.size()));
+    vscf_asn1rd_reset(c_ctx_, data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size()));
 }
 
 std::size_t Asn1rd::left_len() {

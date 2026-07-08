@@ -501,6 +501,13 @@ class HardeningTests(unittest.TestCase):
         self.assertIn("virgil/crypto/foundation/raw_private_key.hpp", includes)
         self.assertNotIn("RawPrivateKey", fwd)
 
+    def test_data_argument_is_null_safe_for_empty_span(self) -> None:
+        # An empty std::span/vector may have data()==nullptr; vsc_data asserts non-null,
+        # so empty input must route through vsc_data_empty() instead of aborting.
+        files = dict(generate_cpp_files(self.foundation, repo_root=str(REPO_ROOT)))
+        c = files["wrappers/cpp/src/foundation/aes256_gcm.cpp"]
+        self.assertIn("data.empty() ? vsc_data_empty() : vsc_data(data.data(), data.size())", c)
+
     def test_dispatch_deletes_impl_on_unknown_tag(self) -> None:
         files = dict(generate_cpp_files(self.foundation, repo_root=str(REPO_ROOT)))
         c = files["wrappers/cpp/src/foundation/foundation_implementation.cpp"]
