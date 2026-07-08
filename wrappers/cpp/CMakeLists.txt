@@ -77,51 +77,70 @@ set(VIRGIL_CPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 # Each wrapper is a header (declarations) + .cpp (definitions) pair, so every library
 # is a STATIC target compiling its generated sources. The public headers forward-declare
 # the C handles, so consumers do not transitively pull the C library headers.
+#
+# Each C++ library is gated on the same VIRGIL_LIB_* option as the C library it wraps
+# (and its vsc:: target), so a foundation-only consumer need not build/link ratchet or
+# phe (or their post-quantum deps).
+set(VIRGIL_CPP_TARGETS "")
+set(VIRGIL_CPP_LIBS "")
 
 # ---------------------------------------------------------------------------
 #   foundation-cpp
 # ---------------------------------------------------------------------------
-file(GLOB VIRGIL_FOUNDATION_CPP_SRCS CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/*.cpp")
-add_library(foundation-cpp STATIC ${VIRGIL_FOUNDATION_CPP_SRCS})
-add_library(virgil::foundation-cpp ALIAS foundation-cpp)
-target_include_directories(foundation-cpp PUBLIC
-    "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
-    "$<INSTALL_INTERFACE:include>"
-)
-target_compile_features(foundation-cpp PUBLIC cxx_std_20)
-target_link_libraries(foundation-cpp PUBLIC vsc::foundation tl::expected)
+if(VIRGIL_LIB_FOUNDATION)
+    file(GLOB VIRGIL_FOUNDATION_CPP_SRCS CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/*.cpp")
+    add_library(foundation-cpp STATIC ${VIRGIL_FOUNDATION_CPP_SRCS})
+    add_library(virgil::foundation-cpp ALIAS foundation-cpp)
+    target_include_directories(foundation-cpp PUBLIC
+        "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
+        "$<INSTALL_INTERFACE:include>"
+    )
+    target_compile_features(foundation-cpp PUBLIC cxx_std_20)
+    target_link_libraries(foundation-cpp PUBLIC vsc::foundation tl::expected)
+    list(APPEND VIRGIL_CPP_TARGETS foundation-cpp)
+    list(APPEND VIRGIL_CPP_LIBS foundation)
+endif()
 
 # ---------------------------------------------------------------------------
 #   ratchet-cpp / phe-cpp
 # ---------------------------------------------------------------------------
 # Both depend on foundation types (Random, PrivateKey, PublicKey), so they link
 # virgil::foundation-cpp for its headers + include dir, plus their own C library.
-file(GLOB VIRGIL_RATCHET_CPP_SRCS CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/ratchet/*.cpp")
-add_library(ratchet-cpp STATIC ${VIRGIL_RATCHET_CPP_SRCS})
-add_library(virgil::ratchet-cpp ALIAS ratchet-cpp)
-target_compile_features(ratchet-cpp PUBLIC cxx_std_20)
-target_link_libraries(ratchet-cpp PUBLIC virgil::foundation-cpp vsc::ratchet tl::expected)
+if(VIRGIL_LIB_RATCHET)
+    file(GLOB VIRGIL_RATCHET_CPP_SRCS CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/ratchet/*.cpp")
+    add_library(ratchet-cpp STATIC ${VIRGIL_RATCHET_CPP_SRCS})
+    add_library(virgil::ratchet-cpp ALIAS ratchet-cpp)
+    target_compile_features(ratchet-cpp PUBLIC cxx_std_20)
+    target_link_libraries(ratchet-cpp PUBLIC virgil::foundation-cpp vsc::ratchet tl::expected)
+    list(APPEND VIRGIL_CPP_TARGETS ratchet-cpp)
+    list(APPEND VIRGIL_CPP_LIBS ratchet)
+endif()
 
-file(GLOB VIRGIL_PHE_CPP_SRCS CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/phe/*.cpp")
-add_library(phe-cpp STATIC ${VIRGIL_PHE_CPP_SRCS})
-add_library(virgil::phe-cpp ALIAS phe-cpp)
-target_compile_features(phe-cpp PUBLIC cxx_std_20)
-target_link_libraries(phe-cpp PUBLIC virgil::foundation-cpp vsc::phe tl::expected)
+if(VIRGIL_LIB_PHE)
+    file(GLOB VIRGIL_PHE_CPP_SRCS CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/phe/*.cpp")
+    add_library(phe-cpp STATIC ${VIRGIL_PHE_CPP_SRCS})
+    add_library(virgil::phe-cpp ALIAS phe-cpp)
+    target_compile_features(phe-cpp PUBLIC cxx_std_20)
+    target_link_libraries(phe-cpp PUBLIC virgil::foundation-cpp vsc::phe tl::expected)
+    list(APPEND VIRGIL_CPP_TARGETS phe-cpp)
+    list(APPEND VIRGIL_CPP_LIBS phe)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Tests (hand-written round-trip / parity — never overwritten by codegen)
 # ---------------------------------------------------------------------------
 # Gated on ENABLE_TESTING (CTest infra), independent of VIRGIL_C_TESTING (the C
 # library's own suite). The test/ directory is skipped by the codegen orchestrator.
+# A library's test is built only when that library was built.
 if(ENABLE_TESTING)
-    foreach(vsc_cpp_test foundation phe ratchet)
-        add_executable(${vsc_cpp_test}_cpp_test
-            "${CMAKE_CURRENT_SOURCE_DIR}/test/${vsc_cpp_test}_test.cpp")
-        target_link_libraries(${vsc_cpp_test}_cpp_test PRIVATE virgil::${vsc_cpp_test}-cpp)
-        add_test(NAME ${vsc_cpp_test}_cpp_test COMMAND ${vsc_cpp_test}_cpp_test)
+    foreach(vsc_cpp_lib ${VIRGIL_CPP_LIBS})
+        add_executable(${vsc_cpp_lib}_cpp_test
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/${vsc_cpp_lib}_test.cpp")
+        target_link_libraries(${vsc_cpp_lib}_cpp_test PRIVATE virgil::${vsc_cpp_lib}-cpp)
+        add_test(NAME ${vsc_cpp_lib}_cpp_test COMMAND ${vsc_cpp_lib}_cpp_test)
     endforeach()
 endif()
 
@@ -135,8 +154,8 @@ endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-if(VIRGIL_INSTALL_LIBS)
-    install(TARGETS foundation-cpp ratchet-cpp phe-cpp
+if(VIRGIL_INSTALL_LIBS AND VIRGIL_CPP_TARGETS)
+    install(TARGETS ${VIRGIL_CPP_TARGETS}
         EXPORT VirgilCryptoCppTargets
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -145,17 +164,33 @@ if(VIRGIL_INSTALL_LIBS)
     )
 endif()
 
+# Install only the headers of the libraries that were built (each project's headers
+# live entirely under its own include subdirectory).
 if(VIRGIL_INSTALL_HDRS)
-    install(DIRECTORY "${VIRGIL_CPP_INCLUDE_DIR}/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-    )
+    foreach(vsc_cpp_lib ${VIRGIL_CPP_LIBS})
+        install(DIRECTORY "${VIRGIL_CPP_INCLUDE_DIR}/virgil/crypto/${vsc_cpp_lib}"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/virgil/crypto"
+        )
+    endforeach()
 endif()
 
-# Requires VIRGIL_INSTALL_LIBS too: the export set is populated by the
-# install(TARGETS ... EXPORT ...) above, so exporting it without installing the
-# targets would fail with "unknown export VirgilCryptoCppTargets".
-if(VIRGIL_INSTALL_CMAKE AND VIRGIL_INSTALL_LIBS)
+# Requires VIRGIL_INSTALL_LIBS too (and at least one built target): the export set is
+# populated by the install(TARGETS ... EXPORT ...) above, so exporting it without
+# installing the targets would fail with "unknown export VirgilCryptoCppTargets".
+if(VIRGIL_INSTALL_CMAKE AND VIRGIL_INSTALL_LIBS AND VIRGIL_CPP_TARGETS)
     set(VIRGIL_CPP_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/VirgilCryptoCpp")
+    # Component flags for the Config: only find_dependency the C packages of the
+    # libraries actually shipped in this install.
+    if(TARGET ratchet-cpp)
+        set(VIRGIL_CPP_WITH_RATCHET 1)
+    else()
+        set(VIRGIL_CPP_WITH_RATCHET 0)
+    endif()
+    if(TARGET phe-cpp)
+        set(VIRGIL_CPP_WITH_PHE 1)
+    else()
+        set(VIRGIL_CPP_WITH_PHE 0)
+    endif()
     install(EXPORT VirgilCryptoCppTargets
         NAMESPACE virgil::
         DESTINATION "${VIRGIL_CPP_CMAKE_DIR}"
