@@ -1,0 +1,129 @@
+name: Build C++
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+      - 'feat/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Validate the C++ codegen backend: unit tests + byte-identical no-drift parity.
+  codegen-tests:
+    name: Codegen tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Run C++ backend tests
+        run: python3 -m pytest tools/codegen/test_cpp_backend.py -q
+
+  # Build the per-library C++ targets against the C libraries on every platform.
+  # Windows/MSVC is a first-class target (the wrapper compiles the vendored C with
+  # MSVC, which has no C99 VLAs — see docs/solutions/build-errors/msvc-no-c99-vla-*).
+  build:
+    name: C++ (${{ matrix.name }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS runners are reserved for direct prebuilt dependencies (CLAUDE.md);
+        # the wrapper builds the C sources itself, so cover GCC + Clang on Linux plus
+        # MSVC on Windows (the divergent toolchains, incl. the VLA-sensitive MSVC).
+        include:
+          - name: linux-gcc
+            runner: ubuntu-latest
+            cmake_extra: '-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++'
+          - name: linux-clang
+            runner: ubuntu-latest
+            cmake_extra: '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++'
+          - name: windows-msvc
+            runner: windows-latest
+            cmake_extra: ''
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install build tools (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+
+      - name: Configure
+        shell: bash
+        run: |
+          cmake -Cconfigs/cpp-config.cmake \
+                -DVIRGIL_WRAP_CPP=ON \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DENABLE_CLANGFORMAT=OFF \
+                -DVIRGIL_POST_QUANTUM=ON \
+                ${{ matrix.cmake_extra }} \
+                -Bbuild -S.
+
+      - name: Build C++ wrapper libraries
+        shell: bash
+        run: cmake --build build --config Release --target foundation-cpp ratchet-cpp phe-cpp --parallel
+
+      # Full FetchContent consumption is a second from-scratch build of the whole
+      # library, so run it on Linux only; the matrix above already proves the wrapper
+      # compiles on macOS/MSVC.
+      - name: Verify downstream FetchContent consumption
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          consumer="$RUNNER_TEMP/cpp-consumer"
+          mkdir -p "$consumer"
+          cat > "$consumer/smoke.cpp" <<'EOF'
+          #include <virgil/crypto/foundation/base64.hpp>
+          #include <cstdint>
+          #include <cstdio>
+          #include <vector>
+          int main() {
+              namespace f = virgil::crypto::foundation;
+              std::vector<uint8_t> data{'h', 'e', 'l', 'l', 'o'};
+              std::vector<uint8_t> enc = f::Base64::encode(data);
+              auto dec = f::Base64::decode(enc);
+              if (!dec) { std::printf("decode failed\n"); return 1; }
+              const bool ok = (*dec == data);
+              std::printf("base64 round-trip: %s\n", ok ? "OK" : "MISMATCH");
+              return ok ? 0 : 1;
+          }
+          EOF
+          cat > "$consumer/CMakeLists.txt" <<EOF
+          cmake_minimum_required(VERSION 3.14)
+          project(cpp_consumer LANGUAGES C CXX)
+          set(VIRGIL_WRAP_CPP ON CACHE BOOL "")
+          set(VIRGIL_C_TESTING OFF CACHE BOOL "")
+          set(VIRGIL_POST_QUANTUM ON CACHE BOOL "")
+          set(ENABLE_TESTING OFF CACHE BOOL "")
+          set(ENABLE_CLANGFORMAT OFF CACHE BOOL "")
+          include(FetchContent)
+          FetchContent_Declare(virgil_crypto SOURCE_DIR "${{ github.workspace }}")
+          FetchContent_MakeAvailable(virgil_crypto)
+          add_executable(smoke smoke.cpp)
+          target_link_libraries(smoke PRIVATE virgil::foundation-cpp)
+          EOF
+          cmake -B "$consumer/build" -S "$consumer" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$consumer/build" --parallel
+          "$consumer/build/smoke"
