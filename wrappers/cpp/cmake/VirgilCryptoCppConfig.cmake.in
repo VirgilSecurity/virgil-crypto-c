@@ -1,0 +1,29 @@
+@PACKAGE_INIT@
+
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#
+#   Package config for the Virgil Crypto C++ wrapper. Exposes the imported
+#   targets virgil::foundation-cpp / virgil::ratchet-cpp / virgil::phe-cpp
+#   (identical names to the in-tree ALIASes used via add_subdirectory/FetchContent).
+
+include(CMakeFindDependencyMacro)
+
+# The C libraries provide vsc::foundation / vsc::ratchet / vsc::phe. Their own
+# package configs reference their dependencies (foundation_pb, common, ed25519, ...)
+# as already-imported targets without find_dependency-ing them, so we resolve the
+# transitive C packages here, leaf-first, before the top-level ones. tl::expected
+# backs the public expected<T, Error> error type.
+find_dependency(vsc_platform)
+find_dependency(vsc_common)
+find_dependency(ed25519)
+find_dependency(vsc_foundation_pb)
+find_dependency(vsc_phe_pb)
+find_dependency(vsc_ratchet_pb)
+find_dependency(vsc_foundation)
+find_dependency(vsc_phe)
+find_dependency(vsc_ratchet)
+find_dependency(tl-expected)
+
+include("${CMAKE_CURRENT_LIST_DIR}/VirgilCryptoCppTargets.cmake")
+
+check_required_components(VirgilCryptoCpp)

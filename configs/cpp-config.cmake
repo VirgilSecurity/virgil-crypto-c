@@ -42,12 +42,12 @@ set(VIRGIL_INSTALL_WRAP_LIBS ON CACHE BOOL "")
 set(VIRGIL_INSTALL_WRAP_DEPS ON CACHE BOOL "")
 set(VIRGIL_INSTALL_DEPS_HDRS ON CACHE BOOL "")
 set(VIRGIL_INSTALL_DEPS_LIBS ON CACHE BOOL "")
-set(VIRGIL_INSTALL_DEPS_CMAKE OFF CACHE BOOL "")
+# INSTALL_CMAKE and INSTALL_DEPS_CMAKE must agree: the C libraries' export sets
+# reference their deps (foundation_pb, ed25519, ...), so both are ON to keep the
+# generated export self-consistent. This lets the C++ package export cleanly.
+set(VIRGIL_INSTALL_DEPS_CMAKE ON CACHE BOOL "")
 set(VIRGIL_INSTALL_HDRS ON CACHE BOOL "")
 set(VIRGIL_INSTALL_LIBS ON CACHE BOOL "")
-# The C libraries' install(EXPORT) sets are incomplete (foundation_pb/ed25519 not
-# exported); enabling CMake-config install here fails at generate time. The C++
-# package export is set up in Unit 7 (which handles this). Keep OFF for the build.
-set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "")
+set(VIRGIL_INSTALL_CMAKE ON CACHE BOOL "")
 set(VIRGIL_PACKAGE_LANGUAGE cpp CACHE STRING "")
 set(VIRGIL_POST_QUANTUM ON CACHE BOOL "")

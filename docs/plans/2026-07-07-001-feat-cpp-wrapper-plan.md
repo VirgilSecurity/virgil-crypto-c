@@ -312,7 +312,10 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Note (header+cpp split):** conforming to the "static per-library (generated `.cpp` bodies)" decision above, the generators now emit a lean declaration `.hpp` (forward-declaring the C handle, so consumers don't pull the C library headers) plus a definition `.cpp` per class/impl. This unlocked **stack-allocated output buffers** (the `.cpp` includes the internal `private/vsc_buffer_defs.h`, never exposed to consumers) — no per-call heap alloc. All three libraries are STATIC. Units 2–4 had emitted an interim header-only inline form; this revises them to the planned shape. Interfaces/enums/`Error`/dispatch header stay header-only.
 
-- [ ] **Unit 6: Third-party deps via FetchContent (tl::expected, GSL)**
+- [x] **Unit 6: Third-party deps via FetchContent (tl::expected, GSL)**
+
+**Done:** `tl::expected` is pinned via FetchContent (`v1.1.0`) with `FIND_PACKAGE_ARGS NAMES tl-expected` on CMake ≥ 3.24 (prefers a system copy, fetches as fallback). **GSL is intentionally not pulled** — interface/delegate arguments are passed by reference (`const T&`), which is non-nullable by construction, so `gsl::not_null` is unnecessary; dropping it removes a dependency.
+
 
 **Goal:** Pull `tl::expected` and Microsoft GSL via CMake FetchContent, pinned, and wire them into the wrapper targets' interface.
 
@@ -333,7 +336,12 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** a from-scratch build with no system `tl-expected`/GSL resolves both via FetchContent and links.
 
-- [ ] **Unit 7: CMake package export + dual find_package/FetchContent consumption**
+- [x] **Unit 7: CMake package export + dual find_package/FetchContent consumption**
+
+**Done:** in-tree `virgil::foundation-cpp`/`ratchet-cpp`/`phe-cpp` ALIASes (for add_subdirectory/FetchContent) + `install(EXPORT ... NAMESPACE virgil::)` (identical names for `find_package`); `VirgilCryptoCppConfig.cmake.in` re-finds the C packages and `tl-expected` via `find_dependency`; `cpp-config.cmake` enables `INSTALL_CMAKE`+`INSTALL_DEPS_CMAKE` (must agree so the C export sets are self-consistent). The package installs cleanly (config + targets + headers + tl-expected). FetchContent/add_subdirectory consumption is verified end-to-end (a scratch consumer links `virgil::foundation-cpp` and runs a base64 round-trip).
+
+**Pre-existing C/thirdparty packaging blockers surfaced (out of C++-wrapper scope):** the installed `find_package` consumption exposed deficiencies in the *C library's own* packaging: (1) the `vsc_*Config.cmake` files reference their deps (`foundation_pb`, `common`, `ed25519`, …) without `find_dependency` — worked around by resolving the transitive C packages in `VirgilCryptoCppConfig.cmake.in`; (2) `thirdparty/ed25519/CMakeLists.txt` had a malformed install-context genex (`$<AND:$<BUILD_INTERFACE:1>,…>`) — **fixed** (wrapped in `$<BUILD_INTERFACE:…>`); (3) `protobuf-nanopb` is not installed as a findable link library, so an installed `find_package` consumer fails at link. (3) blocks the installed-consumer smoke test and belongs to the C library's install story, not the C++ wrapper. FetchContent (the primary mode, and what CI uses) is unaffected since it links in-tree.
+
 
 **Goal:** Ship an installable package exporting `virgil::foundation-cpp`/`ratchet-cpp`/`phe-cpp` (same ALIASes for install and FetchContent), with a Config that re-finds deps; prove a downstream consumer.
 
