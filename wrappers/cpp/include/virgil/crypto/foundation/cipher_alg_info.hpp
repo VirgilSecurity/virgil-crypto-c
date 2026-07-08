@@ -42,56 +42,38 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_cipher_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
+
+struct vscf_cipher_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
 /// Handle symmetric cipher algorithm information.
 class CipherAlgInfo : virtual public AlgInfo {
 public:
-    CipherAlgInfo() : c_ctx_(vscf_cipher_alg_info_new()) {}
+    CipherAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit CipherAlgInfo(vscf_cipher_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    CipherAlgInfo(const CipherAlgInfo& other) : c_ctx_(vscf_cipher_alg_info_shallow_copy(other.c_ctx_)) {}
-    CipherAlgInfo(CipherAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    CipherAlgInfo& operator=(const CipherAlgInfo& other) {
-        if (this != &other) {
-            vscf_cipher_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_cipher_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    CipherAlgInfo& operator=(CipherAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_cipher_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~CipherAlgInfo() { vscf_cipher_alg_info_delete(c_ctx_); }
+    explicit CipherAlgInfo(vscf_cipher_alg_info_t* c_ctx) noexcept;
+    CipherAlgInfo(const CipherAlgInfo& other);
+    CipherAlgInfo(CipherAlgInfo&& other) noexcept;
+    CipherAlgInfo& operator=(const CipherAlgInfo& other);
+    CipherAlgInfo& operator=(CipherAlgInfo&& other) noexcept;
+    ~CipherAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_cipher_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_cipher_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_cipher_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return IV.
-    std::vector<uint8_t> nonce() const {
-        auto proxy_result = vscf_cipher_alg_info_nonce(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> nonce() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_cipher_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_cipher_alg_info_t* c_ctx_;

@@ -42,10 +42,11 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_key_material_rng.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/random.hpp>
+
+struct vscf_key_material_rng_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
@@ -54,33 +55,20 @@ namespace virgil::crypto::foundation {
 /// This RNG can be used to transform key material rial to the private key.
 class KeyMaterialRng : virtual public Random {
 public:
-    KeyMaterialRng() : c_ctx_(vscf_key_material_rng_new()) {}
+    KeyMaterialRng();
     /// Adopt ownership of an existing C handle.
-    explicit KeyMaterialRng(vscf_key_material_rng_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    KeyMaterialRng(const KeyMaterialRng& other) : c_ctx_(vscf_key_material_rng_shallow_copy(other.c_ctx_)) {}
-    KeyMaterialRng(KeyMaterialRng&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    KeyMaterialRng& operator=(const KeyMaterialRng& other) {
-        if (this != &other) {
-            vscf_key_material_rng_delete(c_ctx_);
-            c_ctx_ = vscf_key_material_rng_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    KeyMaterialRng& operator=(KeyMaterialRng&& other) noexcept {
-        if (this != &other) {
-            vscf_key_material_rng_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~KeyMaterialRng() { vscf_key_material_rng_delete(c_ctx_); }
+    explicit KeyMaterialRng(vscf_key_material_rng_t* c_ctx) noexcept;
+    KeyMaterialRng(const KeyMaterialRng& other);
+    KeyMaterialRng(KeyMaterialRng&& other) noexcept;
+    KeyMaterialRng& operator=(const KeyMaterialRng& other);
+    KeyMaterialRng& operator=(KeyMaterialRng&& other) noexcept;
+    ~KeyMaterialRng();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_key_material_rng_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_key_material_rng_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_key_material_rng_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Minimum length in bytes for the key material.
     static constexpr std::size_t KEY_MATERIAL_LEN_MIN = 32;
@@ -89,33 +77,14 @@ public:
     static constexpr std::size_t KEY_MATERIAL_LEN_MAX = 512;
 
     /// Set a new key material.
-    void reset_key_material(std::span<const uint8_t> key_material) {
-        vscf_key_material_rng_reset_key_material(c_ctx_, vsc_data(key_material.data(), key_material.size()));
-    }
+    void reset_key_material(std::span<const uint8_t> key_material);
 
     /// Generate random bytes.
     /// All RNG implementations must be thread-safe.
-    tl::expected<std::vector<uint8_t>, Error> random(std::size_t data_len) const override {
-        std::vector<uint8_t> data(data_len);
-        vsc_buffer_t* data_buf = vsc_buffer_new();
-        vsc_buffer_use(data_buf, data.data(), data.size());
-        const vscf_status_t status = vscf_key_material_rng_random(c_ctx_, data_len, data_buf);
-        data.resize(vsc_buffer_len(data_buf));
-        vsc_buffer_delete(data_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return data;
-    }
+    tl::expected<std::vector<uint8_t>, Error> random(std::size_t data_len) const override;
 
     /// Retrieve new seed data from the entropy sources.
-    tl::expected<void, Error> reseed() override {
-        const vscf_status_t status = vscf_key_material_rng_reseed(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> reseed() override;
 
 private:
     vscf_key_material_rng_t* c_ctx_;

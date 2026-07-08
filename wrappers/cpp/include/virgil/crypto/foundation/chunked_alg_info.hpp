@@ -42,11 +42,12 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_chunked_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
+
+struct vscf_chunked_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
@@ -55,57 +56,32 @@ namespace virgil::crypto::foundation {
 /// a version, the chunk size, and the initial nonce.
 class ChunkedAlgInfo : virtual public AlgInfo {
 public:
-    ChunkedAlgInfo() : c_ctx_(vscf_chunked_alg_info_new()) {}
+    ChunkedAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit ChunkedAlgInfo(vscf_chunked_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    ChunkedAlgInfo(const ChunkedAlgInfo& other) : c_ctx_(vscf_chunked_alg_info_shallow_copy(other.c_ctx_)) {}
-    ChunkedAlgInfo(ChunkedAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    ChunkedAlgInfo& operator=(const ChunkedAlgInfo& other) {
-        if (this != &other) {
-            vscf_chunked_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_chunked_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    ChunkedAlgInfo& operator=(ChunkedAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_chunked_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~ChunkedAlgInfo() { vscf_chunked_alg_info_delete(c_ctx_); }
+    explicit ChunkedAlgInfo(vscf_chunked_alg_info_t* c_ctx) noexcept;
+    ChunkedAlgInfo(const ChunkedAlgInfo& other);
+    ChunkedAlgInfo(ChunkedAlgInfo&& other) noexcept;
+    ChunkedAlgInfo& operator=(const ChunkedAlgInfo& other);
+    ChunkedAlgInfo& operator=(ChunkedAlgInfo&& other) noexcept;
+    ~ChunkedAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_chunked_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_chunked_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_chunked_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return chunk cipher alg info version.
-    std::size_t version() const {
-        auto proxy_result = vscf_chunked_alg_info_version(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t version() const;
 
     /// Return chunk size.
-    std::size_t chunk_size() const {
-        auto proxy_result = vscf_chunked_alg_info_chunk_size(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t chunk_size() const;
 
     /// Return the initial nonce.
-    std::vector<uint8_t> nonce() const {
-        auto proxy_result = vscf_chunked_alg_info_nonce(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> nonce() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_chunked_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_chunked_alg_info_t* c_ctx_;

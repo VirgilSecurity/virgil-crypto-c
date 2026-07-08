@@ -42,70 +42,47 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_salted_kdf_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_salted_kdf_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle KDF algorithms that are configured with salt and iteration count.
 class SaltedKdfAlgInfo : virtual public AlgInfo {
 public:
-    SaltedKdfAlgInfo() : c_ctx_(vscf_salted_kdf_alg_info_new()) {}
+    SaltedKdfAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit SaltedKdfAlgInfo(vscf_salted_kdf_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    SaltedKdfAlgInfo(const SaltedKdfAlgInfo& other) : c_ctx_(vscf_salted_kdf_alg_info_shallow_copy(other.c_ctx_)) {}
-    SaltedKdfAlgInfo(SaltedKdfAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    SaltedKdfAlgInfo& operator=(const SaltedKdfAlgInfo& other) {
-        if (this != &other) {
-            vscf_salted_kdf_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_salted_kdf_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    SaltedKdfAlgInfo& operator=(SaltedKdfAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_salted_kdf_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~SaltedKdfAlgInfo() { vscf_salted_kdf_alg_info_delete(c_ctx_); }
+    explicit SaltedKdfAlgInfo(vscf_salted_kdf_alg_info_t* c_ctx) noexcept;
+    SaltedKdfAlgInfo(const SaltedKdfAlgInfo& other);
+    SaltedKdfAlgInfo(SaltedKdfAlgInfo&& other) noexcept;
+    SaltedKdfAlgInfo& operator=(const SaltedKdfAlgInfo& other);
+    SaltedKdfAlgInfo& operator=(SaltedKdfAlgInfo&& other) noexcept;
+    ~SaltedKdfAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_salted_kdf_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_salted_kdf_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_salted_kdf_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return hash algorithm information.
-    std::unique_ptr<AlgInfo> hash_alg_info() const {
-        auto proxy_result = vscf_salted_kdf_alg_info_hash_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> hash_alg_info() const;
 
     /// Return KDF salt.
-    std::vector<uint8_t> salt() const {
-        auto proxy_result = vscf_salted_kdf_alg_info_salt(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> salt() const;
 
     /// Return KDF iteration count.
     /// Note, can be 0 if KDF does not need the iteration count.
-    std::size_t iteration_count() const {
-        auto proxy_result = vscf_salted_kdf_alg_info_iteration_count(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t iteration_count() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_salted_kdf_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_salted_kdf_alg_info_t* c_ctx_;

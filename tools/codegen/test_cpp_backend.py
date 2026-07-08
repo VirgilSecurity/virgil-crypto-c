@@ -115,51 +115,67 @@ class ClassGenerationTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.ir = _load_ir("foundation")
         cls.files = dict(generate_cpp_files(cls.ir, repo_root=str(REPO_ROOT)))
+        # header holds declarations; source holds the bodies (header+cpp split).
         cls.kp = cls.files["wrappers/cpp/include/virgil/crypto/foundation/key_provider.hpp"]
+        cls.kp_cpp = cls.files["wrappers/cpp/src/foundation/key_provider.cpp"]
 
     def test_raii_lifecycle_rule_of_five(self) -> None:
-        c = self.kp
-        self.assertIn("KeyProvider() : c_ctx_(vscf_key_provider_new())", c)
-        self.assertIn("explicit KeyProvider(vscf_key_provider_t* c_ctx) noexcept", c)
-        self.assertIn("KeyProvider(const KeyProvider& other)", c)  # copy via shallow_copy
-        self.assertIn("vscf_key_provider_shallow_copy(other.c_ctx_)", c)
-        self.assertIn("KeyProvider(KeyProvider&& other) noexcept", c)  # move
-        self.assertIn("~KeyProvider() { vscf_key_provider_delete(c_ctx_); }", c)
-        self.assertIn("vscf_key_provider_t* c_ctx() const noexcept", c)
-        self.assertIn("private:", c)
+        # Declarations in the header (C handle forward-declared, not included).
+        h = self.kp
+        self.assertIn("struct vscf_key_provider_t;", h)
+        self.assertIn("KeyProvider();", h)
+        self.assertIn("explicit KeyProvider(vscf_key_provider_t* c_ctx) noexcept;", h)
+        self.assertIn("KeyProvider(const KeyProvider& other);", h)
+        self.assertIn("KeyProvider(KeyProvider&& other) noexcept;", h)
+        self.assertIn("~KeyProvider();", h)
+        self.assertIn("vscf_key_provider_t* c_ctx() const noexcept;", h)
+        self.assertIn("private:", h)
+        # Definitions in the source.
+        s = self.kp_cpp
+        self.assertIn("KeyProvider::KeyProvider() : c_ctx_(vscf_key_provider_new()) {}", s)
+        self.assertIn("vscf_key_provider_shallow_copy(other.c_ctx_)", s)
+        self.assertIn("KeyProvider::~KeyProvider() { vscf_key_provider_delete(c_ctx_); }", s)
 
     def test_status_methods_return_expected(self) -> None:
-        self.assertIn("tl::expected<void, Error> setup_defaults()", self.kp)
-        # Interface returns are wrapped as unique_ptr via the dispatch (Unit 3).
+        # Signatures in the header; the wrap-body in the source.
+        self.assertIn("tl::expected<void, Error> setup_defaults();", self.kp)
         self.assertIn(
             "tl::expected<std::unique_ptr<PrivateKey>, Error> generate_private_key(AlgId alg_id)",
             self.kp,
         )
-        self.assertIn("return FoundationImplementation::wrap_private_key(proxy_result);", self.kp)
+        self.assertIn("return FoundationImplementation::wrap_private_key(proxy_result);", self.kp_cpp)
 
     def test_error_branch_uses_unexpected(self) -> None:
-        self.assertIn("return tl::unexpected(static_cast<Error>(status));", self.kp)
+        self.assertIn("return tl::unexpected(static_cast<Error>(status));", self.kp_cpp)
 
     def test_enum_arg_cast_to_c_enum(self) -> None:
-        self.assertIn("static_cast<vscf_alg_id_t>(alg_id)", self.kp)
+        self.assertIn("static_cast<vscf_alg_id_t>(alg_id)", self.kp_cpp)
 
     def test_dependency_setter(self) -> None:
-        self.assertIn("void set_random(const Random& random)", self.kp)
-        self.assertIn("vscf_key_provider_release_random(c_ctx_);", self.kp)
+        self.assertIn("void set_random(const Random& random);", self.kp)   # decl
+        self.assertIn("vscf_key_provider_release_random(c_ctx_);", self.kp_cpp)
         # Interface args are passed via impl() (the polymorphic handle), not c_ctx().
-        self.assertIn("vscf_key_provider_use_random(c_ctx_, random.impl());", self.kp)
+        self.assertIn("vscf_key_provider_use_random(c_ctx_, random.impl());", self.kp_cpp)
+
+    def test_header_does_not_include_c_library(self) -> None:
+        # The lean public header forward-declares the C handle instead of pulling
+        # the C library header (the whole point of the header+cpp split).
+        self.assertNotIn("vscf_key_provider.h", self.kp)
+        self.assertIn("vscf_key_provider.h", self.kp_cpp)
 
     def test_no_value_call_anywhere(self) -> None:
         # -fno-exceptions invariant: never call expected::value() on an error path.
         for path, content in self.files.items():
             self.assertNotIn(".value()", content, path)
 
-    def test_buffer_output_maps_to_vector(self) -> None:
-        # At least one generated class must exercise the buffer->vector pattern.
-        joined = "\n".join(self.files.values())
-        self.assertIn("vsc_buffer_use(", joined)
-        self.assertIn(".resize(vsc_buffer_len(", joined)
-        self.assertIn("vsc_buffer_delete(", joined)
+    def test_buffer_output_uses_stack_buffer(self) -> None:
+        # Output buffers are stack-allocated (init/use/cleanup), not heap (new/delete).
+        joined = "\n".join(v for k, v in self.files.items() if k.endswith(".cpp"))
+        self.assertIn("vsc_buffer_t ", joined)       # value, not pointer
+        self.assertIn("vsc_buffer_init(&", joined)
+        self.assertIn("vsc_buffer_use(&", joined)
+        self.assertIn(".resize(vsc_buffer_len(&", joined)
+        self.assertIn("vsc_buffer_cleanup(&", joined)
 
     def test_static_class_has_no_handle(self) -> None:
         # A context="none" class (e.g. base64) is emitted with static methods and
@@ -189,6 +205,9 @@ class InterfaceAndImplementationTests(unittest.TestCase):
     def _f(self, name: str) -> str:
         return self.files[f"wrappers/cpp/include/virgil/crypto/foundation/{name}"]
 
+    def _c(self, name: str) -> str:
+        return self.files[f"wrappers/cpp/src/foundation/{name}"]
+
     def test_context_base(self) -> None:
         c = self._f("context.hpp")
         self.assertIn("class Context {", c)
@@ -207,21 +226,21 @@ class InterfaceAndImplementationTests(unittest.TestCase):
         self.assertRegex(c, r"class AuthEncrypt : virtual public Context(, virtual public \w+)+ \{")
 
     def test_implementation_inherits_and_overrides(self) -> None:
-        c = self._f("sha256.hpp")
-        self.assertIn("class Sha256 : virtual public Alg, virtual public Hash {", c)
-        self.assertIn("vscf_impl_t* impl() const noexcept override { return vscf_sha256_impl(c_ctx_); }", c)
-        self.assertIn("std::vector<uint8_t> hash(std::span<const uint8_t> data) override {", c)
-        self.assertIn("vscf_sha256_hash(", c)  # calls its own C func, not vscf_hash_*
+        h = self._f("sha256.hpp")
+        s = self._c("sha256.cpp")
+        self.assertIn("class Sha256 : virtual public Alg, virtual public Hash {", h)
+        self.assertIn("vscf_impl_t* impl() const noexcept override;", h)  # decl
+        self.assertIn("vscf_impl_t* Sha256::impl() const noexcept { return vscf_sha256_impl(c_ctx_); }", s)
+        self.assertIn("std::vector<uint8_t> hash(std::span<const uint8_t> data) override;", h)  # decl
+        self.assertIn("vscf_sha256_hash(", s)  # calls its own C func, not vscf_hash_*
 
     def test_interface_return_wrapped_as_unique_ptr(self) -> None:
-        c = self._f("sha256.hpp")
-        self.assertIn("std::unique_ptr<AlgInfo> produce_alg_info() const override {", c)
-        self.assertIn("return FoundationImplementation::wrap_alg_info(proxy_result);", c)
+        self.assertIn("std::unique_ptr<AlgInfo> produce_alg_info() const override;", self._f("sha256.hpp"))
+        self.assertIn("return FoundationImplementation::wrap_alg_info(proxy_result);", self._c("sha256.cpp"))
 
     def test_interface_arg_uses_impl(self) -> None:
-        c = self._f("sha256.hpp")
-        self.assertIn("restore_alg_info(const AlgInfo& alg_info)", c)
-        self.assertIn("vscf_sha256_restore_alg_info(c_ctx_, alg_info.impl());", c)
+        self.assertIn("restore_alg_info(const AlgInfo& alg_info)", self._f("sha256.hpp"))
+        self.assertIn("vscf_sha256_restore_alg_info(c_ctx_, alg_info.impl());", self._c("sha256.cpp"))
 
     def test_dispatch_header_declares_wrap(self) -> None:
         c = self._f("foundation_implementation.hpp")
@@ -252,33 +271,34 @@ class OwnershipAndConventionTests(unittest.TestCase):
     def _f(self, name: str) -> str:
         return self.files[f"wrappers/cpp/include/virgil/crypto/foundation/{name}"]
 
+    def _c(self, name: str) -> str:
+        return self.files[f"wrappers/cpp/src/foundation/{name}"]
+
     def test_borrowed_interface_return_is_shallow_copied(self) -> None:
         # access="readonly" -> C returns `const vscf_impl_t*` (borrowed); the RAII
         # wrapper must shallow-copy so it does not double-free the callee's object.
-        c = self._f("raw_public_key.hpp")
         self.assertIn(
             "wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)))",
-            c,
+            self._c("raw_public_key.cpp"),
         )
 
     def test_owned_interface_return_is_adopted_directly(self) -> None:
         # access="disown" -> owned; adopt the returned impl without copying.
-        c = self._f("sha256.hpp")
+        c = self._c("sha256.cpp")
         self.assertIn("wrap_alg_info(proxy_result);", c)
         self.assertNotIn("wrap_alg_info(vscf_impl_shallow_copy", c)
 
     def test_borrowed_class_return_is_shallow_copied(self) -> None:
-        c = self._f("raw_private_key.hpp")
         self.assertIn(
             "RawPublicKey(vscf_raw_public_key_shallow_copy("
             "const_cast<vscf_raw_public_key_t*>(proxy_result)))",
-            c,
+            self._c("raw_private_key.cpp"),
         )
 
     def test_disown_object_argument_transfers_via_shallow_copied_ref(self) -> None:
         # C sig: set_public_key(self, vscf_raw_public_key_t **). Hand it a copy so the
         # caller keeps ownership; the callee adopts + nulls the temp.
-        c = self._f("raw_private_key.hpp")
+        c = self._c("raw_private_key.cpp")
         self.assertIn(
             "vscf_raw_public_key_t* raw_public_key_ref = "
             "vscf_raw_public_key_shallow_copy(raw_public_key.c_ctx());",
@@ -289,7 +309,7 @@ class OwnershipAndConventionTests(unittest.TestCase):
     def test_class_typed_dependency_uses_c_ctx_not_impl(self) -> None:
         # use_ecies takes vscf_ecies_t* (Ecies is a plain class, no impl()); use_random
         # takes vscf_impl_t* (Random is an interface).
-        c = self._f("curve25519.hpp")
+        c = self._c("curve25519.cpp")
         self.assertIn("vscf_curve25519_use_ecies(c_ctx_, ecies.c_ctx());", c)
         self.assertIn("vscf_curve25519_use_random(c_ctx_, random.impl());", c)
 
@@ -312,29 +332,27 @@ class OwnershipAndConventionTests(unittest.TestCase):
         self.assertIn("std::size_t signature_len(", c)
 
     def test_string_argument_is_string_view_passed_as_c_str(self) -> None:
-        c = self._f("pem.hpp")
-        # Parameter is a non-owning std::string_view; a std::string is materialised
-        # for the null-terminated C const char*.
-        self.assertIn("std::string_view title", c)
-        self.assertIn("vscf_pem_wrapped_len(std::string(title).c_str(), data_len);", c)
+        # Parameter (decl) is a non-owning std::string_view; the body materialises a
+        # std::string for the null-terminated C const char*.
+        self.assertIn("std::string_view title", self._f("pem.hpp"))
+        self.assertIn("vscf_pem_wrapped_len(std::string(title).c_str(), data_len);", self._c("pem.cpp"))
 
     def test_status_returning_dependency_setter_returns_expected(self) -> None:
         # vscf_ctr_drbg_use_entropy_source returns vscf_status_t (VSCF_NODISCARD);
         # its setter must surface the failure, not drop it.
-        c = self._f("ctr_drbg.hpp")
-        self.assertIn("tl::expected<void, Error> set_entropy_source(const EntropySource& entropy_source)", c)
-        self.assertIn("const vscf_status_t status = vscf_ctr_drbg_use_entropy_source(", c)
+        self.assertIn("tl::expected<void, Error> set_entropy_source(const EntropySource& entropy_source);",
+                      self._f("ctr_drbg.hpp"))
+        self.assertIn("const vscf_status_t status = vscf_ctr_drbg_use_entropy_source(", self._c("ctr_drbg.cpp"))
         # a plain (void-returning) use_ setter stays void
-        self.assertIn("void set_hash(const Hash& hash)", self._f("hkdf.hpp"))
+        self.assertIn("void set_hash(const Hash& hash);", self._f("hkdf.hpp"))
 
     def test_is_const_methods_are_const_qualified(self) -> None:
         # Class method, interface override, and interface pure-virtual decl all pick
-        # up C++ `const` from the IR is_const flag; static methods never do.
+        # up C++ `const` from the IR is_const flag (declarations); static methods never.
         rpk = self._f("raw_private_key.hpp")
-        self.assertIn("RawPublicKey get_public_key() const {", rpk)   # class method
-        self.assertIn("AlgId alg_id() const override {", rpk)         # interface override
-        key = self._f("key.hpp")
-        self.assertIn("virtual AlgId alg_id() const = 0;", key)       # interface decl
+        self.assertIn("RawPublicKey get_public_key() const;", rpk)     # class method decl
+        self.assertIn("AlgId alg_id() const override;", rpk)           # interface override decl
+        self.assertIn("virtual AlgId alg_id() const = 0;", self._f("key.hpp"))  # interface decl
         # a mutating method stays non-const
         self.assertNotIn("setup_defaults() const", self._f("key_provider.hpp"))
 
@@ -376,16 +394,18 @@ class CrossProjectTests(unittest.TestCase):
 
     def test_buffer_return_copies_out_and_frees(self) -> None:
         # vscr_ratchet_session_serialize returns an owned vsc_buffer_t*.
-        c = self.ratchet["wrappers/cpp/include/virgil/crypto/ratchet/ratchet_session.hpp"]
-        self.assertIn("std::vector<uint8_t> serialize()", c)
-        self.assertIn("vsc_buffer_bytes(proxy_result)", c)
-        self.assertIn("vsc_buffer_delete(proxy_result);", c)
+        self.assertIn("std::vector<uint8_t> serialize()",
+                      self.ratchet["wrappers/cpp/include/virgil/crypto/ratchet/ratchet_session.hpp"])
+        s = self.ratchet["wrappers/cpp/src/ratchet/ratchet_session.cpp"]
+        self.assertIn("vsc_buffer_bytes(proxy_result)", s)
+        self.assertIn("vsc_buffer_delete(proxy_result);", s)
 
     def test_length_owner_class_header_included(self) -> None:
-        # phe_client buffers size against PheCommon::PHE_*_LENGTH constants.
-        c = self.phe["wrappers/cpp/include/virgil/crypto/phe/phe_client.hpp"]
-        self.assertIn("#include <virgil/crypto/phe/phe_common.hpp>", c)
-        self.assertIn("PheCommon::PHE_PRIVATE_KEY_LENGTH", c)
+        # phe_client buffers size against PheCommon::PHE_*_LENGTH constants; the
+        # capacity expression (and so the include) lives in the .cpp body.
+        s = self.phe["wrappers/cpp/src/phe/phe_client.cpp"]
+        self.assertIn("#include <virgil/crypto/phe/phe_common.hpp>", s)
+        self.assertIn("PheCommon::PHE_PRIVATE_KEY_LENGTH", s)
 
 
 class GeneratedTreeParityTests(unittest.TestCase):
@@ -393,7 +413,7 @@ class GeneratedTreeParityTests(unittest.TestCase):
     regeneration (no drift), and the per-project file counts must be stable."""
 
     # Update deliberately if the surface changes; a mismatch flags accidental drift.
-    EXPECTED_FILE_COUNTS = {"foundation": 133, "phe": 8, "ratchet": 6}
+    EXPECTED_FILE_COUNTS = {"foundation": 223, "phe": 15, "ratchet": 9}
 
     @classmethod
     def setUpClass(cls) -> None:

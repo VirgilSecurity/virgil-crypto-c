@@ -42,8 +42,6 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_aes256_cbc.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg.hpp>
 #include <virgil/crypto/foundation/encrypt.hpp>
@@ -51,43 +49,33 @@
 #include <virgil/crypto/foundation/cipher_info.hpp>
 #include <virgil/crypto/foundation/cipher.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_aes256_cbc_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Implementation of the symmetric cipher AES-256 bit in a CBC mode.
 /// Note, this implementation contains dynamic memory allocations,
 /// this should be improved in the future releases.
 class Aes256Cbc : virtual public Alg, virtual public Encrypt, virtual public Decrypt, virtual public CipherInfo, virtual public Cipher {
 public:
-    Aes256Cbc() : c_ctx_(vscf_aes256_cbc_new()) {}
+    Aes256Cbc();
     /// Adopt ownership of an existing C handle.
-    explicit Aes256Cbc(vscf_aes256_cbc_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Aes256Cbc(const Aes256Cbc& other) : c_ctx_(vscf_aes256_cbc_shallow_copy(other.c_ctx_)) {}
-    Aes256Cbc(Aes256Cbc&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Aes256Cbc& operator=(const Aes256Cbc& other) {
-        if (this != &other) {
-            vscf_aes256_cbc_delete(c_ctx_);
-            c_ctx_ = vscf_aes256_cbc_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Aes256Cbc& operator=(Aes256Cbc&& other) noexcept {
-        if (this != &other) {
-            vscf_aes256_cbc_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Aes256Cbc() { vscf_aes256_cbc_delete(c_ctx_); }
+    explicit Aes256Cbc(vscf_aes256_cbc_t* c_ctx) noexcept;
+    Aes256Cbc(const Aes256Cbc& other);
+    Aes256Cbc(Aes256Cbc&& other) noexcept;
+    Aes256Cbc& operator=(const Aes256Cbc& other);
+    Aes256Cbc& operator=(Aes256Cbc&& other) noexcept;
+    ~Aes256Cbc();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_aes256_cbc_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_aes256_cbc_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_aes256_cbc_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     static constexpr std::size_t NONCE_LEN = 16;
 
@@ -98,140 +86,61 @@ public:
     static constexpr std::size_t BLOCK_LEN = 16;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_aes256_cbc_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() const override {
-        auto proxy_result = vscf_aes256_cbc_produce_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    std::unique_ptr<AlgInfo> produce_alg_info() const override;
 
     /// Restore algorithm configuration from the given object.
-    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override {
-        const vscf_status_t status = vscf_aes256_cbc_restore_alg_info(c_ctx_, alg_info.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override;
 
     /// Encrypt given data.
-    tl::expected<std::vector<uint8_t>, Error> encrypt(std::span<const uint8_t> data) override {
-        std::vector<uint8_t> out(this->encrypted_len(data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_aes256_cbc_encrypt(c_ctx_, vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> encrypt(std::span<const uint8_t> data) override;
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes256_cbc_encrypted_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t encrypted_len(std::size_t data_len) const override;
 
     /// Precise length calculation of encrypted data.
-    std::size_t precise_encrypted_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes256_cbc_precise_encrypted_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t precise_encrypted_len(std::size_t data_len) const override;
 
     /// Decrypt given data.
-    tl::expected<std::vector<uint8_t>, Error> decrypt(std::span<const uint8_t> data) override {
-        std::vector<uint8_t> out(this->decrypted_len(data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_aes256_cbc_decrypt(c_ctx_, vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> decrypt(std::span<const uint8_t> data) override;
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes256_cbc_decrypted_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t decrypted_len(std::size_t data_len) const override;
 
     /// Setup IV or nonce.
-    void set_nonce(std::span<const uint8_t> nonce) override {
-        vscf_aes256_cbc_set_nonce(c_ctx_, vsc_data(nonce.data(), nonce.size()));
-    }
+    void set_nonce(std::span<const uint8_t> nonce) override;
 
     /// Set cipher encryption / decryption key.
-    void set_key(std::span<const uint8_t> key) override {
-        vscf_aes256_cbc_set_key(c_ctx_, vsc_data(key.data(), key.size()));
-    }
+    void set_key(std::span<const uint8_t> key) override;
 
     /// Start sequential encryption.
-    void start_encryption() override {
-        vscf_aes256_cbc_start_encryption(c_ctx_);
-    }
+    void start_encryption() override;
 
     /// Start sequential decryption.
-    void start_decryption() override {
-        vscf_aes256_cbc_start_decryption(c_ctx_);
-    }
+    void start_decryption() override;
 
     /// Process encryption or decryption of the given data chunk.
-    std::vector<uint8_t> update(std::span<const uint8_t> data) override {
-        std::vector<uint8_t> out(this->out_len(data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        vscf_aes256_cbc_update(c_ctx_, vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        return out;
-    }
+    std::vector<uint8_t> update(std::span<const uint8_t> data) override;
 
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an current mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t out_len(std::size_t data_len) override {
-        auto proxy_result = vscf_aes256_cbc_out_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t out_len(std::size_t data_len) override;
 
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an encryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t encrypted_out_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes256_cbc_encrypted_out_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t encrypted_out_len(std::size_t data_len) const override;
 
     /// Return buffer length required to hold an output of the methods
     /// "update" or "finish" in an decryption mode.
     /// Pass zero length to define buffer length of the method "finish".
-    std::size_t decrypted_out_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes256_cbc_decrypted_out_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t decrypted_out_len(std::size_t data_len) const override;
 
     /// Accomplish encryption or decryption process.
-    tl::expected<std::vector<uint8_t>, Error> finish() override {
-        std::vector<uint8_t> out(this->out_len(0));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_aes256_cbc_finish(c_ctx_, out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> finish() override;
 
 private:
     vscf_aes256_cbc_t* c_ctx_;

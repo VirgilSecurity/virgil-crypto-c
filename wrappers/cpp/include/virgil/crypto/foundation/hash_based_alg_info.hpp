@@ -42,57 +42,40 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_hash_based_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_hash_based_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
 class HashBasedAlgInfo : virtual public AlgInfo {
 public:
-    HashBasedAlgInfo() : c_ctx_(vscf_hash_based_alg_info_new()) {}
+    HashBasedAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit HashBasedAlgInfo(vscf_hash_based_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    HashBasedAlgInfo(const HashBasedAlgInfo& other) : c_ctx_(vscf_hash_based_alg_info_shallow_copy(other.c_ctx_)) {}
-    HashBasedAlgInfo(HashBasedAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    HashBasedAlgInfo& operator=(const HashBasedAlgInfo& other) {
-        if (this != &other) {
-            vscf_hash_based_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_hash_based_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    HashBasedAlgInfo& operator=(HashBasedAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_hash_based_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~HashBasedAlgInfo() { vscf_hash_based_alg_info_delete(c_ctx_); }
+    explicit HashBasedAlgInfo(vscf_hash_based_alg_info_t* c_ctx) noexcept;
+    HashBasedAlgInfo(const HashBasedAlgInfo& other);
+    HashBasedAlgInfo(HashBasedAlgInfo&& other) noexcept;
+    HashBasedAlgInfo& operator=(const HashBasedAlgInfo& other);
+    HashBasedAlgInfo& operator=(HashBasedAlgInfo&& other) noexcept;
+    ~HashBasedAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_hash_based_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_hash_based_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_hash_based_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return hash algorithm information.
-    std::unique_ptr<AlgInfo> hash_alg_info() const {
-        auto proxy_result = vscf_hash_based_alg_info_hash_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> hash_alg_info() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_hash_based_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_hash_based_alg_info_t* c_ctx_;

@@ -42,223 +42,124 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_asn1rd.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/asn1_reader.hpp>
+
+struct vscf_asn1rd_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
 /// This is MbedTLS implementation of ASN.1 reader.
 class Asn1rd : virtual public Asn1Reader {
 public:
-    Asn1rd() : c_ctx_(vscf_asn1rd_new()) {}
+    Asn1rd();
     /// Adopt ownership of an existing C handle.
-    explicit Asn1rd(vscf_asn1rd_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Asn1rd(const Asn1rd& other) : c_ctx_(vscf_asn1rd_shallow_copy(other.c_ctx_)) {}
-    Asn1rd(Asn1rd&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Asn1rd& operator=(const Asn1rd& other) {
-        if (this != &other) {
-            vscf_asn1rd_delete(c_ctx_);
-            c_ctx_ = vscf_asn1rd_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Asn1rd& operator=(Asn1rd&& other) noexcept {
-        if (this != &other) {
-            vscf_asn1rd_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Asn1rd() { vscf_asn1rd_delete(c_ctx_); }
+    explicit Asn1rd(vscf_asn1rd_t* c_ctx) noexcept;
+    Asn1rd(const Asn1rd& other);
+    Asn1rd(Asn1rd&& other) noexcept;
+    Asn1rd& operator=(const Asn1rd& other);
+    Asn1rd& operator=(Asn1rd&& other) noexcept;
+    ~Asn1rd();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_asn1rd_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_asn1rd_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_asn1rd_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Reset all internal states and prepare to new ASN.1 reading operations.
-    void reset(std::span<const uint8_t> data) override {
-        vscf_asn1rd_reset(c_ctx_, vsc_data(data.data(), data.size()));
-    }
+    void reset(std::span<const uint8_t> data) override;
 
     /// Return length in bytes how many bytes are left for reading.
-    std::size_t left_len() override {
-        auto proxy_result = vscf_asn1rd_left_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t left_len() override;
 
     /// Return true if status is not "success".
-    bool has_error() const override {
-        auto proxy_result = vscf_asn1rd_has_error(c_ctx_);
-        return proxy_result;
-    }
+    bool has_error() const override;
 
     /// Return error code.
-    tl::expected<void, Error> status() const override {
-        const vscf_status_t status = vscf_asn1rd_status(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> status() const override;
 
     /// Get tag of the current ASN.1 element.
-    int32_t get_tag() override {
-        auto proxy_result = vscf_asn1rd_get_tag(c_ctx_);
-        return proxy_result;
-    }
+    int32_t get_tag() override;
 
     /// Get length of the current ASN.1 element.
-    std::size_t get_len() override {
-        auto proxy_result = vscf_asn1rd_get_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t get_len() override;
 
     /// Get length of the current ASN.1 element with tag and length itself.
-    std::size_t get_data_len() override {
-        auto proxy_result = vscf_asn1rd_get_data_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t get_data_len() override;
 
     /// Read ASN.1 type: TAG.
     /// Return element length.
-    std::size_t read_tag(int32_t tag) override {
-        auto proxy_result = vscf_asn1rd_read_tag(c_ctx_, tag);
-        return proxy_result;
-    }
+    std::size_t read_tag(int32_t tag) override;
 
     /// Read ASN.1 type: context-specific TAG.
     /// Return element length.
     /// Return 0 if current position do not points to the requested tag.
-    std::size_t read_context_tag(int32_t tag) override {
-        auto proxy_result = vscf_asn1rd_read_context_tag(c_ctx_, tag);
-        return proxy_result;
-    }
+    std::size_t read_context_tag(int32_t tag) override;
 
     /// Read ASN.1 type: INTEGER.
-    int32_t read_int() override {
-        auto proxy_result = vscf_asn1rd_read_int(c_ctx_);
-        return proxy_result;
-    }
+    int32_t read_int() override;
 
     /// Read ASN.1 type: INTEGER.
-    int8_t read_int8() override {
-        auto proxy_result = vscf_asn1rd_read_int8(c_ctx_);
-        return proxy_result;
-    }
+    int8_t read_int8() override;
 
     /// Read ASN.1 type: INTEGER.
-    int16_t read_int16() override {
-        auto proxy_result = vscf_asn1rd_read_int16(c_ctx_);
-        return proxy_result;
-    }
+    int16_t read_int16() override;
 
     /// Read ASN.1 type: INTEGER.
-    int32_t read_int32() override {
-        auto proxy_result = vscf_asn1rd_read_int32(c_ctx_);
-        return proxy_result;
-    }
+    int32_t read_int32() override;
 
     /// Read ASN.1 type: INTEGER.
-    int64_t read_int64() override {
-        auto proxy_result = vscf_asn1rd_read_int64(c_ctx_);
-        return proxy_result;
-    }
+    int64_t read_int64() override;
 
     /// Read ASN.1 type: INTEGER.
-    uint32_t read_uint() override {
-        auto proxy_result = vscf_asn1rd_read_uint(c_ctx_);
-        return proxy_result;
-    }
+    uint32_t read_uint() override;
 
     /// Read ASN.1 type: INTEGER.
-    uint8_t read_uint8() override {
-        auto proxy_result = vscf_asn1rd_read_uint8(c_ctx_);
-        return proxy_result;
-    }
+    uint8_t read_uint8() override;
 
     /// Read ASN.1 type: INTEGER.
-    uint16_t read_uint16() override {
-        auto proxy_result = vscf_asn1rd_read_uint16(c_ctx_);
-        return proxy_result;
-    }
+    uint16_t read_uint16() override;
 
     /// Read ASN.1 type: INTEGER.
-    uint32_t read_uint32() override {
-        auto proxy_result = vscf_asn1rd_read_uint32(c_ctx_);
-        return proxy_result;
-    }
+    uint32_t read_uint32() override;
 
     /// Read ASN.1 type: INTEGER.
-    uint64_t read_uint64() override {
-        auto proxy_result = vscf_asn1rd_read_uint64(c_ctx_);
-        return proxy_result;
-    }
+    uint64_t read_uint64() override;
 
     /// Read ASN.1 type: BOOLEAN.
-    bool read_bool() override {
-        auto proxy_result = vscf_asn1rd_read_bool(c_ctx_);
-        return proxy_result;
-    }
+    bool read_bool() override;
 
     /// Read ASN.1 type: NULL.
-    void read_null() override {
-        vscf_asn1rd_read_null(c_ctx_);
-    }
+    void read_null() override;
 
     /// Read ASN.1 type: NULL, only if it exists.
     /// Note, this method is safe to call even no more data is left for reading.
-    void read_null_optional() override {
-        vscf_asn1rd_read_null_optional(c_ctx_);
-    }
+    void read_null_optional() override;
 
     /// Read ASN.1 type: OCTET STRING.
-    std::vector<uint8_t> read_octet_str() override {
-        auto proxy_result = vscf_asn1rd_read_octet_str(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> read_octet_str() override;
 
     /// Read ASN.1 type: BIT STRING.
-    std::vector<uint8_t> read_bitstring_as_octet_str() override {
-        auto proxy_result = vscf_asn1rd_read_bitstring_as_octet_str(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> read_bitstring_as_octet_str() override;
 
     /// Read ASN.1 type: UTF8String.
-    std::vector<uint8_t> read_utf8_str() override {
-        auto proxy_result = vscf_asn1rd_read_utf8_str(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> read_utf8_str() override;
 
     /// Read ASN.1 type: OID.
-    std::vector<uint8_t> read_oid() override {
-        auto proxy_result = vscf_asn1rd_read_oid(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> read_oid() override;
 
     /// Read raw data of given length.
-    std::vector<uint8_t> read_data(std::size_t len) override {
-        auto proxy_result = vscf_asn1rd_read_data(c_ctx_, len);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> read_data(std::size_t len) override;
 
     /// Read ASN.1 type: SEQUENCE.
     /// Return element length.
-    std::size_t read_sequence() override {
-        auto proxy_result = vscf_asn1rd_read_sequence(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t read_sequence() override;
 
     /// Read ASN.1 type: SET.
     /// Return element length.
-    std::size_t read_set() override {
-        auto proxy_result = vscf_asn1rd_read_set(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t read_set() override;
 
 private:
     vscf_asn1rd_t* c_ctx_;

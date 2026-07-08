@@ -41,157 +41,94 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_key_info.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
+
+struct vscf_key_info_t;
 
 namespace virgil::crypto::foundation {
 
 class KeyInfo {
 public:
-    KeyInfo() : c_ctx_(vscf_key_info_new()) {}
+    KeyInfo();
     /// Adopt ownership of an existing C handle.
-    explicit KeyInfo(vscf_key_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    KeyInfo(const KeyInfo& other) : c_ctx_(vscf_key_info_shallow_copy(other.c_ctx_)) {}
-    KeyInfo(KeyInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    KeyInfo& operator=(const KeyInfo& other) {
-        if (this != &other) {
-            vscf_key_info_delete(c_ctx_);
-            c_ctx_ = vscf_key_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    KeyInfo& operator=(KeyInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_key_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~KeyInfo() { vscf_key_info_delete(c_ctx_); }
+    explicit KeyInfo(vscf_key_info_t* c_ctx) noexcept;
+    KeyInfo(const KeyInfo& other);
+    KeyInfo(KeyInfo&& other) noexcept;
+    KeyInfo& operator=(const KeyInfo& other);
+    KeyInfo& operator=(KeyInfo&& other) noexcept;
+    ~KeyInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_key_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_key_info_t* c_ctx() const noexcept;
 
     /// Return true if a key is a compound key
-    bool is_compound() const {
-        auto proxy_result = vscf_key_info_is_compound(c_ctx_);
-        return proxy_result;
-    }
+    bool is_compound() const;
 
     /// Return true if a key is a hybrid key
-    bool is_hybrid() const {
-        auto proxy_result = vscf_key_info_is_hybrid(c_ctx_);
-        return proxy_result;
-    }
+    bool is_hybrid() const;
 
     /// Return true if a key is a compound key and compounds cipher key
     /// and signer key are hybrid keys.
-    bool is_compound_hybrid() const {
-        auto proxy_result = vscf_key_info_is_compound_hybrid(c_ctx_);
-        return proxy_result;
-    }
+    bool is_compound_hybrid() const;
 
     /// Return true if a key is a compound key and compounds cipher key
     /// is a hybrid key.
-    bool is_compound_hybrid_cipher() const {
-        auto proxy_result = vscf_key_info_is_compound_hybrid_cipher(c_ctx_);
-        return proxy_result;
-    }
+    bool is_compound_hybrid_cipher() const;
 
     /// Return true if a key is a compound key and compounds signer key
     /// is a hybrid key.
-    bool is_compound_hybrid_signer() const {
-        auto proxy_result = vscf_key_info_is_compound_hybrid_signer(c_ctx_);
-        return proxy_result;
-    }
+    bool is_compound_hybrid_signer() const;
 
     /// Return true if a key is a compound key that contains hybrid keys
     /// for encryption/decryption and signing/verifying that itself
     /// contains a combination of classic keys and post-quantum keys.
-    bool is_hybrid_post_quantum() const {
-        auto proxy_result = vscf_key_info_is_hybrid_post_quantum(c_ctx_);
-        return proxy_result;
-    }
+    bool is_hybrid_post_quantum() const;
 
     /// Return true if a key is a compound key that contains a hybrid key
     /// for encryption/decryption that contains a classic key and
     /// a post-quantum key.
-    bool is_hybrid_post_quantum_cipher() const {
-        auto proxy_result = vscf_key_info_is_hybrid_post_quantum_cipher(c_ctx_);
-        return proxy_result;
-    }
+    bool is_hybrid_post_quantum_cipher() const;
 
     /// Return true if a key is a compound key that contains a hybrid key
     /// for signing/verifying that contains a classic key and
     /// a post-quantum key.
-    bool is_hybrid_post_quantum_signer() const {
-        auto proxy_result = vscf_key_info_is_hybrid_post_quantum_signer(c_ctx_);
-        return proxy_result;
-    }
+    bool is_hybrid_post_quantum_signer() const;
 
     /// Return common type of the key.
-    AlgId alg_id() const {
-        auto proxy_result = vscf_key_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const;
 
     /// Return compound's cipher key id, if key is compound.
     /// Return None, otherwise.
-    AlgId compound_cipher_alg_id() const {
-        auto proxy_result = vscf_key_info_compound_cipher_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId compound_cipher_alg_id() const;
 
     /// Return compound's signer key id, if key is compound.
     /// Return None, otherwise.
-    AlgId compound_signer_alg_id() const {
-        auto proxy_result = vscf_key_info_compound_signer_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId compound_signer_alg_id() const;
 
     /// Return hybrid's first key id, if key is hybrid.
     /// Return None, otherwise.
-    AlgId hybrid_first_key_alg_id() const {
-        auto proxy_result = vscf_key_info_hybrid_first_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId hybrid_first_key_alg_id() const;
 
     /// Return hybrid's second key id, if key is hybrid.
     /// Return None, otherwise.
-    AlgId hybrid_second_key_alg_id() const {
-        auto proxy_result = vscf_key_info_hybrid_second_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId hybrid_second_key_alg_id() const;
 
     /// Return hybrid's first key id of compound's cipher key,
     /// if key is compound(hybrid, ...), None - otherwise.
-    AlgId compound_hybrid_cipher_first_key_alg_id() const {
-        auto proxy_result = vscf_key_info_compound_hybrid_cipher_first_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId compound_hybrid_cipher_first_key_alg_id() const;
 
     /// Return hybrid's second key id of compound's cipher key,
     /// if key is compound(hybrid, ...), None - otherwise.
-    AlgId compound_hybrid_cipher_second_key_alg_id() const {
-        auto proxy_result = vscf_key_info_compound_hybrid_cipher_second_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId compound_hybrid_cipher_second_key_alg_id() const;
 
     /// Return hybrid's first key id of compound's signer key,
     /// if key is compound(..., hybrid), None - otherwise.
-    AlgId compound_hybrid_signer_first_key_alg_id() const {
-        auto proxy_result = vscf_key_info_compound_hybrid_signer_first_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId compound_hybrid_signer_first_key_alg_id() const;
 
     /// Return hybrid's second key id of compound's signer key,
     /// if key is compound(..., hybrid), None - otherwise.
-    AlgId compound_hybrid_signer_second_key_alg_id() const {
-        auto proxy_result = vscf_key_info_compound_hybrid_signer_second_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId compound_hybrid_signer_second_key_alg_id() const;
 
 private:
     vscf_key_info_t* c_ctx_;

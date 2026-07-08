@@ -41,80 +41,49 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_signer_info_list.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/signer_info.hpp>
+
+struct vscf_signer_info_list_t;
 
 namespace virgil::crypto::foundation {
+
+class SignerInfo;
 
 /// Handles a list of "signer info" class objects.
 class SignerInfoList {
 public:
-    SignerInfoList() : c_ctx_(vscf_signer_info_list_new()) {}
+    SignerInfoList();
     /// Adopt ownership of an existing C handle.
-    explicit SignerInfoList(vscf_signer_info_list_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    SignerInfoList(const SignerInfoList& other) : c_ctx_(vscf_signer_info_list_shallow_copy(other.c_ctx_)) {}
-    SignerInfoList(SignerInfoList&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    SignerInfoList& operator=(const SignerInfoList& other) {
-        if (this != &other) {
-            vscf_signer_info_list_delete(c_ctx_);
-            c_ctx_ = vscf_signer_info_list_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    SignerInfoList& operator=(SignerInfoList&& other) noexcept {
-        if (this != &other) {
-            vscf_signer_info_list_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~SignerInfoList() { vscf_signer_info_list_delete(c_ctx_); }
+    explicit SignerInfoList(vscf_signer_info_list_t* c_ctx) noexcept;
+    SignerInfoList(const SignerInfoList& other);
+    SignerInfoList(SignerInfoList&& other) noexcept;
+    SignerInfoList& operator=(const SignerInfoList& other);
+    SignerInfoList& operator=(SignerInfoList&& other) noexcept;
+    ~SignerInfoList();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_signer_info_list_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_signer_info_list_t* c_ctx() const noexcept;
 
     /// Return true if given list has item.
-    bool has_item() const {
-        auto proxy_result = vscf_signer_info_list_has_item(c_ctx_);
-        return proxy_result;
-    }
+    bool has_item() const;
 
     /// Return list item.
-    SignerInfo item() const {
-        auto proxy_result = vscf_signer_info_list_item(c_ctx_);
-        return SignerInfo(vscf_signer_info_shallow_copy(const_cast<vscf_signer_info_t*>(proxy_result)));
-    }
+    SignerInfo item() const;
 
     /// Return true if list has next item.
-    bool has_next() const {
-        auto proxy_result = vscf_signer_info_list_has_next(c_ctx_);
-        return proxy_result;
-    }
+    bool has_next() const;
 
     /// Return next list node if exists, or NULL otherwise.
-    SignerInfoList next() const {
-        auto proxy_result = vscf_signer_info_list_next(c_ctx_);
-        return SignerInfoList(vscf_signer_info_list_shallow_copy(const_cast<vscf_signer_info_list_t*>(proxy_result)));
-    }
+    SignerInfoList next() const;
 
     /// Return true if list has previous item.
-    bool has_prev() const {
-        auto proxy_result = vscf_signer_info_list_has_prev(c_ctx_);
-        return proxy_result;
-    }
+    bool has_prev() const;
 
     /// Return previous list node if exists, or NULL otherwise.
-    SignerInfoList prev() const {
-        auto proxy_result = vscf_signer_info_list_prev(c_ctx_);
-        return SignerInfoList(vscf_signer_info_list_shallow_copy(const_cast<vscf_signer_info_list_t*>(proxy_result)));
-    }
+    SignerInfoList prev() const;
 
     /// Remove all items.
-    void clear() {
-        vscf_signer_info_list_clear(c_ctx_);
-    }
+    void clear();
 
 private:
     vscf_signer_info_list_t* c_ctx_;

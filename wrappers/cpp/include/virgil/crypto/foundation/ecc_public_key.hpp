@@ -42,78 +42,51 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_ecc_public_key.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/key.hpp>
 #include <virgil/crypto/foundation/public_key.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_ecc_public_key_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handles ECC public key.
 class EccPublicKey : virtual public Key, virtual public PublicKey {
 public:
-    EccPublicKey() : c_ctx_(vscf_ecc_public_key_new()) {}
+    EccPublicKey();
     /// Adopt ownership of an existing C handle.
-    explicit EccPublicKey(vscf_ecc_public_key_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    EccPublicKey(const EccPublicKey& other) : c_ctx_(vscf_ecc_public_key_shallow_copy(other.c_ctx_)) {}
-    EccPublicKey(EccPublicKey&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    EccPublicKey& operator=(const EccPublicKey& other) {
-        if (this != &other) {
-            vscf_ecc_public_key_delete(c_ctx_);
-            c_ctx_ = vscf_ecc_public_key_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    EccPublicKey& operator=(EccPublicKey&& other) noexcept {
-        if (this != &other) {
-            vscf_ecc_public_key_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~EccPublicKey() { vscf_ecc_public_key_delete(c_ctx_); }
+    explicit EccPublicKey(vscf_ecc_public_key_t* c_ctx) noexcept;
+    EccPublicKey(const EccPublicKey& other);
+    EccPublicKey(EccPublicKey&& other) noexcept;
+    EccPublicKey& operator=(const EccPublicKey& other);
+    EccPublicKey& operator=(EccPublicKey&& other) noexcept;
+    ~EccPublicKey();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_ecc_public_key_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_ecc_public_key_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_ecc_public_key_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Algorithm identifier the key belongs to.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_ecc_public_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Return algorithm information that can be used for serialization.
-    std::unique_ptr<AlgInfo> alg_info() const override {
-        auto proxy_result = vscf_ecc_public_key_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> alg_info() const override;
 
     /// Length of the key in bytes.
-    std::size_t len() const override {
-        auto proxy_result = vscf_ecc_public_key_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t len() const override;
 
     /// Length of the key in bits.
-    std::size_t bitlen() const override {
-        auto proxy_result = vscf_ecc_public_key_bitlen(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t bitlen() const override;
 
     /// Check that key is valid.
     /// Note, this operation can be slow.
-    bool is_valid() const override {
-        auto proxy_result = vscf_ecc_public_key_is_valid(c_ctx_);
-        return proxy_result;
-    }
+    bool is_valid() const override;
 
 private:
     vscf_ecc_public_key_t* c_ctx_;

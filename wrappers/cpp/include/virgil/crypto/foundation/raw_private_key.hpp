@@ -42,110 +42,68 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_raw_private_key.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/key.hpp>
 #include <virgil/crypto/foundation/private_key.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/public_key.hpp>
-#include <virgil/crypto/foundation/raw_public_key.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_raw_private_key_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class PublicKey;
+class RawPublicKey;
 
 /// Handles interchangeable private key representation.
 class RawPrivateKey : virtual public Key, virtual public PrivateKey {
 public:
-    RawPrivateKey() : c_ctx_(vscf_raw_private_key_new()) {}
+    RawPrivateKey();
     /// Adopt ownership of an existing C handle.
-    explicit RawPrivateKey(vscf_raw_private_key_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    RawPrivateKey(const RawPrivateKey& other) : c_ctx_(vscf_raw_private_key_shallow_copy(other.c_ctx_)) {}
-    RawPrivateKey(RawPrivateKey&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    RawPrivateKey& operator=(const RawPrivateKey& other) {
-        if (this != &other) {
-            vscf_raw_private_key_delete(c_ctx_);
-            c_ctx_ = vscf_raw_private_key_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    RawPrivateKey& operator=(RawPrivateKey&& other) noexcept {
-        if (this != &other) {
-            vscf_raw_private_key_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~RawPrivateKey() { vscf_raw_private_key_delete(c_ctx_); }
+    explicit RawPrivateKey(vscf_raw_private_key_t* c_ctx) noexcept;
+    RawPrivateKey(const RawPrivateKey& other);
+    RawPrivateKey(RawPrivateKey&& other) noexcept;
+    RawPrivateKey& operator=(const RawPrivateKey& other);
+    RawPrivateKey& operator=(RawPrivateKey&& other) noexcept;
+    ~RawPrivateKey();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_raw_private_key_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_raw_private_key_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_raw_private_key_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return key data.
-    std::vector<uint8_t> data() const {
-        auto proxy_result = vscf_raw_private_key_data(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> data() const;
 
     /// Return true if private key contains public key.
-    bool has_public_key() const {
-        auto proxy_result = vscf_raw_private_key_has_public_key(c_ctx_);
-        return proxy_result;
-    }
+    bool has_public_key() const;
 
     /// Setup public key related to the private key.
-    void set_public_key(const RawPublicKey& raw_public_key) {
-        vscf_raw_public_key_t* raw_public_key_ref = vscf_raw_public_key_shallow_copy(raw_public_key.c_ctx());
-        vscf_raw_private_key_set_public_key(c_ctx_, &raw_public_key_ref);
-    }
+    void set_public_key(const RawPublicKey& raw_public_key);
 
     /// Return public key related to the private key.
-    RawPublicKey get_public_key() const {
-        auto proxy_result = vscf_raw_private_key_get_public_key(c_ctx_);
-        return RawPublicKey(vscf_raw_public_key_shallow_copy(const_cast<vscf_raw_public_key_t*>(proxy_result)));
-    }
+    RawPublicKey get_public_key() const;
 
     /// Algorithm identifier the key belongs to.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_raw_private_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Return algorithm information that can be used for serialization.
-    std::unique_ptr<AlgInfo> alg_info() const override {
-        auto proxy_result = vscf_raw_private_key_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> alg_info() const override;
 
     /// Length of the key in bytes.
-    std::size_t len() const override {
-        auto proxy_result = vscf_raw_private_key_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t len() const override;
 
     /// Length of the key in bits.
-    std::size_t bitlen() const override {
-        auto proxy_result = vscf_raw_private_key_bitlen(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t bitlen() const override;
 
     /// Check that key is valid.
     /// Note, this operation can be slow.
-    bool is_valid() const override {
-        auto proxy_result = vscf_raw_private_key_is_valid(c_ctx_);
-        return proxy_result;
-    }
+    bool is_valid() const override;
 
     /// Extract public key from the private key.
-    std::unique_ptr<PublicKey> extract_public_key() const override {
-        auto proxy_result = vscf_raw_private_key_extract_public_key(c_ctx_);
-        return FoundationImplementation::wrap_public_key(proxy_result);
-    }
+    std::unique_ptr<PublicKey> extract_public_key() const override;
 
 private:
     vscf_raw_private_key_t* c_ctx_;

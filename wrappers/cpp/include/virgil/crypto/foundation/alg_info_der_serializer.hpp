@@ -42,80 +42,50 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_alg_info_der_serializer.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info_serializer.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/asn1_writer.hpp>
+
+struct vscf_alg_info_der_serializer_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class Asn1Writer;
 
 /// Provide DER serializer of algorithm information.
 class AlgInfoDerSerializer : virtual public AlgInfoSerializer {
 public:
-    AlgInfoDerSerializer() : c_ctx_(vscf_alg_info_der_serializer_new()) {}
+    AlgInfoDerSerializer();
     /// Adopt ownership of an existing C handle.
-    explicit AlgInfoDerSerializer(vscf_alg_info_der_serializer_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    AlgInfoDerSerializer(const AlgInfoDerSerializer& other) : c_ctx_(vscf_alg_info_der_serializer_shallow_copy(other.c_ctx_)) {}
-    AlgInfoDerSerializer(AlgInfoDerSerializer&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    AlgInfoDerSerializer& operator=(const AlgInfoDerSerializer& other) {
-        if (this != &other) {
-            vscf_alg_info_der_serializer_delete(c_ctx_);
-            c_ctx_ = vscf_alg_info_der_serializer_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    AlgInfoDerSerializer& operator=(AlgInfoDerSerializer&& other) noexcept {
-        if (this != &other) {
-            vscf_alg_info_der_serializer_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~AlgInfoDerSerializer() { vscf_alg_info_der_serializer_delete(c_ctx_); }
+    explicit AlgInfoDerSerializer(vscf_alg_info_der_serializer_t* c_ctx) noexcept;
+    AlgInfoDerSerializer(const AlgInfoDerSerializer& other);
+    AlgInfoDerSerializer(AlgInfoDerSerializer&& other) noexcept;
+    AlgInfoDerSerializer& operator=(const AlgInfoDerSerializer& other);
+    AlgInfoDerSerializer& operator=(AlgInfoDerSerializer&& other) noexcept;
+    ~AlgInfoDerSerializer();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_alg_info_der_serializer_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_alg_info_der_serializer_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_alg_info_der_serializer_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
-    void set_asn1_writer(const Asn1Writer& asn1_writer) {
-        vscf_alg_info_der_serializer_release_asn1_writer(c_ctx_);
-        vscf_alg_info_der_serializer_use_asn1_writer(c_ctx_, asn1_writer.impl());
-    }
+    void set_asn1_writer(const Asn1Writer& asn1_writer);
 
     /// Setup predefined values to the uninitialized class dependencies.
-    void setup_defaults() {
-        vscf_alg_info_der_serializer_setup_defaults(c_ctx_);
-    }
+    void setup_defaults();
 
     /// Serialize by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    std::size_t serialize_inplace(const AlgInfo& alg_info) {
-        auto proxy_result = vscf_alg_info_der_serializer_serialize_inplace(c_ctx_, alg_info.impl());
-        return proxy_result;
-    }
+    std::size_t serialize_inplace(const AlgInfo& alg_info);
 
     /// Return buffer size enough to hold serialized algorithm.
-    std::size_t serialized_len(const AlgInfo& alg_info) const override {
-        auto proxy_result = vscf_alg_info_der_serializer_serialized_len(c_ctx_, alg_info.impl());
-        return proxy_result;
-    }
+    std::size_t serialized_len(const AlgInfo& alg_info) const override;
 
     /// Serialize algorithm info to buffer class.
-    std::vector<uint8_t> serialize(const AlgInfo& alg_info) override {
-        std::vector<uint8_t> out(this->serialized_len(alg_info));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        vscf_alg_info_der_serializer_serialize(c_ctx_, alg_info.impl(), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        return out;
-    }
+    std::vector<uint8_t> serialize(const AlgInfo& alg_info) override;
 
 private:
     vscf_alg_info_der_serializer_t* c_ctx_;

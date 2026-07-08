@@ -41,7 +41,6 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/phe/vsce_phe_common.h>
 #include <virgil/crypto/phe/error.hpp>
 
 namespace virgil::crypto::phe {

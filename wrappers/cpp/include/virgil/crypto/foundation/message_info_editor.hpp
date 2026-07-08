@@ -41,13 +41,15 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_message_info_editor.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/private_key.hpp>
-#include <virgil/crypto/foundation/public_key.hpp>
-#include <virgil/crypto/foundation/random.hpp>
+
+struct vscf_message_info_editor_t;
 
 namespace virgil::crypto::foundation {
+
+class PrivateKey;
+class PublicKey;
+class Random;
 
 /// Add and/or remove recipients and it's parameters within message info.
 ///
@@ -57,105 +59,49 @@ namespace virgil::crypto::foundation {
 /// 3. Pack MessagInfo to the binary data.
 class MessageInfoEditor {
 public:
-    MessageInfoEditor() : c_ctx_(vscf_message_info_editor_new()) {}
+    MessageInfoEditor();
     /// Adopt ownership of an existing C handle.
-    explicit MessageInfoEditor(vscf_message_info_editor_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    MessageInfoEditor(const MessageInfoEditor& other) : c_ctx_(vscf_message_info_editor_shallow_copy(other.c_ctx_)) {}
-    MessageInfoEditor(MessageInfoEditor&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    MessageInfoEditor& operator=(const MessageInfoEditor& other) {
-        if (this != &other) {
-            vscf_message_info_editor_delete(c_ctx_);
-            c_ctx_ = vscf_message_info_editor_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    MessageInfoEditor& operator=(MessageInfoEditor&& other) noexcept {
-        if (this != &other) {
-            vscf_message_info_editor_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~MessageInfoEditor() { vscf_message_info_editor_delete(c_ctx_); }
+    explicit MessageInfoEditor(vscf_message_info_editor_t* c_ctx) noexcept;
+    MessageInfoEditor(const MessageInfoEditor& other);
+    MessageInfoEditor(MessageInfoEditor&& other) noexcept;
+    MessageInfoEditor& operator=(const MessageInfoEditor& other);
+    MessageInfoEditor& operator=(MessageInfoEditor&& other) noexcept;
+    ~MessageInfoEditor();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_message_info_editor_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_message_info_editor_t* c_ctx() const noexcept;
 
-    void set_random(const Random& random) {
-        vscf_message_info_editor_release_random(c_ctx_);
-        vscf_message_info_editor_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const Random& random);
 
     /// Set dependencies to it's defaults.
-    tl::expected<void, Error> setup_defaults() {
-        const vscf_status_t status = vscf_message_info_editor_setup_defaults(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Unpack serialized message info.
     ///
     /// Note that recipients can only be removed but not added.
     /// Note, use "unlock" method to be able to add new recipients as well.
-    tl::expected<void, Error> unpack(std::span<const uint8_t> message_info_data) {
-        const vscf_status_t status = vscf_message_info_editor_unpack(c_ctx_, vsc_data(message_info_data.data(), message_info_data.size()));
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> unpack(std::span<const uint8_t> message_info_data);
 
     /// Decrypt encryption key this allows adding new recipients.
-    tl::expected<void, Error> unlock(std::span<const uint8_t> owner_recipient_id, const PrivateKey& owner_private_key) {
-        const vscf_status_t status = vscf_message_info_editor_unlock(c_ctx_, vsc_data(owner_recipient_id.data(), owner_recipient_id.size()), owner_private_key.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> unlock(std::span<const uint8_t> owner_recipient_id, const PrivateKey& owner_private_key);
 
     /// Add recipient defined with id and public key.
-    tl::expected<void, Error> add_key_recipient(std::span<const uint8_t> recipient_id, const PublicKey& public_key) {
-        const vscf_status_t status = vscf_message_info_editor_add_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()), public_key.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> add_key_recipient(std::span<const uint8_t> recipient_id, const PublicKey& public_key);
 
     /// Remove recipient with a given id.
     /// Return false if recipient with given id was not found.
-    bool remove_key_recipient(std::span<const uint8_t> recipient_id) {
-        auto proxy_result = vscf_message_info_editor_remove_key_recipient(c_ctx_, vsc_data(recipient_id.data(), recipient_id.size()));
-        return proxy_result;
-    }
+    bool remove_key_recipient(std::span<const uint8_t> recipient_id);
 
     /// Remove all existent recipients.
-    void remove_all() {
-        vscf_message_info_editor_remove_all(c_ctx_);
-    }
+    void remove_all();
 
     /// Return length of serialized message info.
     /// Actual length can be obtained right after applying changes.
-    std::size_t packed_len() const {
-        auto proxy_result = vscf_message_info_editor_packed_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t packed_len() const;
 
     /// Return serialized message info.
     /// Precondition: this method can be called after "apply".
-    std::vector<uint8_t> pack() {
-        std::vector<uint8_t> message_info(this->packed_len());
-        vsc_buffer_t* message_info_buf = vsc_buffer_new();
-        vsc_buffer_use(message_info_buf, message_info.data(), message_info.size());
-        vscf_message_info_editor_pack(c_ctx_, message_info_buf);
-        message_info.resize(vsc_buffer_len(message_info_buf));
-        vsc_buffer_delete(message_info_buf);
-        return message_info;
-    }
+    std::vector<uint8_t> pack();
 
 private:
     vscf_message_info_editor_t* c_ctx_;

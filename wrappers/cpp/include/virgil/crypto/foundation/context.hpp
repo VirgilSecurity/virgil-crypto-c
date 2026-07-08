@@ -34,7 +34,7 @@
 
 #pragma once
 
-#include <virgil/crypto/foundation/vscf_impl.h>
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 

@@ -42,16 +42,18 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_compound_public_key.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/key.hpp>
 #include <virgil/crypto/foundation/public_key.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_compound_public_key_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class PublicKey;
 
 /// Handles compound public key.
 ///
@@ -60,76 +62,42 @@ namespace virgil::crypto::foundation {
 /// - signer key - is used for verifying.
 class CompoundPublicKey : virtual public Key, virtual public PublicKey {
 public:
-    CompoundPublicKey() : c_ctx_(vscf_compound_public_key_new()) {}
+    CompoundPublicKey();
     /// Adopt ownership of an existing C handle.
-    explicit CompoundPublicKey(vscf_compound_public_key_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    CompoundPublicKey(const CompoundPublicKey& other) : c_ctx_(vscf_compound_public_key_shallow_copy(other.c_ctx_)) {}
-    CompoundPublicKey(CompoundPublicKey&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    CompoundPublicKey& operator=(const CompoundPublicKey& other) {
-        if (this != &other) {
-            vscf_compound_public_key_delete(c_ctx_);
-            c_ctx_ = vscf_compound_public_key_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    CompoundPublicKey& operator=(CompoundPublicKey&& other) noexcept {
-        if (this != &other) {
-            vscf_compound_public_key_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~CompoundPublicKey() { vscf_compound_public_key_delete(c_ctx_); }
+    explicit CompoundPublicKey(vscf_compound_public_key_t* c_ctx) noexcept;
+    CompoundPublicKey(const CompoundPublicKey& other);
+    CompoundPublicKey(CompoundPublicKey&& other) noexcept;
+    CompoundPublicKey& operator=(const CompoundPublicKey& other);
+    CompoundPublicKey& operator=(CompoundPublicKey&& other) noexcept;
+    ~CompoundPublicKey();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_compound_public_key_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_compound_public_key_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_compound_public_key_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return a cipher public key suitable for initial encryption.
-    std::unique_ptr<PublicKey> cipher_key() const {
-        auto proxy_result = vscf_compound_public_key_cipher_key(c_ctx_);
-        return FoundationImplementation::wrap_public_key(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<PublicKey> cipher_key() const;
 
     /// Return public key suitable for verifying.
-    std::unique_ptr<PublicKey> signer_key() const {
-        auto proxy_result = vscf_compound_public_key_signer_key(c_ctx_);
-        return FoundationImplementation::wrap_public_key(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<PublicKey> signer_key() const;
 
     /// Algorithm identifier the key belongs to.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_compound_public_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Return algorithm information that can be used for serialization.
-    std::unique_ptr<AlgInfo> alg_info() const override {
-        auto proxy_result = vscf_compound_public_key_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> alg_info() const override;
 
     /// Length of the key in bytes.
-    std::size_t len() const override {
-        auto proxy_result = vscf_compound_public_key_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t len() const override;
 
     /// Length of the key in bits.
-    std::size_t bitlen() const override {
-        auto proxy_result = vscf_compound_public_key_bitlen(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t bitlen() const override;
 
     /// Check that key is valid.
     /// Note, this operation can be slow.
-    bool is_valid() const override {
-        auto proxy_result = vscf_compound_public_key_is_valid(c_ctx_);
-        return proxy_result;
-    }
+    bool is_valid() const override;
 
 private:
     vscf_compound_public_key_t* c_ctx_;

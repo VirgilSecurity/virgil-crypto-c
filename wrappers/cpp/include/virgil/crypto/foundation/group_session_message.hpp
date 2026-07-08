@@ -41,39 +41,27 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_group_session_message.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/group_msg_type.hpp>
+
+struct vscf_group_session_message_t;
 
 namespace virgil::crypto::foundation {
 
 /// Class represents group session message
 class GroupSessionMessage {
 public:
-    GroupSessionMessage() : c_ctx_(vscf_group_session_message_new()) {}
+    GroupSessionMessage();
     /// Adopt ownership of an existing C handle.
-    explicit GroupSessionMessage(vscf_group_session_message_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    GroupSessionMessage(const GroupSessionMessage& other) : c_ctx_(vscf_group_session_message_shallow_copy(other.c_ctx_)) {}
-    GroupSessionMessage(GroupSessionMessage&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    GroupSessionMessage& operator=(const GroupSessionMessage& other) {
-        if (this != &other) {
-            vscf_group_session_message_delete(c_ctx_);
-            c_ctx_ = vscf_group_session_message_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    GroupSessionMessage& operator=(GroupSessionMessage&& other) noexcept {
-        if (this != &other) {
-            vscf_group_session_message_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~GroupSessionMessage() { vscf_group_session_message_delete(c_ctx_); }
+    explicit GroupSessionMessage(vscf_group_session_message_t* c_ctx) noexcept;
+    GroupSessionMessage(const GroupSessionMessage& other);
+    GroupSessionMessage(GroupSessionMessage&& other) noexcept;
+    GroupSessionMessage& operator=(const GroupSessionMessage& other);
+    GroupSessionMessage& operator=(GroupSessionMessage&& other) noexcept;
+    ~GroupSessionMessage();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_group_session_message_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_group_session_message_t* c_ctx() const noexcept;
 
     /// Max message len
     static constexpr std::size_t MAX_MESSAGE_LEN = 30188;
@@ -82,51 +70,23 @@ public:
     static constexpr std::size_t MESSAGE_VERSION = 1;
 
     /// Returns message type.
-    GroupMsgType get_type() const {
-        auto proxy_result = vscf_group_session_message_get_type(c_ctx_);
-        return static_cast<GroupMsgType>(proxy_result);
-    }
+    GroupMsgType get_type() const;
 
     /// Returns session id.
     /// This method should be called only for group info type.
-    std::vector<uint8_t> get_session_id() const {
-        auto proxy_result = vscf_group_session_message_get_session_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> get_session_id() const;
 
     /// Returns message epoch.
-    uint32_t get_epoch() const {
-        auto proxy_result = vscf_group_session_message_get_epoch(c_ctx_);
-        return proxy_result;
-    }
+    uint32_t get_epoch() const;
 
     /// Buffer len to serialize this class.
-    std::size_t serialize_len() const {
-        auto proxy_result = vscf_group_session_message_serialize_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t serialize_len() const;
 
     /// Serializes instance.
-    std::vector<uint8_t> serialize() const {
-        std::vector<uint8_t> output(this->serialize_len());
-        vsc_buffer_t* output_buf = vsc_buffer_new();
-        vsc_buffer_use(output_buf, output.data(), output.size());
-        vscf_group_session_message_serialize(c_ctx_, output_buf);
-        output.resize(vsc_buffer_len(output_buf));
-        vsc_buffer_delete(output_buf);
-        return output;
-    }
+    std::vector<uint8_t> serialize() const;
 
     /// Deserializes instance.
-    static tl::expected<GroupSessionMessage, Error> deserialize(std::span<const uint8_t> input) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_group_session_message_deserialize(vsc_data(input.data(), input.size()), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return GroupSessionMessage(proxy_result);
-    }
+    static tl::expected<GroupSessionMessage, Error> deserialize(std::span<const uint8_t> input);
 
 private:
     vscf_group_session_message_t* c_ctx_;

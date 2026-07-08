@@ -42,53 +42,35 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_password_recipient_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_password_recipient_info_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle information about recipient that is defined by a password.
 class PasswordRecipientInfo {
 public:
-    PasswordRecipientInfo() : c_ctx_(vscf_password_recipient_info_new()) {}
+    PasswordRecipientInfo();
     /// Adopt ownership of an existing C handle.
-    explicit PasswordRecipientInfo(vscf_password_recipient_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    PasswordRecipientInfo(const PasswordRecipientInfo& other) : c_ctx_(vscf_password_recipient_info_shallow_copy(other.c_ctx_)) {}
-    PasswordRecipientInfo(PasswordRecipientInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    PasswordRecipientInfo& operator=(const PasswordRecipientInfo& other) {
-        if (this != &other) {
-            vscf_password_recipient_info_delete(c_ctx_);
-            c_ctx_ = vscf_password_recipient_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    PasswordRecipientInfo& operator=(PasswordRecipientInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_password_recipient_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~PasswordRecipientInfo() { vscf_password_recipient_info_delete(c_ctx_); }
+    explicit PasswordRecipientInfo(vscf_password_recipient_info_t* c_ctx) noexcept;
+    PasswordRecipientInfo(const PasswordRecipientInfo& other);
+    PasswordRecipientInfo(PasswordRecipientInfo&& other) noexcept;
+    PasswordRecipientInfo& operator=(const PasswordRecipientInfo& other);
+    PasswordRecipientInfo& operator=(PasswordRecipientInfo&& other) noexcept;
+    ~PasswordRecipientInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_password_recipient_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_password_recipient_info_t* c_ctx() const noexcept;
 
     /// Return algorithm information that was used for encryption
     /// a data encryption key.
-    std::unique_ptr<AlgInfo> key_encryption_algorithm() const {
-        auto proxy_result = vscf_password_recipient_info_key_encryption_algorithm(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> key_encryption_algorithm() const;
 
     /// Return an encrypted data encryption key.
-    std::vector<uint8_t> encrypted_key() const {
-        auto proxy_result = vscf_password_recipient_info_encrypted_key(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> encrypted_key() const;
 
 private:
     vscf_password_recipient_info_t* c_ctx_;

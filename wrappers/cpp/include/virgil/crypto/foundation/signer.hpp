@@ -41,81 +41,46 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_signer.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/hash.hpp>
-#include <virgil/crypto/foundation/private_key.hpp>
-#include <virgil/crypto/foundation/random.hpp>
+
+struct vscf_signer_t;
 
 namespace virgil::crypto::foundation {
+
+class Hash;
+class PrivateKey;
+class Random;
 
 /// Sign data of any size.
 class Signer {
 public:
-    Signer() : c_ctx_(vscf_signer_new()) {}
+    Signer();
     /// Adopt ownership of an existing C handle.
-    explicit Signer(vscf_signer_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Signer(const Signer& other) : c_ctx_(vscf_signer_shallow_copy(other.c_ctx_)) {}
-    Signer(Signer&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Signer& operator=(const Signer& other) {
-        if (this != &other) {
-            vscf_signer_delete(c_ctx_);
-            c_ctx_ = vscf_signer_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Signer& operator=(Signer&& other) noexcept {
-        if (this != &other) {
-            vscf_signer_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Signer() { vscf_signer_delete(c_ctx_); }
+    explicit Signer(vscf_signer_t* c_ctx) noexcept;
+    Signer(const Signer& other);
+    Signer(Signer&& other) noexcept;
+    Signer& operator=(const Signer& other);
+    Signer& operator=(Signer&& other) noexcept;
+    ~Signer();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_signer_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_signer_t* c_ctx() const noexcept;
 
-    void set_hash(const Hash& hash) {
-        vscf_signer_release_hash(c_ctx_);
-        vscf_signer_use_hash(c_ctx_, hash.impl());
-    }
+    void set_hash(const Hash& hash);
 
-    void set_random(const Random& random) {
-        vscf_signer_release_random(c_ctx_);
-        vscf_signer_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const Random& random);
 
     /// Start a processing a new signature.
-    void reset() {
-        vscf_signer_reset(c_ctx_);
-    }
+    void reset();
 
     /// Add given data to the signed data.
-    void append_data(std::span<const uint8_t> data) {
-        vscf_signer_append_data(c_ctx_, vsc_data(data.data(), data.size()));
-    }
+    void append_data(std::span<const uint8_t> data);
 
     /// Return length of the signature.
-    std::size_t signature_len(const PrivateKey& private_key) const {
-        auto proxy_result = vscf_signer_signature_len(c_ctx_, private_key.impl());
-        return proxy_result;
-    }
+    std::size_t signature_len(const PrivateKey& private_key) const;
 
     /// Accomplish signing and return signature.
-    tl::expected<std::vector<uint8_t>, Error> sign(const PrivateKey& private_key) const {
-        std::vector<uint8_t> signature(this->signature_len(private_key));
-        vsc_buffer_t* signature_buf = vsc_buffer_new();
-        vsc_buffer_use(signature_buf, signature.data(), signature.size());
-        const vscf_status_t status = vscf_signer_sign(c_ctx_, private_key.impl(), signature_buf);
-        signature.resize(vsc_buffer_len(signature_buf));
-        vsc_buffer_delete(signature_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return signature;
-    }
+    tl::expected<std::vector<uint8_t>, Error> sign(const PrivateKey& private_key) const;
 
 private:
     vscf_signer_t* c_ctx_;

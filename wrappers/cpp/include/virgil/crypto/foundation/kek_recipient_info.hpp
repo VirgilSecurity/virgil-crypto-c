@@ -42,59 +42,38 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_kek_recipient_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_kek_recipient_info_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle information about recipient that uses a pre-shared symmetric Key Encryption Key (KEK).
 /// Follows RFC 5652 KEKRecipientInfo structure.
 class KekRecipientInfo {
 public:
-    KekRecipientInfo() : c_ctx_(vscf_kek_recipient_info_new()) {}
+    KekRecipientInfo();
     /// Adopt ownership of an existing C handle.
-    explicit KekRecipientInfo(vscf_kek_recipient_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    KekRecipientInfo(const KekRecipientInfo& other) : c_ctx_(vscf_kek_recipient_info_shallow_copy(other.c_ctx_)) {}
-    KekRecipientInfo(KekRecipientInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    KekRecipientInfo& operator=(const KekRecipientInfo& other) {
-        if (this != &other) {
-            vscf_kek_recipient_info_delete(c_ctx_);
-            c_ctx_ = vscf_kek_recipient_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    KekRecipientInfo& operator=(KekRecipientInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_kek_recipient_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~KekRecipientInfo() { vscf_kek_recipient_info_delete(c_ctx_); }
+    explicit KekRecipientInfo(vscf_kek_recipient_info_t* c_ctx) noexcept;
+    KekRecipientInfo(const KekRecipientInfo& other);
+    KekRecipientInfo(KekRecipientInfo&& other) noexcept;
+    KekRecipientInfo& operator=(const KekRecipientInfo& other);
+    KekRecipientInfo& operator=(KekRecipientInfo&& other) noexcept;
+    ~KekRecipientInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_kek_recipient_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_kek_recipient_info_t* c_ctx() const noexcept;
 
     /// Return KEK identifier.
-    std::vector<uint8_t> kek_id() const {
-        auto proxy_result = vscf_kek_recipient_info_kek_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> kek_id() const;
 
     /// Return algorithm information that was used for encrypting the data encryption key.
-    std::unique_ptr<AlgInfo> key_encryption_algorithm() const {
-        auto proxy_result = vscf_kek_recipient_info_key_encryption_algorithm(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> key_encryption_algorithm() const;
 
     /// Return an encrypted data encryption key.
-    std::vector<uint8_t> encrypted_key() const {
-        auto proxy_result = vscf_kek_recipient_info_encrypted_key(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> encrypted_key() const;
 
 private:
     vscf_kek_recipient_info_t* c_ctx_;

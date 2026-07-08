@@ -310,6 +310,8 @@ target_link_libraries(app PRIVATE virgil::foundation-cpp)
 
 **Verification:** `cmake -Cconfigs/cpp-config.cmake -DVIRGIL_WRAP_CPP=ON -Bbuild -S.` then `cmake --build build` produces `foundation-cpp`/`ratchet-cpp`/`phe-cpp` on macOS/Linux.
 
+**Note (header+cpp split):** conforming to the "static per-library (generated `.cpp` bodies)" decision above, the generators now emit a lean declaration `.hpp` (forward-declaring the C handle, so consumers don't pull the C library headers) plus a definition `.cpp` per class/impl. This unlocked **stack-allocated output buffers** (the `.cpp` includes the internal `private/vsc_buffer_defs.h`, never exposed to consumers) — no per-call heap alloc. All three libraries are STATIC. Units 2–4 had emitted an interim header-only inline form; this revises them to the planned shape. Interfaces/enums/`Error`/dispatch header stay header-only.
+
 - [ ] **Unit 6: Third-party deps via FetchContent (tl::expected, GSL)**
 
 **Goal:** Pull `tl::expected` and Microsoft GSL via CMake FetchContent, pinned, and wire them into the wrapper targets' interface.

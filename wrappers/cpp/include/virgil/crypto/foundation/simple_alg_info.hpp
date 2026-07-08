@@ -42,50 +42,35 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_simple_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
+
+struct vscf_simple_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
 /// Handle simple algorithm information (just id).
 class SimpleAlgInfo : virtual public AlgInfo {
 public:
-    SimpleAlgInfo() : c_ctx_(vscf_simple_alg_info_new()) {}
+    SimpleAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit SimpleAlgInfo(vscf_simple_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    SimpleAlgInfo(const SimpleAlgInfo& other) : c_ctx_(vscf_simple_alg_info_shallow_copy(other.c_ctx_)) {}
-    SimpleAlgInfo(SimpleAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    SimpleAlgInfo& operator=(const SimpleAlgInfo& other) {
-        if (this != &other) {
-            vscf_simple_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_simple_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    SimpleAlgInfo& operator=(SimpleAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_simple_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~SimpleAlgInfo() { vscf_simple_alg_info_delete(c_ctx_); }
+    explicit SimpleAlgInfo(vscf_simple_alg_info_t* c_ctx) noexcept;
+    SimpleAlgInfo(const SimpleAlgInfo& other);
+    SimpleAlgInfo(SimpleAlgInfo&& other) noexcept;
+    SimpleAlgInfo& operator=(const SimpleAlgInfo& other);
+    SimpleAlgInfo& operator=(SimpleAlgInfo&& other) noexcept;
+    ~SimpleAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_simple_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_simple_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_simple_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_simple_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_simple_alg_info_t* c_ctx_;

@@ -41,7 +41,6 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_pem.h>
 #include <virgil/crypto/foundation/error.hpp>
 
 namespace virgil::crypto::foundation {
@@ -50,49 +49,21 @@ namespace virgil::crypto::foundation {
 class Pem {
 public:
     /// Return length in bytes required to hold wrapped PEM format.
-    static std::size_t wrapped_len(std::string_view title, std::size_t data_len) {
-        auto proxy_result = vscf_pem_wrapped_len(std::string(title).c_str(), data_len);
-        return proxy_result;
-    }
+    static std::size_t wrapped_len(std::string_view title, std::size_t data_len);
 
     /// Takes binary data and wraps it to the simple PEM format - no
     /// additional information just header-base64-footer.
     /// Note, written buffer is NOT null-terminated.
-    static std::vector<uint8_t> wrap(std::string_view title, std::span<const uint8_t> data) {
-        std::vector<uint8_t> pem(Pem::wrapped_len(title, data.size()));
-        vsc_buffer_t* pem_buf = vsc_buffer_new();
-        vsc_buffer_use(pem_buf, pem.data(), pem.size());
-        vscf_pem_wrap(std::string(title).c_str(), vsc_data(data.data(), data.size()), pem_buf);
-        pem.resize(vsc_buffer_len(pem_buf));
-        vsc_buffer_delete(pem_buf);
-        return pem;
-    }
+    static std::vector<uint8_t> wrap(std::string_view title, std::span<const uint8_t> data);
 
     /// Return length in bytes required to hold unwrapped binary.
-    static std::size_t unwrapped_len(std::size_t pem_len) {
-        auto proxy_result = vscf_pem_unwrapped_len(pem_len);
-        return proxy_result;
-    }
+    static std::size_t unwrapped_len(std::size_t pem_len);
 
     /// Takes PEM data and extract binary data from it.
-    static tl::expected<std::vector<uint8_t>, Error> unwrap(std::span<const uint8_t> pem) {
-        std::vector<uint8_t> data(Pem::unwrapped_len(pem.size()));
-        vsc_buffer_t* data_buf = vsc_buffer_new();
-        vsc_buffer_use(data_buf, data.data(), data.size());
-        const vscf_status_t status = vscf_pem_unwrap(vsc_data(pem.data(), pem.size()), data_buf);
-        data.resize(vsc_buffer_len(data_buf));
-        vsc_buffer_delete(data_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return data;
-    }
+    static tl::expected<std::vector<uint8_t>, Error> unwrap(std::span<const uint8_t> pem);
 
     /// Returns PEM title if PEM data is valid, otherwise - empty data.
-    static std::vector<uint8_t> title(std::span<const uint8_t> pem) {
-        auto proxy_result = vscf_pem_title(vsc_data(pem.data(), pem.size()));
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    static std::vector<uint8_t> title(std::span<const uint8_t> pem);
 
 };
 

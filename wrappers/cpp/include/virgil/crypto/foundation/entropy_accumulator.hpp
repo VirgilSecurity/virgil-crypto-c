@@ -42,77 +42,49 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_entropy_accumulator.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/entropy_source.hpp>
 
+struct vscf_entropy_accumulator_t;
+struct vscf_impl_t;
+
 namespace virgil::crypto::foundation {
+
+class EntropySource;
 
 /// Implementation based on a simple entropy accumulator.
 class EntropyAccumulator : virtual public EntropySource {
 public:
-    EntropyAccumulator() : c_ctx_(vscf_entropy_accumulator_new()) {}
+    EntropyAccumulator();
     /// Adopt ownership of an existing C handle.
-    explicit EntropyAccumulator(vscf_entropy_accumulator_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    EntropyAccumulator(const EntropyAccumulator& other) : c_ctx_(vscf_entropy_accumulator_shallow_copy(other.c_ctx_)) {}
-    EntropyAccumulator(EntropyAccumulator&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    EntropyAccumulator& operator=(const EntropyAccumulator& other) {
-        if (this != &other) {
-            vscf_entropy_accumulator_delete(c_ctx_);
-            c_ctx_ = vscf_entropy_accumulator_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    EntropyAccumulator& operator=(EntropyAccumulator&& other) noexcept {
-        if (this != &other) {
-            vscf_entropy_accumulator_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~EntropyAccumulator() { vscf_entropy_accumulator_delete(c_ctx_); }
+    explicit EntropyAccumulator(vscf_entropy_accumulator_t* c_ctx) noexcept;
+    EntropyAccumulator(const EntropyAccumulator& other);
+    EntropyAccumulator(EntropyAccumulator&& other) noexcept;
+    EntropyAccumulator& operator=(const EntropyAccumulator& other);
+    EntropyAccumulator& operator=(EntropyAccumulator&& other) noexcept;
+    ~EntropyAccumulator();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_entropy_accumulator_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_entropy_accumulator_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_entropy_accumulator_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     static constexpr std::size_t SOURCES_MAX = 15;
 
     /// Setup predefined values to the uninitialized class dependencies.
-    void setup_defaults() {
-        vscf_entropy_accumulator_setup_defaults(c_ctx_);
-    }
+    void setup_defaults();
 
     /// Add given entropy source to the accumulator.
     /// Threshold defines minimum number of bytes that must be gathered
     /// from the source during accumulation.
-    void add_source(const EntropySource& source, std::size_t threshold) {
-        vscf_entropy_accumulator_add_source(c_ctx_, source.impl(), threshold);
-    }
+    void add_source(const EntropySource& source, std::size_t threshold);
 
     /// Defines that implemented source is strong.
-    bool is_strong() override {
-        auto proxy_result = vscf_entropy_accumulator_is_strong(c_ctx_);
-        return proxy_result;
-    }
+    bool is_strong() override;
 
     /// Gather entropy of the requested length.
-    tl::expected<std::vector<uint8_t>, Error> gather(std::size_t len) override {
-        std::vector<uint8_t> out(len);
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_entropy_accumulator_gather(c_ctx_, len, out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> gather(std::size_t len) override;
 
 private:
     vscf_entropy_accumulator_t* c_ctx_;

@@ -41,62 +41,40 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_footer_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/signed_data_info.hpp>
+
+struct vscf_footer_info_t;
 
 namespace virgil::crypto::foundation {
+
+class SignedDataInfo;
 
 /// Handle meta information about footer.
 class FooterInfo {
 public:
-    FooterInfo() : c_ctx_(vscf_footer_info_new()) {}
+    FooterInfo();
     /// Adopt ownership of an existing C handle.
-    explicit FooterInfo(vscf_footer_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    FooterInfo(const FooterInfo& other) : c_ctx_(vscf_footer_info_shallow_copy(other.c_ctx_)) {}
-    FooterInfo(FooterInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    FooterInfo& operator=(const FooterInfo& other) {
-        if (this != &other) {
-            vscf_footer_info_delete(c_ctx_);
-            c_ctx_ = vscf_footer_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    FooterInfo& operator=(FooterInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_footer_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~FooterInfo() { vscf_footer_info_delete(c_ctx_); }
+    explicit FooterInfo(vscf_footer_info_t* c_ctx) noexcept;
+    FooterInfo(const FooterInfo& other);
+    FooterInfo(FooterInfo&& other) noexcept;
+    FooterInfo& operator=(const FooterInfo& other);
+    FooterInfo& operator=(FooterInfo&& other) noexcept;
+    ~FooterInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_footer_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_footer_info_t* c_ctx() const noexcept;
 
     /// Retrun true if signed data info present.
-    bool has_signed_data_info() const {
-        auto proxy_result = vscf_footer_info_has_signed_data_info(c_ctx_);
-        return proxy_result;
-    }
+    bool has_signed_data_info() const;
 
     /// Return signed data info.
-    SignedDataInfo signed_data_info() const {
-        auto proxy_result = vscf_footer_info_signed_data_info(c_ctx_);
-        return SignedDataInfo(vscf_signed_data_info_shallow_copy(const_cast<vscf_signed_data_info_t*>(proxy_result)));
-    }
+    SignedDataInfo signed_data_info() const;
 
     /// Set data size.
-    void set_data_size(std::size_t data_size) {
-        vscf_footer_info_set_data_size(c_ctx_, data_size);
-    }
+    void set_data_size(std::size_t data_size);
 
     /// Return data size.
-    std::size_t data_size() const {
-        auto proxy_result = vscf_footer_info_data_size(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t data_size() const;
 
 private:
     vscf_footer_info_t* c_ctx_;

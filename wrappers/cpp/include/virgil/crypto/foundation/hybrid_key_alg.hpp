@@ -42,104 +42,61 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_hybrid_key_alg.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/key_alg.hpp>
 #include <virgil/crypto/foundation/key_cipher.hpp>
 #include <virgil/crypto/foundation/key_signer.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/cipher_auth.hpp>
-#include <virgil/crypto/foundation/hash.hpp>
-#include <virgil/crypto/foundation/key.hpp>
-#include <virgil/crypto/foundation/private_key.hpp>
-#include <virgil/crypto/foundation/public_key.hpp>
-#include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/foundation/raw_private_key.hpp>
-#include <virgil/crypto/foundation/raw_public_key.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_hybrid_key_alg_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class CipherAuth;
+class Hash;
+class Key;
+class PrivateKey;
+class PublicKey;
+class Random;
+class RawPrivateKey;
+class RawPublicKey;
 
 /// Implements public key cryptography over hybrid keys.
 /// Hybrid encryption - TODO
 /// Hybrid signatures - TODO
 class HybridKeyAlg : virtual public KeyAlg, virtual public KeyCipher, virtual public KeySigner {
 public:
-    HybridKeyAlg() : c_ctx_(vscf_hybrid_key_alg_new()) {}
+    HybridKeyAlg();
     /// Adopt ownership of an existing C handle.
-    explicit HybridKeyAlg(vscf_hybrid_key_alg_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    HybridKeyAlg(const HybridKeyAlg& other) : c_ctx_(vscf_hybrid_key_alg_shallow_copy(other.c_ctx_)) {}
-    HybridKeyAlg(HybridKeyAlg&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    HybridKeyAlg& operator=(const HybridKeyAlg& other) {
-        if (this != &other) {
-            vscf_hybrid_key_alg_delete(c_ctx_);
-            c_ctx_ = vscf_hybrid_key_alg_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    HybridKeyAlg& operator=(HybridKeyAlg&& other) noexcept {
-        if (this != &other) {
-            vscf_hybrid_key_alg_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~HybridKeyAlg() { vscf_hybrid_key_alg_delete(c_ctx_); }
+    explicit HybridKeyAlg(vscf_hybrid_key_alg_t* c_ctx) noexcept;
+    HybridKeyAlg(const HybridKeyAlg& other);
+    HybridKeyAlg(HybridKeyAlg&& other) noexcept;
+    HybridKeyAlg& operator=(const HybridKeyAlg& other);
+    HybridKeyAlg& operator=(HybridKeyAlg&& other) noexcept;
+    ~HybridKeyAlg();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_hybrid_key_alg_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_hybrid_key_alg_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_hybrid_key_alg_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
-    void set_random(const Random& random) {
-        vscf_hybrid_key_alg_release_random(c_ctx_);
-        vscf_hybrid_key_alg_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const Random& random);
 
-    void set_cipher(const CipherAuth& cipher) {
-        vscf_hybrid_key_alg_release_cipher(c_ctx_);
-        vscf_hybrid_key_alg_use_cipher(c_ctx_, cipher.impl());
-    }
+    void set_cipher(const CipherAuth& cipher);
 
-    void set_hash(const Hash& hash) {
-        vscf_hybrid_key_alg_release_hash(c_ctx_);
-        vscf_hybrid_key_alg_use_hash(c_ctx_, hash.impl());
-    }
+    void set_hash(const Hash& hash);
 
     /// Setup predefined values to the uninitialized class dependencies.
-    tl::expected<void, Error> setup_defaults() {
-        const vscf_status_t status = vscf_hybrid_key_alg_setup_defaults(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Make hybrid private key from given keys.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> make_key(const PrivateKey& first_key, const PrivateKey& second_key) const {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_hybrid_key_alg_make_key(c_ctx_, first_key.impl(), second_key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> make_key(const PrivateKey& first_key, const PrivateKey& second_key) const;
 
     /// Generate ephemeral private key of the same type.
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_hybrid_key_alg_generate_ephemeral_key(c_ctx_, key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const override;
 
     /// Import public key from the raw binary format.
     ///
@@ -149,30 +106,14 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_hybrid_key_alg_import_public_key(c_ctx_, raw_key.c_ctx(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_public_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const override;
 
     /// Export public key to the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be exported in format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_hybrid_key_alg_export_public_key(c_ctx_, public_key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return RawPublicKey(proxy_result);
-    }
+    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const override;
 
     /// Import private key from the raw binary format.
     ///
@@ -182,122 +123,49 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_hybrid_key_alg_import_private_key(c_ctx_, raw_key.c_ctx(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const override;
 
     /// Export private key in the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be exported in format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_hybrid_key_alg_export_private_key(c_ctx_, private_key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return RawPrivateKey(proxy_result);
-    }
+    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const override;
 
     /// Check if algorithm can encrypt data with a given key.
-    bool can_encrypt(const PublicKey& public_key, std::size_t data_len) const override {
-        auto proxy_result = vscf_hybrid_key_alg_can_encrypt(c_ctx_, public_key.impl(), data_len);
-        return proxy_result;
-    }
+    bool can_encrypt(const PublicKey& public_key, std::size_t data_len) const override;
 
     /// Calculate required buffer length to hold the encrypted data.
-    std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) const override {
-        auto proxy_result = vscf_hybrid_key_alg_encrypted_len(c_ctx_, public_key.impl(), data_len);
-        return proxy_result;
-    }
+    std::size_t encrypted_len(const PublicKey& public_key, std::size_t data_len) const override;
 
     /// Encrypt data with a given public key.
-    tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) const override {
-        std::vector<uint8_t> out(this->encrypted_len(public_key, data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_hybrid_key_alg_encrypt(c_ctx_, public_key.impl(), vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> encrypt(const PublicKey& public_key, std::span<const uint8_t> data) const override;
 
     /// Check if algorithm can decrypt data with a given key.
     /// However, success result of decryption is not guaranteed.
-    bool can_decrypt(const PrivateKey& private_key, std::size_t data_len) const override {
-        auto proxy_result = vscf_hybrid_key_alg_can_decrypt(c_ctx_, private_key.impl(), data_len);
-        return proxy_result;
-    }
+    bool can_decrypt(const PrivateKey& private_key, std::size_t data_len) const override;
 
     /// Calculate required buffer length to hold the decrypted data.
-    std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) const override {
-        auto proxy_result = vscf_hybrid_key_alg_decrypted_len(c_ctx_, private_key.impl(), data_len);
-        return proxy_result;
-    }
+    std::size_t decrypted_len(const PrivateKey& private_key, std::size_t data_len) const override;
 
     /// Decrypt given data.
-    tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) const override {
-        std::vector<uint8_t> out(this->decrypted_len(private_key, data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_hybrid_key_alg_decrypt(c_ctx_, private_key.impl(), vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> decrypt(const PrivateKey& private_key, std::span<const uint8_t> data) const override;
 
     /// Check if algorithm can sign data digest with a given key.
-    bool can_sign(const PrivateKey& private_key) const override {
-        auto proxy_result = vscf_hybrid_key_alg_can_sign(c_ctx_, private_key.impl());
-        return proxy_result;
-    }
+    bool can_sign(const PrivateKey& private_key) const override;
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    std::size_t signature_len(const PrivateKey& private_key) const override {
-        auto proxy_result = vscf_hybrid_key_alg_signature_len(c_ctx_, private_key.impl());
-        return proxy_result;
-    }
+    std::size_t signature_len(const PrivateKey& private_key) const override;
 
     /// Sign data digest with a given private key.
-    tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const override {
-        std::vector<uint8_t> signature(this->signature_len(private_key));
-        vsc_buffer_t* signature_buf = vsc_buffer_new();
-        vsc_buffer_use(signature_buf, signature.data(), signature.size());
-        const vscf_status_t status = vscf_hybrid_key_alg_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), signature_buf);
-        signature.resize(vsc_buffer_len(signature_buf));
-        vsc_buffer_delete(signature_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return signature;
-    }
+    tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const override;
 
     /// Check if algorithm can verify data digest with a given key.
-    bool can_verify(const PublicKey& public_key) const override {
-        auto proxy_result = vscf_hybrid_key_alg_can_verify(c_ctx_, public_key.impl());
-        return proxy_result;
-    }
+    bool can_verify(const PublicKey& public_key) const override;
 
     /// Verify data digest with a given public key and signature.
-    bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const override {
-        auto proxy_result = vscf_hybrid_key_alg_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), vsc_data(signature.data(), signature.size()));
-        return proxy_result;
-    }
+    bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const override;
 
 private:
     vscf_hybrid_key_alg_t* c_ctx_;

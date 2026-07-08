@@ -41,70 +41,41 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_group_session_ticket.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/group_session_message.hpp>
-#include <virgil/crypto/foundation/random.hpp>
+
+struct vscf_group_session_ticket_t;
 
 namespace virgil::crypto::foundation {
+
+class GroupSessionMessage;
+class Random;
 
 /// Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 class GroupSessionTicket {
 public:
-    GroupSessionTicket() : c_ctx_(vscf_group_session_ticket_new()) {}
+    GroupSessionTicket();
     /// Adopt ownership of an existing C handle.
-    explicit GroupSessionTicket(vscf_group_session_ticket_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    GroupSessionTicket(const GroupSessionTicket& other) : c_ctx_(vscf_group_session_ticket_shallow_copy(other.c_ctx_)) {}
-    GroupSessionTicket(GroupSessionTicket&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    GroupSessionTicket& operator=(const GroupSessionTicket& other) {
-        if (this != &other) {
-            vscf_group_session_ticket_delete(c_ctx_);
-            c_ctx_ = vscf_group_session_ticket_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    GroupSessionTicket& operator=(GroupSessionTicket&& other) noexcept {
-        if (this != &other) {
-            vscf_group_session_ticket_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~GroupSessionTicket() { vscf_group_session_ticket_delete(c_ctx_); }
+    explicit GroupSessionTicket(vscf_group_session_ticket_t* c_ctx) noexcept;
+    GroupSessionTicket(const GroupSessionTicket& other);
+    GroupSessionTicket(GroupSessionTicket&& other) noexcept;
+    GroupSessionTicket& operator=(const GroupSessionTicket& other);
+    GroupSessionTicket& operator=(GroupSessionTicket&& other) noexcept;
+    ~GroupSessionTicket();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_group_session_ticket_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_group_session_ticket_t* c_ctx() const noexcept;
 
-    void set_rng(const Random& rng) {
-        vscf_group_session_ticket_release_rng(c_ctx_);
-        vscf_group_session_ticket_use_rng(c_ctx_, rng.impl());
-    }
+    void set_rng(const Random& rng);
 
     /// Setups default dependencies:
     /// - RNG: CTR DRBG
-    tl::expected<void, Error> setup_defaults() {
-        const vscf_status_t status = vscf_group_session_ticket_setup_defaults(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Set this ticket to start new group session.
-    tl::expected<void, Error> setup_ticket_as_new(std::span<const uint8_t> session_id) {
-        const vscf_status_t status = vscf_group_session_ticket_setup_ticket_as_new(c_ctx_, vsc_data(session_id.data(), session_id.size()));
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_ticket_as_new(std::span<const uint8_t> session_id);
 
     /// Returns message that should be sent to all participants using secure channel.
-    GroupSessionMessage get_ticket_message() const {
-        auto proxy_result = vscf_group_session_ticket_get_ticket_message(c_ctx_);
-        return GroupSessionMessage(vscf_group_session_message_shallow_copy(const_cast<vscf_group_session_message_t*>(proxy_result)));
-    }
+    GroupSessionMessage get_ticket_message() const;
 
 private:
     vscf_group_session_ticket_t* c_ctx_;

@@ -42,80 +42,47 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_alg_info_der_deserializer.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info_deserializer.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/asn1_reader.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_alg_info_der_deserializer_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class Asn1Reader;
 
 /// Provide DER deserializer of algorithm information.
 class AlgInfoDerDeserializer : virtual public AlgInfoDeserializer {
 public:
-    AlgInfoDerDeserializer() : c_ctx_(vscf_alg_info_der_deserializer_new()) {}
+    AlgInfoDerDeserializer();
     /// Adopt ownership of an existing C handle.
-    explicit AlgInfoDerDeserializer(vscf_alg_info_der_deserializer_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    AlgInfoDerDeserializer(const AlgInfoDerDeserializer& other) : c_ctx_(vscf_alg_info_der_deserializer_shallow_copy(other.c_ctx_)) {}
-    AlgInfoDerDeserializer(AlgInfoDerDeserializer&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    AlgInfoDerDeserializer& operator=(const AlgInfoDerDeserializer& other) {
-        if (this != &other) {
-            vscf_alg_info_der_deserializer_delete(c_ctx_);
-            c_ctx_ = vscf_alg_info_der_deserializer_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    AlgInfoDerDeserializer& operator=(AlgInfoDerDeserializer&& other) noexcept {
-        if (this != &other) {
-            vscf_alg_info_der_deserializer_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~AlgInfoDerDeserializer() { vscf_alg_info_der_deserializer_delete(c_ctx_); }
+    explicit AlgInfoDerDeserializer(vscf_alg_info_der_deserializer_t* c_ctx) noexcept;
+    AlgInfoDerDeserializer(const AlgInfoDerDeserializer& other);
+    AlgInfoDerDeserializer(AlgInfoDerDeserializer&& other) noexcept;
+    AlgInfoDerDeserializer& operator=(const AlgInfoDerDeserializer& other);
+    AlgInfoDerDeserializer& operator=(AlgInfoDerDeserializer&& other) noexcept;
+    ~AlgInfoDerDeserializer();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_alg_info_der_deserializer_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_alg_info_der_deserializer_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_alg_info_der_deserializer_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
-    void set_asn1_reader(const Asn1Reader& asn1_reader) {
-        vscf_alg_info_der_deserializer_release_asn1_reader(c_ctx_);
-        vscf_alg_info_der_deserializer_use_asn1_reader(c_ctx_, asn1_reader.impl());
-    }
+    void set_asn1_reader(const Asn1Reader& asn1_reader);
 
     /// Setup predefined values to the uninitialized class dependencies.
-    void setup_defaults() {
-        vscf_alg_info_der_deserializer_setup_defaults(c_ctx_);
-    }
+    void setup_defaults();
 
     /// Deserialize by using internal ASN.1 reader.
     /// Note, that caller code is responsible to reset ASN.1 reader with
     /// an input buffer.
-    tl::expected<std::unique_ptr<AlgInfo>, Error> deserialize_inplace() {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_alg_info_der_deserializer_deserialize_inplace(c_ctx_, &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    tl::expected<std::unique_ptr<AlgInfo>, Error> deserialize_inplace();
 
     /// Deserialize algorithm from the data.
-    tl::expected<std::unique_ptr<AlgInfo>, Error> deserialize(std::span<const uint8_t> data) override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_alg_info_der_deserializer_deserialize(c_ctx_, vsc_data(data.data(), data.size()), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    tl::expected<std::unique_ptr<AlgInfo>, Error> deserialize(std::span<const uint8_t> data) override;
 
 private:
     vscf_alg_info_der_deserializer_t* c_ctx_;

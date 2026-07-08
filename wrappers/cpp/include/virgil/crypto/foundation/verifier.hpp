@@ -41,60 +41,38 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_verifier.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/public_key.hpp>
+
+struct vscf_verifier_t;
 
 namespace virgil::crypto::foundation {
+
+class PublicKey;
 
 /// Verify data of any size.
 /// Compatible with the class "signer".
 class Verifier {
 public:
-    Verifier() : c_ctx_(vscf_verifier_new()) {}
+    Verifier();
     /// Adopt ownership of an existing C handle.
-    explicit Verifier(vscf_verifier_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Verifier(const Verifier& other) : c_ctx_(vscf_verifier_shallow_copy(other.c_ctx_)) {}
-    Verifier(Verifier&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Verifier& operator=(const Verifier& other) {
-        if (this != &other) {
-            vscf_verifier_delete(c_ctx_);
-            c_ctx_ = vscf_verifier_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Verifier& operator=(Verifier&& other) noexcept {
-        if (this != &other) {
-            vscf_verifier_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Verifier() { vscf_verifier_delete(c_ctx_); }
+    explicit Verifier(vscf_verifier_t* c_ctx) noexcept;
+    Verifier(const Verifier& other);
+    Verifier(Verifier&& other) noexcept;
+    Verifier& operator=(const Verifier& other);
+    Verifier& operator=(Verifier&& other) noexcept;
+    ~Verifier();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_verifier_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_verifier_t* c_ctx() const noexcept;
 
     /// Start verifying a signature.
-    tl::expected<void, Error> reset(std::span<const uint8_t> signature) {
-        const vscf_status_t status = vscf_verifier_reset(c_ctx_, vsc_data(signature.data(), signature.size()));
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> reset(std::span<const uint8_t> signature);
 
     /// Add given data to the signed data.
-    void append_data(std::span<const uint8_t> data) {
-        vscf_verifier_append_data(c_ctx_, vsc_data(data.data(), data.size()));
-    }
+    void append_data(std::span<const uint8_t> data);
 
     /// Verify accumulated data.
-    bool verify(const PublicKey& public_key) {
-        auto proxy_result = vscf_verifier_verify(c_ctx_, public_key.impl());
-        return proxy_result;
-    }
+    bool verify(const PublicKey& public_key);
 
 private:
     vscf_verifier_t* c_ctx_;

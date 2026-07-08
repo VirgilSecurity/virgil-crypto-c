@@ -42,125 +42,75 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_message_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/footer_info.hpp>
-#include <virgil/crypto/foundation/kek_recipient_info_list.hpp>
-#include <virgil/crypto/foundation/key_recipient_info_list.hpp>
-#include <virgil/crypto/foundation/message_info_custom_params.hpp>
-#include <virgil/crypto/foundation/password_recipient_info_list.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_message_info_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class FooterInfo;
+class KekRecipientInfoList;
+class KeyRecipientInfoList;
+class MessageInfoCustomParams;
+class PasswordRecipientInfoList;
 
 /// Handle information about an encrypted message and algorithms
 /// that was used for encryption.
 class MessageInfo {
 public:
-    MessageInfo() : c_ctx_(vscf_message_info_new()) {}
+    MessageInfo();
     /// Adopt ownership of an existing C handle.
-    explicit MessageInfo(vscf_message_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    MessageInfo(const MessageInfo& other) : c_ctx_(vscf_message_info_shallow_copy(other.c_ctx_)) {}
-    MessageInfo(MessageInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    MessageInfo& operator=(const MessageInfo& other) {
-        if (this != &other) {
-            vscf_message_info_delete(c_ctx_);
-            c_ctx_ = vscf_message_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    MessageInfo& operator=(MessageInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_message_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~MessageInfo() { vscf_message_info_delete(c_ctx_); }
+    explicit MessageInfo(vscf_message_info_t* c_ctx) noexcept;
+    MessageInfo(const MessageInfo& other);
+    MessageInfo(MessageInfo&& other) noexcept;
+    MessageInfo& operator=(const MessageInfo& other);
+    MessageInfo& operator=(MessageInfo&& other) noexcept;
+    ~MessageInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_message_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_message_info_t* c_ctx() const noexcept;
 
     /// Return information about algorithm that was used for the data encryption.
-    std::unique_ptr<AlgInfo> data_encryption_alg_info() const {
-        auto proxy_result = vscf_message_info_data_encryption_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> data_encryption_alg_info() const;
 
     /// Return list with a "key recipient info" elements.
-    KeyRecipientInfoList key_recipient_info_list() const {
-        auto proxy_result = vscf_message_info_key_recipient_info_list(c_ctx_);
-        return KeyRecipientInfoList(vscf_key_recipient_info_list_shallow_copy(const_cast<vscf_key_recipient_info_list_t*>(proxy_result)));
-    }
+    KeyRecipientInfoList key_recipient_info_list() const;
 
     /// Return list with a "password recipient info" elements.
-    PasswordRecipientInfoList password_recipient_info_list() const {
-        auto proxy_result = vscf_message_info_password_recipient_info_list(c_ctx_);
-        return PasswordRecipientInfoList(vscf_password_recipient_info_list_shallow_copy(const_cast<vscf_password_recipient_info_list_t*>(proxy_result)));
-    }
+    PasswordRecipientInfoList password_recipient_info_list() const;
 
     /// Return list with a "kek recipient info" elements.
-    KekRecipientInfoList kek_recipient_info_list() const {
-        auto proxy_result = vscf_message_info_kek_recipient_info_list(c_ctx_);
-        return KekRecipientInfoList(vscf_kek_recipient_info_list_shallow_copy(const_cast<vscf_kek_recipient_info_list_t*>(proxy_result)));
-    }
+    KekRecipientInfoList kek_recipient_info_list() const;
 
     /// Return true if message info contains at least one custom param.
-    bool has_custom_params() const {
-        auto proxy_result = vscf_message_info_has_custom_params(c_ctx_);
-        return proxy_result;
-    }
+    bool has_custom_params() const;
 
     /// Provide access to the custom params object.
     /// The returned object can be used to add custom params or read it.
     /// If custom params object was not set then new empty object is created.
-    MessageInfoCustomParams custom_params() {
-        auto proxy_result = vscf_message_info_custom_params(c_ctx_);
-        return MessageInfoCustomParams(vscf_message_info_custom_params_shallow_copy(const_cast<vscf_message_info_custom_params_t*>(proxy_result)));
-    }
+    MessageInfoCustomParams custom_params();
 
     /// Return true if cipher kdf alg info exists.
-    bool has_cipher_kdf_alg_info() const {
-        auto proxy_result = vscf_message_info_has_cipher_kdf_alg_info(c_ctx_);
-        return proxy_result;
-    }
+    bool has_cipher_kdf_alg_info() const;
 
     /// Return cipher kdf alg info.
-    std::unique_ptr<AlgInfo> cipher_kdf_alg_info() const {
-        auto proxy_result = vscf_message_info_cipher_kdf_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> cipher_kdf_alg_info() const;
 
     /// Return true if cipher padding alg info exists.
-    bool has_cipher_padding_alg_info() const {
-        auto proxy_result = vscf_message_info_has_cipher_padding_alg_info(c_ctx_);
-        return proxy_result;
-    }
+    bool has_cipher_padding_alg_info() const;
 
     /// Return cipher padding alg info.
-    std::unique_ptr<AlgInfo> cipher_padding_alg_info() const {
-        auto proxy_result = vscf_message_info_cipher_padding_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> cipher_padding_alg_info() const;
 
     /// Return true if footer info exists.
-    bool has_footer_info() const {
-        auto proxy_result = vscf_message_info_has_footer_info(c_ctx_);
-        return proxy_result;
-    }
+    bool has_footer_info() const;
 
     /// Return footer info.
-    FooterInfo footer_info() const {
-        auto proxy_result = vscf_message_info_footer_info(c_ctx_);
-        return FooterInfo(vscf_footer_info_shallow_copy(const_cast<vscf_footer_info_t*>(proxy_result)));
-    }
+    FooterInfo footer_info() const;
 
     /// Remove all infos.
-    void clear() {
-        vscf_message_info_clear(c_ctx_);
-    }
+    void clear();
 
 private:
     vscf_message_info_t* c_ctx_;

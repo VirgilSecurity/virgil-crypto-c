@@ -42,108 +42,56 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_aes128_kw.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg.hpp>
 #include <virgil/crypto/foundation/key_wrap.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_aes128_kw_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Implementation of AES-128 Key Wrap algorithm (RFC 3394).
 class Aes128Kw : virtual public Alg, virtual public KeyWrap {
 public:
-    Aes128Kw() : c_ctx_(vscf_aes128_kw_new()) {}
+    Aes128Kw();
     /// Adopt ownership of an existing C handle.
-    explicit Aes128Kw(vscf_aes128_kw_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Aes128Kw(const Aes128Kw& other) : c_ctx_(vscf_aes128_kw_shallow_copy(other.c_ctx_)) {}
-    Aes128Kw(Aes128Kw&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Aes128Kw& operator=(const Aes128Kw& other) {
-        if (this != &other) {
-            vscf_aes128_kw_delete(c_ctx_);
-            c_ctx_ = vscf_aes128_kw_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Aes128Kw& operator=(Aes128Kw&& other) noexcept {
-        if (this != &other) {
-            vscf_aes128_kw_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Aes128Kw() { vscf_aes128_kw_delete(c_ctx_); }
+    explicit Aes128Kw(vscf_aes128_kw_t* c_ctx) noexcept;
+    Aes128Kw(const Aes128Kw& other);
+    Aes128Kw(Aes128Kw&& other) noexcept;
+    Aes128Kw& operator=(const Aes128Kw& other);
+    Aes128Kw& operator=(Aes128Kw&& other) noexcept;
+    ~Aes128Kw();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_aes128_kw_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_aes128_kw_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_aes128_kw_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_aes128_kw_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() const override {
-        auto proxy_result = vscf_aes128_kw_produce_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    std::unique_ptr<AlgInfo> produce_alg_info() const override;
 
     /// Restore algorithm configuration from the given object.
-    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override {
-        const vscf_status_t status = vscf_aes128_kw_restore_alg_info(c_ctx_, alg_info.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override;
 
     /// Return buffer length required to hold a wrapped key for the given plain key length.
-    std::size_t wrapped_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes128_kw_wrapped_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t wrapped_len(std::size_t data_len) const override;
 
     /// Return buffer length required to hold an unwrapped key for the given wrapped key length.
-    std::size_t unwrapped_len(std::size_t data_len) const override {
-        auto proxy_result = vscf_aes128_kw_unwrapped_len(c_ctx_, data_len);
-        return proxy_result;
-    }
+    std::size_t unwrapped_len(std::size_t data_len) const override;
 
     /// Wrap given key data using the Key Encryption Key (KEK).
-    tl::expected<std::vector<uint8_t>, Error> wrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) override {
-        std::vector<uint8_t> out(this->wrapped_len(data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_aes128_kw_wrap(c_ctx_, vsc_data(kek.data(), kek.size()), vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> wrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) override;
 
     /// Unwrap given key data using the Key Encryption Key (KEK).
-    tl::expected<std::vector<uint8_t>, Error> unwrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) override {
-        std::vector<uint8_t> out(this->unwrapped_len(data.size()));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_aes128_kw_unwrap(c_ctx_, vsc_data(kek.data(), kek.size()), vsc_data(data.data(), data.size()), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> unwrap(std::span<const uint8_t> kek, std::span<const uint8_t> data) override;
 
 private:
     vscf_aes128_kw_t* c_ctx_;

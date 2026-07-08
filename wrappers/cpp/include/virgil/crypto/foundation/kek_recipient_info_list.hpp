@@ -41,80 +41,49 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_kek_recipient_info_list.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/kek_recipient_info.hpp>
+
+struct vscf_kek_recipient_info_list_t;
 
 namespace virgil::crypto::foundation {
+
+class KekRecipientInfo;
 
 /// Handles a list of "kek recipient info" class objects.
 class KekRecipientInfoList {
 public:
-    KekRecipientInfoList() : c_ctx_(vscf_kek_recipient_info_list_new()) {}
+    KekRecipientInfoList();
     /// Adopt ownership of an existing C handle.
-    explicit KekRecipientInfoList(vscf_kek_recipient_info_list_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    KekRecipientInfoList(const KekRecipientInfoList& other) : c_ctx_(vscf_kek_recipient_info_list_shallow_copy(other.c_ctx_)) {}
-    KekRecipientInfoList(KekRecipientInfoList&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    KekRecipientInfoList& operator=(const KekRecipientInfoList& other) {
-        if (this != &other) {
-            vscf_kek_recipient_info_list_delete(c_ctx_);
-            c_ctx_ = vscf_kek_recipient_info_list_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    KekRecipientInfoList& operator=(KekRecipientInfoList&& other) noexcept {
-        if (this != &other) {
-            vscf_kek_recipient_info_list_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~KekRecipientInfoList() { vscf_kek_recipient_info_list_delete(c_ctx_); }
+    explicit KekRecipientInfoList(vscf_kek_recipient_info_list_t* c_ctx) noexcept;
+    KekRecipientInfoList(const KekRecipientInfoList& other);
+    KekRecipientInfoList(KekRecipientInfoList&& other) noexcept;
+    KekRecipientInfoList& operator=(const KekRecipientInfoList& other);
+    KekRecipientInfoList& operator=(KekRecipientInfoList&& other) noexcept;
+    ~KekRecipientInfoList();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_kek_recipient_info_list_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_kek_recipient_info_list_t* c_ctx() const noexcept;
 
     /// Return true if given list has item.
-    bool has_item() const {
-        auto proxy_result = vscf_kek_recipient_info_list_has_item(c_ctx_);
-        return proxy_result;
-    }
+    bool has_item() const;
 
     /// Return list item.
-    KekRecipientInfo item() const {
-        auto proxy_result = vscf_kek_recipient_info_list_item(c_ctx_);
-        return KekRecipientInfo(vscf_kek_recipient_info_shallow_copy(const_cast<vscf_kek_recipient_info_t*>(proxy_result)));
-    }
+    KekRecipientInfo item() const;
 
     /// Return true if list has next item.
-    bool has_next() const {
-        auto proxy_result = vscf_kek_recipient_info_list_has_next(c_ctx_);
-        return proxy_result;
-    }
+    bool has_next() const;
 
     /// Return next list node if exists, or NULL otherwise.
-    KekRecipientInfoList next() const {
-        auto proxy_result = vscf_kek_recipient_info_list_next(c_ctx_);
-        return KekRecipientInfoList(vscf_kek_recipient_info_list_shallow_copy(const_cast<vscf_kek_recipient_info_list_t*>(proxy_result)));
-    }
+    KekRecipientInfoList next() const;
 
     /// Return true if list has previous item.
-    bool has_prev() const {
-        auto proxy_result = vscf_kek_recipient_info_list_has_prev(c_ctx_);
-        return proxy_result;
-    }
+    bool has_prev() const;
 
     /// Return previous list node if exists, or NULL otherwise.
-    KekRecipientInfoList prev() const {
-        auto proxy_result = vscf_kek_recipient_info_list_prev(c_ctx_);
-        return KekRecipientInfoList(vscf_kek_recipient_info_list_shallow_copy(const_cast<vscf_kek_recipient_info_list_t*>(proxy_result)));
-    }
+    KekRecipientInfoList prev() const;
 
     /// Remove all items.
-    void clear() {
-        vscf_kek_recipient_info_list_clear(c_ctx_);
-    }
+    void clear();
 
 private:
     vscf_kek_recipient_info_list_t* c_ctx_;

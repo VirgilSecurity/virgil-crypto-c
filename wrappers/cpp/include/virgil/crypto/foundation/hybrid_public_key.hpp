@@ -42,92 +42,60 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_hybrid_public_key.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/key.hpp>
 #include <virgil/crypto/foundation/public_key.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_hybrid_public_key_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class PublicKey;
 
 /// Handles a hybrid public key.
 ///
 /// The hybrid public key contains 2 public keys.
 class HybridPublicKey : virtual public Key, virtual public PublicKey {
 public:
-    HybridPublicKey() : c_ctx_(vscf_hybrid_public_key_new()) {}
+    HybridPublicKey();
     /// Adopt ownership of an existing C handle.
-    explicit HybridPublicKey(vscf_hybrid_public_key_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    HybridPublicKey(const HybridPublicKey& other) : c_ctx_(vscf_hybrid_public_key_shallow_copy(other.c_ctx_)) {}
-    HybridPublicKey(HybridPublicKey&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    HybridPublicKey& operator=(const HybridPublicKey& other) {
-        if (this != &other) {
-            vscf_hybrid_public_key_delete(c_ctx_);
-            c_ctx_ = vscf_hybrid_public_key_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    HybridPublicKey& operator=(HybridPublicKey&& other) noexcept {
-        if (this != &other) {
-            vscf_hybrid_public_key_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~HybridPublicKey() { vscf_hybrid_public_key_delete(c_ctx_); }
+    explicit HybridPublicKey(vscf_hybrid_public_key_t* c_ctx) noexcept;
+    HybridPublicKey(const HybridPublicKey& other);
+    HybridPublicKey(HybridPublicKey&& other) noexcept;
+    HybridPublicKey& operator=(const HybridPublicKey& other);
+    HybridPublicKey& operator=(HybridPublicKey&& other) noexcept;
+    ~HybridPublicKey();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_hybrid_public_key_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_hybrid_public_key_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_hybrid_public_key_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return the first public key.
-    std::unique_ptr<PublicKey> first_key() const {
-        auto proxy_result = vscf_hybrid_public_key_first_key(c_ctx_);
-        return FoundationImplementation::wrap_public_key(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<PublicKey> first_key() const;
 
     /// Return the second public key.
-    std::unique_ptr<PublicKey> second_key() const {
-        auto proxy_result = vscf_hybrid_public_key_second_key(c_ctx_);
-        return FoundationImplementation::wrap_public_key(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<PublicKey> second_key() const;
 
     /// Algorithm identifier the key belongs to.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_hybrid_public_key_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Return algorithm information that can be used for serialization.
-    std::unique_ptr<AlgInfo> alg_info() const override {
-        auto proxy_result = vscf_hybrid_public_key_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> alg_info() const override;
 
     /// Length of the key in bytes.
-    std::size_t len() const override {
-        auto proxy_result = vscf_hybrid_public_key_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t len() const override;
 
     /// Length of the key in bits.
-    std::size_t bitlen() const override {
-        auto proxy_result = vscf_hybrid_public_key_bitlen(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t bitlen() const override;
 
     /// Check that key is valid.
     /// Note, this operation can be slow.
-    bool is_valid() const override {
-        auto proxy_result = vscf_hybrid_public_key_is_valid(c_ctx_);
-        return proxy_result;
-    }
+    bool is_valid() const override;
 
 private:
     vscf_hybrid_public_key_t* c_ctx_;

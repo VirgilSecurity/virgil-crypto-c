@@ -42,131 +42,71 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_sec1_serializer.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/key_serializer.hpp>
-#include <virgil/crypto/foundation/asn1_writer.hpp>
-#include <virgil/crypto/foundation/raw_private_key.hpp>
-#include <virgil/crypto/foundation/raw_public_key.hpp>
+
+struct vscf_sec1_serializer_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class Asn1Writer;
+class RawPrivateKey;
+class RawPublicKey;
 
 /// Implements SEC 1 key serialization to DER format.
 /// See also RFC 5480 and RFC 5915.
 class Sec1Serializer : virtual public KeySerializer {
 public:
-    Sec1Serializer() : c_ctx_(vscf_sec1_serializer_new()) {}
+    Sec1Serializer();
     /// Adopt ownership of an existing C handle.
-    explicit Sec1Serializer(vscf_sec1_serializer_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Sec1Serializer(const Sec1Serializer& other) : c_ctx_(vscf_sec1_serializer_shallow_copy(other.c_ctx_)) {}
-    Sec1Serializer(Sec1Serializer&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Sec1Serializer& operator=(const Sec1Serializer& other) {
-        if (this != &other) {
-            vscf_sec1_serializer_delete(c_ctx_);
-            c_ctx_ = vscf_sec1_serializer_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Sec1Serializer& operator=(Sec1Serializer&& other) noexcept {
-        if (this != &other) {
-            vscf_sec1_serializer_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Sec1Serializer() { vscf_sec1_serializer_delete(c_ctx_); }
+    explicit Sec1Serializer(vscf_sec1_serializer_t* c_ctx) noexcept;
+    Sec1Serializer(const Sec1Serializer& other);
+    Sec1Serializer(Sec1Serializer&& other) noexcept;
+    Sec1Serializer& operator=(const Sec1Serializer& other);
+    Sec1Serializer& operator=(Sec1Serializer&& other) noexcept;
+    ~Sec1Serializer();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_sec1_serializer_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_sec1_serializer_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_sec1_serializer_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
-    void set_asn1_writer(const Asn1Writer& asn1_writer) {
-        vscf_sec1_serializer_release_asn1_writer(c_ctx_);
-        vscf_sec1_serializer_use_asn1_writer(c_ctx_, asn1_writer.impl());
-    }
+    void set_asn1_writer(const Asn1Writer& asn1_writer);
 
     /// Setup predefined values to the uninitialized class dependencies.
-    void setup_defaults() {
-        vscf_sec1_serializer_setup_defaults(c_ctx_);
-    }
+    void setup_defaults();
 
     /// Serialize Public Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    tl::expected<std::size_t, Error> serialize_public_key_inplace(const RawPublicKey& public_key) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_sec1_serializer_serialize_public_key_inplace(c_ctx_, public_key.c_ctx(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return proxy_result;
-    }
+    tl::expected<std::size_t, Error> serialize_public_key_inplace(const RawPublicKey& public_key);
 
     /// Serialize Private Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    tl::expected<std::size_t, Error> serialize_private_key_inplace(const RawPrivateKey& private_key) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_sec1_serializer_serialize_private_key_inplace(c_ctx_, private_key.c_ctx(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return proxy_result;
-    }
+    tl::expected<std::size_t, Error> serialize_private_key_inplace(const RawPrivateKey& private_key);
 
     /// Calculate buffer size enough to hold serialized public key.
     ///
     /// Precondition: public key must be exportable.
-    std::size_t serialized_public_key_len(const RawPublicKey& public_key) const override {
-        auto proxy_result = vscf_sec1_serializer_serialized_public_key_len(c_ctx_, public_key.c_ctx());
-        return proxy_result;
-    }
+    std::size_t serialized_public_key_len(const RawPublicKey& public_key) const override;
 
     /// Serialize given public key to an interchangeable format.
     ///
     /// Precondition: public key must be exportable.
-    tl::expected<std::vector<uint8_t>, Error> serialize_public_key(const RawPublicKey& public_key) override {
-        std::vector<uint8_t> out(this->serialized_public_key_len(public_key));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_sec1_serializer_serialize_public_key(c_ctx_, public_key.c_ctx(), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> serialize_public_key(const RawPublicKey& public_key) override;
 
     /// Calculate buffer size enough to hold serialized private key.
     ///
     /// Precondition: private key must be exportable.
-    std::size_t serialized_private_key_len(const RawPrivateKey& private_key) const override {
-        auto proxy_result = vscf_sec1_serializer_serialized_private_key_len(c_ctx_, private_key.c_ctx());
-        return proxy_result;
-    }
+    std::size_t serialized_private_key_len(const RawPrivateKey& private_key) const override;
 
     /// Serialize given private key to an interchangeable format.
     ///
     /// Precondition: private key must be exportable.
-    tl::expected<std::vector<uint8_t>, Error> serialize_private_key(const RawPrivateKey& private_key) override {
-        std::vector<uint8_t> out(this->serialized_private_key_len(private_key));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_sec1_serializer_serialize_private_key(c_ctx_, private_key.c_ctx(), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> serialize_private_key(const RawPrivateKey& private_key) override;
 
 private:
     vscf_sec1_serializer_t* c_ctx_;

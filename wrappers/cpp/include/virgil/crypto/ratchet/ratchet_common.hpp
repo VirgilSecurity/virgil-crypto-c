@@ -41,7 +41,6 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/ratchet/vscr_ratchet_common.h>
 #include <virgil/crypto/ratchet/error.hpp>
 
 namespace virgil::crypto::ratchet {

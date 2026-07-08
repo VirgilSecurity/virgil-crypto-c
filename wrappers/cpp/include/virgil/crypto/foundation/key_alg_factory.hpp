@@ -42,64 +42,31 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_key_alg_factory.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/key.hpp>
-#include <virgil/crypto/foundation/key_alg.hpp>
-#include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/foundation/raw_private_key.hpp>
-#include <virgil/crypto/foundation/raw_public_key.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
 
 namespace virgil::crypto::foundation {
+
+class Key;
+class KeyAlg;
+class Random;
+class RawPrivateKey;
+class RawPublicKey;
 
 /// Create a bridge between "raw keys" and algorithms that can import them.
 class KeyAlgFactory {
 public:
     /// Create a key algorithm based on an identifier.
-    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_alg_id(AlgId alg_id, const Random& random) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_alg_factory_create_from_alg_id(static_cast<vscf_alg_id_t>(alg_id), random.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_key_alg(proxy_result);
-    }
+    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_alg_id(AlgId alg_id, const Random& random);
 
     /// Create a key algorithm correspond to a specific key.
-    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_key(const Key& key, const Random& random) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_alg_factory_create_from_key(key.impl(), random.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_key_alg(proxy_result);
-    }
+    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_key(const Key& key, const Random& random);
 
     /// Create a key algorithm that can import "raw public key".
-    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_raw_public_key(const RawPublicKey& public_key, const Random& random) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_alg_factory_create_from_raw_public_key(public_key.c_ctx(), random.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_key_alg(proxy_result);
-    }
+    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_raw_public_key(const RawPublicKey& public_key, const Random& random);
 
     /// Create a key algorithm that can import "raw private key".
-    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_raw_private_key(const RawPrivateKey& private_key, const Random& random) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_alg_factory_create_from_raw_private_key(private_key.c_ctx(), random.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_key_alg(proxy_result);
-    }
+    static tl::expected<std::unique_ptr<KeyAlg>, Error> create_from_raw_private_key(const RawPrivateKey& private_key, const Random& random);
 
 };
 

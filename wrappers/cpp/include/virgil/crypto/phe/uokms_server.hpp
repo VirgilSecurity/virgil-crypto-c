@@ -41,10 +41,10 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/phe/vsce_uokms_server.h>
 #include <virgil/crypto/phe/error.hpp>
 #include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/phe/phe_common.hpp>
+
+struct vsce_uokms_server_t;
 
 namespace virgil::crypto::phe {
 
@@ -64,112 +64,36 @@ struct UokmsServerRotateKeysResult {
 /// Class implements UOKMS for server-side.
 class UokmsServer {
 public:
-    UokmsServer() : c_ctx_(vsce_uokms_server_new()) {}
+    UokmsServer();
     /// Adopt ownership of an existing C handle.
-    explicit UokmsServer(vsce_uokms_server_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    UokmsServer(const UokmsServer& other) : c_ctx_(vsce_uokms_server_shallow_copy(other.c_ctx_)) {}
-    UokmsServer(UokmsServer&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    UokmsServer& operator=(const UokmsServer& other) {
-        if (this != &other) {
-            vsce_uokms_server_delete(c_ctx_);
-            c_ctx_ = vsce_uokms_server_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    UokmsServer& operator=(UokmsServer&& other) noexcept {
-        if (this != &other) {
-            vsce_uokms_server_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~UokmsServer() { vsce_uokms_server_delete(c_ctx_); }
+    explicit UokmsServer(vsce_uokms_server_t* c_ctx) noexcept;
+    UokmsServer(const UokmsServer& other);
+    UokmsServer(UokmsServer&& other) noexcept;
+    UokmsServer& operator=(const UokmsServer& other);
+    UokmsServer& operator=(UokmsServer&& other) noexcept;
+    ~UokmsServer();
 
     /// The underlying concrete C handle (non-owning).
-    vsce_uokms_server_t* c_ctx() const noexcept { return c_ctx_; }
+    vsce_uokms_server_t* c_ctx() const noexcept;
 
-    void set_random(const virgil::crypto::foundation::Random& random) {
-        vsce_uokms_server_release_random(c_ctx_);
-        vsce_uokms_server_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const virgil::crypto::foundation::Random& random);
 
-    void set_operation_random(const virgil::crypto::foundation::Random& operation_random) {
-        vsce_uokms_server_release_operation_random(c_ctx_);
-        vsce_uokms_server_use_operation_random(c_ctx_, operation_random.impl());
-    }
+    void set_operation_random(const virgil::crypto::foundation::Random& operation_random);
 
     /// Setups dependencies with default values.
-    tl::expected<void, Error> setup_defaults() {
-        const vsce_status_t status = vsce_uokms_server_setup_defaults(c_ctx_);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Generates new NIST P-256 server key pair for some client
-    tl::expected<UokmsServerGenerateServerKeyPairResult, Error> generate_server_key_pair() {
-        std::vector<uint8_t> server_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-        vsc_buffer_t* server_private_key_buf = vsc_buffer_new();
-        vsc_buffer_use(server_private_key_buf, server_private_key.data(), server_private_key.size());
-        std::vector<uint8_t> server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-        vsc_buffer_t* server_public_key_buf = vsc_buffer_new();
-        vsc_buffer_use(server_public_key_buf, server_public_key.data(), server_public_key.size());
-        const vsce_status_t status = vsce_uokms_server_generate_server_key_pair(c_ctx_, server_private_key_buf, server_public_key_buf);
-        server_private_key.resize(vsc_buffer_len(server_private_key_buf));
-        vsc_buffer_delete(server_private_key_buf);
-        server_public_key.resize(vsc_buffer_len(server_public_key_buf));
-        vsc_buffer_delete(server_public_key_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return UokmsServerGenerateServerKeyPairResult{.server_private_key = std::move(server_private_key), .server_public_key = std::move(server_public_key)};
-    }
+    tl::expected<UokmsServerGenerateServerKeyPairResult, Error> generate_server_key_pair();
 
     /// Buffer size needed to fit DecryptResponse
-    std::size_t decrypt_response_len() {
-        auto proxy_result = vsce_uokms_server_decrypt_response_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t decrypt_response_len();
 
     /// Processed client's decrypt request
-    tl::expected<std::vector<uint8_t>, Error> process_decrypt_request(std::span<const uint8_t> server_private_key, std::span<const uint8_t> decrypt_request) {
-        std::vector<uint8_t> decrypt_response(this->decrypt_response_len());
-        vsc_buffer_t* decrypt_response_buf = vsc_buffer_new();
-        vsc_buffer_use(decrypt_response_buf, decrypt_response.data(), decrypt_response.size());
-        const vsce_status_t status = vsce_uokms_server_process_decrypt_request(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), vsc_data(decrypt_request.data(), decrypt_request.size()), decrypt_response_buf);
-        decrypt_response.resize(vsc_buffer_len(decrypt_response_buf));
-        vsc_buffer_delete(decrypt_response_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return decrypt_response;
-    }
+    tl::expected<std::vector<uint8_t>, Error> process_decrypt_request(std::span<const uint8_t> server_private_key, std::span<const uint8_t> decrypt_request);
 
     /// Updates server's private and public keys and issues an update token for use on client's side
-    tl::expected<UokmsServerRotateKeysResult, Error> rotate_keys(std::span<const uint8_t> server_private_key) {
-        std::vector<uint8_t> new_server_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-        vsc_buffer_t* new_server_private_key_buf = vsc_buffer_new();
-        vsc_buffer_use(new_server_private_key_buf, new_server_private_key.data(), new_server_private_key.size());
-        std::vector<uint8_t> new_server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-        vsc_buffer_t* new_server_public_key_buf = vsc_buffer_new();
-        vsc_buffer_use(new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
-        std::vector<uint8_t> update_token(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-        vsc_buffer_t* update_token_buf = vsc_buffer_new();
-        vsc_buffer_use(update_token_buf, update_token.data(), update_token.size());
-        const vsce_status_t status = vsce_uokms_server_rotate_keys(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), new_server_private_key_buf, new_server_public_key_buf, update_token_buf);
-        new_server_private_key.resize(vsc_buffer_len(new_server_private_key_buf));
-        vsc_buffer_delete(new_server_private_key_buf);
-        new_server_public_key.resize(vsc_buffer_len(new_server_public_key_buf));
-        vsc_buffer_delete(new_server_public_key_buf);
-        update_token.resize(vsc_buffer_len(update_token_buf));
-        vsc_buffer_delete(update_token_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return UokmsServerRotateKeysResult{.new_server_private_key = std::move(new_server_private_key), .new_server_public_key = std::move(new_server_public_key), .update_token = std::move(update_token)};
-    }
+    tl::expected<UokmsServerRotateKeysResult, Error> rotate_keys(std::span<const uint8_t> server_private_key);
 
 private:
     vsce_uokms_server_t* c_ctx_;

@@ -42,59 +42,38 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_signer_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_signer_info_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle information about signer that is defined by an identifer and
 /// a Public Key.
 class SignerInfo {
 public:
-    SignerInfo() : c_ctx_(vscf_signer_info_new()) {}
+    SignerInfo();
     /// Adopt ownership of an existing C handle.
-    explicit SignerInfo(vscf_signer_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    SignerInfo(const SignerInfo& other) : c_ctx_(vscf_signer_info_shallow_copy(other.c_ctx_)) {}
-    SignerInfo(SignerInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    SignerInfo& operator=(const SignerInfo& other) {
-        if (this != &other) {
-            vscf_signer_info_delete(c_ctx_);
-            c_ctx_ = vscf_signer_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    SignerInfo& operator=(SignerInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_signer_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~SignerInfo() { vscf_signer_info_delete(c_ctx_); }
+    explicit SignerInfo(vscf_signer_info_t* c_ctx) noexcept;
+    SignerInfo(const SignerInfo& other);
+    SignerInfo(SignerInfo&& other) noexcept;
+    SignerInfo& operator=(const SignerInfo& other);
+    SignerInfo& operator=(SignerInfo&& other) noexcept;
+    ~SignerInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_signer_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_signer_info_t* c_ctx() const noexcept;
 
     /// Return signer identifier.
-    std::vector<uint8_t> signer_id() const {
-        auto proxy_result = vscf_signer_info_signer_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> signer_id() const;
 
     /// Return algorithm information that was used for data signing.
-    std::unique_ptr<AlgInfo> signer_alg_info() const {
-        auto proxy_result = vscf_signer_info_signer_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> signer_alg_info() const;
 
     /// Return data signature.
-    std::vector<uint8_t> signature() const {
-        auto proxy_result = vscf_signer_info_signature(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> signature() const;
 
 private:
     vscf_signer_info_t* c_ctx_;

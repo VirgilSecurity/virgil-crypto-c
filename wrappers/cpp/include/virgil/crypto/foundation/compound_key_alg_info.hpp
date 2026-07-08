@@ -42,63 +42,43 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_compound_key_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_compound_key_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle information about compound key algorithm.
 class CompoundKeyAlgInfo : virtual public AlgInfo {
 public:
-    CompoundKeyAlgInfo() : c_ctx_(vscf_compound_key_alg_info_new()) {}
+    CompoundKeyAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit CompoundKeyAlgInfo(vscf_compound_key_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    CompoundKeyAlgInfo(const CompoundKeyAlgInfo& other) : c_ctx_(vscf_compound_key_alg_info_shallow_copy(other.c_ctx_)) {}
-    CompoundKeyAlgInfo(CompoundKeyAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    CompoundKeyAlgInfo& operator=(const CompoundKeyAlgInfo& other) {
-        if (this != &other) {
-            vscf_compound_key_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_compound_key_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    CompoundKeyAlgInfo& operator=(CompoundKeyAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_compound_key_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~CompoundKeyAlgInfo() { vscf_compound_key_alg_info_delete(c_ctx_); }
+    explicit CompoundKeyAlgInfo(vscf_compound_key_alg_info_t* c_ctx) noexcept;
+    CompoundKeyAlgInfo(const CompoundKeyAlgInfo& other);
+    CompoundKeyAlgInfo(CompoundKeyAlgInfo&& other) noexcept;
+    CompoundKeyAlgInfo& operator=(const CompoundKeyAlgInfo& other);
+    CompoundKeyAlgInfo& operator=(CompoundKeyAlgInfo&& other) noexcept;
+    ~CompoundKeyAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_compound_key_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_compound_key_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_compound_key_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return information about encrypt/decrypt algorithm.
-    std::unique_ptr<AlgInfo> cipher_alg_info() const {
-        auto proxy_result = vscf_compound_key_alg_info_cipher_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> cipher_alg_info() const;
 
     /// Return information about sign/verify algorithm.
-    std::unique_ptr<AlgInfo> signer_alg_info() const {
-        auto proxy_result = vscf_compound_key_alg_info_signer_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> signer_alg_info() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_compound_key_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_compound_key_alg_info_t* c_ctx_;

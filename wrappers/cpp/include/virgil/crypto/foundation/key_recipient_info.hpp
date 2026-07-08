@@ -42,59 +42,38 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_key_recipient_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_key_recipient_info_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle information about recipient that is defined by a Public Key.
 class KeyRecipientInfo {
 public:
-    KeyRecipientInfo() : c_ctx_(vscf_key_recipient_info_new()) {}
+    KeyRecipientInfo();
     /// Adopt ownership of an existing C handle.
-    explicit KeyRecipientInfo(vscf_key_recipient_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    KeyRecipientInfo(const KeyRecipientInfo& other) : c_ctx_(vscf_key_recipient_info_shallow_copy(other.c_ctx_)) {}
-    KeyRecipientInfo(KeyRecipientInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    KeyRecipientInfo& operator=(const KeyRecipientInfo& other) {
-        if (this != &other) {
-            vscf_key_recipient_info_delete(c_ctx_);
-            c_ctx_ = vscf_key_recipient_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    KeyRecipientInfo& operator=(KeyRecipientInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_key_recipient_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~KeyRecipientInfo() { vscf_key_recipient_info_delete(c_ctx_); }
+    explicit KeyRecipientInfo(vscf_key_recipient_info_t* c_ctx) noexcept;
+    KeyRecipientInfo(const KeyRecipientInfo& other);
+    KeyRecipientInfo(KeyRecipientInfo&& other) noexcept;
+    KeyRecipientInfo& operator=(const KeyRecipientInfo& other);
+    KeyRecipientInfo& operator=(KeyRecipientInfo&& other) noexcept;
+    ~KeyRecipientInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_key_recipient_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_key_recipient_info_t* c_ctx() const noexcept;
 
     /// Return recipient identifier.
-    std::vector<uint8_t> recipient_id() const {
-        auto proxy_result = vscf_key_recipient_info_recipient_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> recipient_id() const;
 
     /// Return algorithm information that was used for encryption
     /// a data encryption key.
-    std::unique_ptr<AlgInfo> key_encryption_algorithm() const {
-        auto proxy_result = vscf_key_recipient_info_key_encryption_algorithm(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> key_encryption_algorithm() const;
 
     /// Return an encrypted data encryption key.
-    std::vector<uint8_t> encrypted_key() const {
-        auto proxy_result = vscf_key_recipient_info_encrypted_key(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> encrypted_key() const;
 
 private:
     vscf_key_recipient_info_t* c_ctx_;

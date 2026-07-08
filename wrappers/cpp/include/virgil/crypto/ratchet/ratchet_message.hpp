@@ -41,103 +41,54 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/ratchet/vscr_ratchet_message.h>
 #include <virgil/crypto/ratchet/error.hpp>
 #include <virgil/crypto/ratchet/msg_type.hpp>
+
+struct vscr_ratchet_message_t;
 
 namespace virgil::crypto::ratchet {
 
 /// Class represents ratchet message
 class RatchetMessage {
 public:
-    RatchetMessage() : c_ctx_(vscr_ratchet_message_new()) {}
+    RatchetMessage();
     /// Adopt ownership of an existing C handle.
-    explicit RatchetMessage(vscr_ratchet_message_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    RatchetMessage(const RatchetMessage& other) : c_ctx_(vscr_ratchet_message_shallow_copy(other.c_ctx_)) {}
-    RatchetMessage(RatchetMessage&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    RatchetMessage& operator=(const RatchetMessage& other) {
-        if (this != &other) {
-            vscr_ratchet_message_delete(c_ctx_);
-            c_ctx_ = vscr_ratchet_message_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    RatchetMessage& operator=(RatchetMessage&& other) noexcept {
-        if (this != &other) {
-            vscr_ratchet_message_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~RatchetMessage() { vscr_ratchet_message_delete(c_ctx_); }
+    explicit RatchetMessage(vscr_ratchet_message_t* c_ctx) noexcept;
+    RatchetMessage(const RatchetMessage& other);
+    RatchetMessage(RatchetMessage&& other) noexcept;
+    RatchetMessage& operator=(const RatchetMessage& other);
+    RatchetMessage& operator=(RatchetMessage&& other) noexcept;
+    ~RatchetMessage();
 
     /// The underlying concrete C handle (non-owning).
-    vscr_ratchet_message_t* c_ctx() const noexcept { return c_ctx_; }
+    vscr_ratchet_message_t* c_ctx() const noexcept;
 
     /// Returns message type.
-    MsgType get_type() const {
-        auto proxy_result = vscr_ratchet_message_get_type(c_ctx_);
-        return static_cast<MsgType>(proxy_result);
-    }
+    MsgType get_type() const;
 
     /// Returns message counter in current asymmetric ratchet round.
-    uint32_t get_counter() const {
-        auto proxy_result = vscr_ratchet_message_get_counter(c_ctx_);
-        return proxy_result;
-    }
+    uint32_t get_counter() const;
 
     /// Returns long-term public key, if message is prekey message.
-    std::vector<uint8_t> get_sender_identity_key_id() {
-        auto proxy_result = vscr_ratchet_message_get_sender_identity_key_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> get_sender_identity_key_id();
 
     /// Returns long-term public key, if message is prekey message.
-    std::vector<uint8_t> get_receiver_identity_key_id() {
-        auto proxy_result = vscr_ratchet_message_get_receiver_identity_key_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> get_receiver_identity_key_id();
 
     /// Returns long-term public key, if message is prekey message.
-    std::vector<uint8_t> get_receiver_long_term_key_id() {
-        auto proxy_result = vscr_ratchet_message_get_receiver_long_term_key_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> get_receiver_long_term_key_id();
 
     /// Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
-    std::vector<uint8_t> get_receiver_one_time_key_id() {
-        auto proxy_result = vscr_ratchet_message_get_receiver_one_time_key_id(c_ctx_);
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    std::vector<uint8_t> get_receiver_one_time_key_id();
 
     /// Buffer len to serialize this class.
-    std::size_t serialize_len() const {
-        auto proxy_result = vscr_ratchet_message_serialize_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t serialize_len() const;
 
     /// Serializes instance.
-    std::vector<uint8_t> serialize() const {
-        std::vector<uint8_t> output(this->serialize_len());
-        vsc_buffer_t* output_buf = vsc_buffer_new();
-        vsc_buffer_use(output_buf, output.data(), output.size());
-        vscr_ratchet_message_serialize(c_ctx_, output_buf);
-        output.resize(vsc_buffer_len(output_buf));
-        vsc_buffer_delete(output_buf);
-        return output;
-    }
+    std::vector<uint8_t> serialize() const;
 
     /// Deserializes instance.
-    static tl::expected<RatchetMessage, Error> deserialize(std::span<const uint8_t> input) {
-        vscr_error_t error;
-        vscr_error_reset(&error);
-        auto proxy_result = vscr_ratchet_message_deserialize(vsc_data(input.data(), input.size()), &error);
-        if (vscr_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscr_error_status(&error)));
-        }
-        return RatchetMessage(proxy_result);
-    }
+    static tl::expected<RatchetMessage, Error> deserialize(std::span<const uint8_t> input);
 
 private:
     vscr_ratchet_message_t* c_ctx_;

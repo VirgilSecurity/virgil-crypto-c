@@ -42,85 +42,50 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_kdf2.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg.hpp>
 #include <virgil/crypto/foundation/kdf.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/hash.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_kdf2_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class Hash;
 
 /// Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
 class Kdf2 : virtual public Alg, virtual public Kdf {
 public:
-    Kdf2() : c_ctx_(vscf_kdf2_new()) {}
+    Kdf2();
     /// Adopt ownership of an existing C handle.
-    explicit Kdf2(vscf_kdf2_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Kdf2(const Kdf2& other) : c_ctx_(vscf_kdf2_shallow_copy(other.c_ctx_)) {}
-    Kdf2(Kdf2&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Kdf2& operator=(const Kdf2& other) {
-        if (this != &other) {
-            vscf_kdf2_delete(c_ctx_);
-            c_ctx_ = vscf_kdf2_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Kdf2& operator=(Kdf2&& other) noexcept {
-        if (this != &other) {
-            vscf_kdf2_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Kdf2() { vscf_kdf2_delete(c_ctx_); }
+    explicit Kdf2(vscf_kdf2_t* c_ctx) noexcept;
+    Kdf2(const Kdf2& other);
+    Kdf2(Kdf2&& other) noexcept;
+    Kdf2& operator=(const Kdf2& other);
+    Kdf2& operator=(Kdf2&& other) noexcept;
+    ~Kdf2();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_kdf2_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_kdf2_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_kdf2_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
-    void set_hash(const Hash& hash) {
-        vscf_kdf2_release_hash(c_ctx_);
-        vscf_kdf2_use_hash(c_ctx_, hash.impl());
-    }
+    void set_hash(const Hash& hash);
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_kdf2_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() const override {
-        auto proxy_result = vscf_kdf2_produce_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    std::unique_ptr<AlgInfo> produce_alg_info() const override;
 
     /// Restore algorithm configuration from the given object.
-    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override {
-        const vscf_status_t status = vscf_kdf2_restore_alg_info(c_ctx_, alg_info.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override;
 
     /// Derive key of the requested length from the given data.
-    std::vector<uint8_t> derive(std::span<const uint8_t> data, std::size_t key_len) override {
-        std::vector<uint8_t> key(key_len);
-        vsc_buffer_t* key_buf = vsc_buffer_new();
-        vsc_buffer_use(key_buf, key.data(), key.size());
-        vscf_kdf2_derive(c_ctx_, vsc_data(data.data(), data.size()), key_len, key_buf);
-        key.resize(vsc_buffer_len(key_buf));
-        vsc_buffer_delete(key_buf);
-        return key;
-    }
+    std::vector<uint8_t> derive(std::span<const uint8_t> data, std::size_t key_len) override;
 
 private:
     vscf_kdf2_t* c_ctx_;

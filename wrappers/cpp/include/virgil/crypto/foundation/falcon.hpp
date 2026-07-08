@@ -42,55 +42,43 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_falcon.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg.hpp>
 #include <virgil/crypto/foundation/key_alg.hpp>
 #include <virgil/crypto/foundation/key_signer.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/key.hpp>
-#include <virgil/crypto/foundation/private_key.hpp>
-#include <virgil/crypto/foundation/public_key.hpp>
-#include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/foundation/raw_private_key.hpp>
-#include <virgil/crypto/foundation/raw_public_key.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_falcon_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
+class Key;
+class PrivateKey;
+class PublicKey;
+class Random;
+class RawPrivateKey;
+class RawPublicKey;
 
 /// Provide post-quantum signature based on the falcon implementation.
 /// For algorithm details check https://falcon-sign.info.
 class Falcon : virtual public Alg, virtual public KeyAlg, virtual public KeySigner {
 public:
-    Falcon() : c_ctx_(vscf_falcon_new()) {}
+    Falcon();
     /// Adopt ownership of an existing C handle.
-    explicit Falcon(vscf_falcon_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Falcon(const Falcon& other) : c_ctx_(vscf_falcon_shallow_copy(other.c_ctx_)) {}
-    Falcon(Falcon&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Falcon& operator=(const Falcon& other) {
-        if (this != &other) {
-            vscf_falcon_delete(c_ctx_);
-            c_ctx_ = vscf_falcon_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Falcon& operator=(Falcon&& other) noexcept {
-        if (this != &other) {
-            vscf_falcon_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Falcon() { vscf_falcon_delete(c_ctx_); }
+    explicit Falcon(vscf_falcon_t* c_ctx) noexcept;
+    Falcon(const Falcon& other);
+    Falcon(Falcon&& other) noexcept;
+    Falcon& operator=(const Falcon& other);
+    Falcon& operator=(Falcon&& other) noexcept;
+    ~Falcon();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_falcon_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_falcon_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_falcon_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     static constexpr std::size_t SEED_LEN = 48;
 
@@ -98,64 +86,27 @@ public:
 
     static constexpr std::size_t LOGN_1024 = 10;
 
-    void set_random(const Random& random) {
-        vscf_falcon_release_random(c_ctx_);
-        vscf_falcon_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const Random& random);
 
     /// Setup predefined values to the uninitialized class dependencies.
-    tl::expected<void, Error> setup_defaults() {
-        const vscf_status_t status = vscf_falcon_setup_defaults(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Generate new private key.
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_key() const {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_falcon_generate_key(c_ctx_, &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_key() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_falcon_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() const override {
-        auto proxy_result = vscf_falcon_produce_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    std::unique_ptr<AlgInfo> produce_alg_info() const override;
 
     /// Restore algorithm configuration from the given object.
-    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override {
-        const vscf_status_t status = vscf_falcon_restore_alg_info(c_ctx_, alg_info.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override;
 
     /// Generate ephemeral private key of the same type.
     /// Note, this operation might be slow.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_falcon_generate_ephemeral_key(c_ctx_, key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_ephemeral_key(const Key& key) const override;
 
     /// Import public key from the raw binary format.
     ///
@@ -165,30 +116,14 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_falcon_import_public_key(c_ctx_, raw_key.c_ctx(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_public_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(const RawPublicKey& raw_key) const override;
 
     /// Export public key to the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be exported in format defined in
     /// RFC 3447 Appendix A.1.1.
-    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_falcon_export_public_key(c_ctx_, public_key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return RawPublicKey(proxy_result);
-    }
+    tl::expected<RawPublicKey, Error> export_public_key(const PublicKey& public_key) const override;
 
     /// Import private key from the raw binary format.
     ///
@@ -198,69 +133,30 @@ public:
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be imported from the format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_falcon_import_private_key(c_ctx_, raw_key.c_ctx(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(const RawPrivateKey& raw_key) const override;
 
     /// Export private key in the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be exported in format defined in
     /// RFC 3447 Appendix A.1.2.
-    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const override {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_falcon_export_private_key(c_ctx_, private_key.impl(), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return RawPrivateKey(proxy_result);
-    }
+    tl::expected<RawPrivateKey, Error> export_private_key(const PrivateKey& private_key) const override;
 
     /// Check if algorithm can sign data digest with a given key.
-    bool can_sign(const PrivateKey& private_key) const override {
-        auto proxy_result = vscf_falcon_can_sign(c_ctx_, private_key.impl());
-        return proxy_result;
-    }
+    bool can_sign(const PrivateKey& private_key) const override;
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    std::size_t signature_len(const PrivateKey& private_key) const override {
-        auto proxy_result = vscf_falcon_signature_len(c_ctx_, private_key.impl());
-        return proxy_result;
-    }
+    std::size_t signature_len(const PrivateKey& private_key) const override;
 
     /// Sign data digest with a given private key.
-    tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const override {
-        std::vector<uint8_t> signature(this->signature_len(private_key));
-        vsc_buffer_t* signature_buf = vsc_buffer_new();
-        vsc_buffer_use(signature_buf, signature.data(), signature.size());
-        const vscf_status_t status = vscf_falcon_sign_hash(c_ctx_, private_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), signature_buf);
-        signature.resize(vsc_buffer_len(signature_buf));
-        vsc_buffer_delete(signature_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return signature;
-    }
+    tl::expected<std::vector<uint8_t>, Error> sign_hash(const PrivateKey& private_key, AlgId hash_id, std::span<const uint8_t> digest) const override;
 
     /// Check if algorithm can verify data digest with a given key.
-    bool can_verify(const PublicKey& public_key) const override {
-        auto proxy_result = vscf_falcon_can_verify(c_ctx_, public_key.impl());
-        return proxy_result;
-    }
+    bool can_verify(const PublicKey& public_key) const override;
 
     /// Verify data digest with a given public key and signature.
-    bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const override {
-        auto proxy_result = vscf_falcon_verify_hash(c_ctx_, public_key.impl(), static_cast<vscf_alg_id_t>(hash_id), vsc_data(digest.data(), digest.size()), vsc_data(signature.data(), signature.size()));
-        return proxy_result;
-    }
+    bool verify_hash(const PublicKey& public_key, AlgId hash_id, std::span<const uint8_t> digest, std::span<const uint8_t> signature) const override;
 
 private:
     vscf_falcon_t* c_ctx_;

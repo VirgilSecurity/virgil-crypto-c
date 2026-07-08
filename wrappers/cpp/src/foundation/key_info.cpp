@@ -1,0 +1,156 @@
+// Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#include <virgil/crypto/foundation/key_info.hpp>
+#include <virgil/crypto/foundation/vscf_key_info.h>
+#include <virgil/crypto/foundation/vscf_impl.h>
+#include <virgil/crypto/foundation/alg_id.hpp>
+
+namespace virgil::crypto::foundation {
+
+KeyInfo::KeyInfo() : c_ctx_(vscf_key_info_new()) {}
+
+KeyInfo::KeyInfo(vscf_key_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
+
+KeyInfo::KeyInfo(const KeyInfo& other) : c_ctx_(vscf_key_info_shallow_copy(other.c_ctx_)) {}
+
+KeyInfo::KeyInfo(KeyInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
+
+KeyInfo& KeyInfo::operator=(const KeyInfo& other) {
+    if (this != &other) {
+        vscf_key_info_delete(c_ctx_);
+        c_ctx_ = vscf_key_info_shallow_copy(other.c_ctx_);
+    }
+    return *this;
+}
+
+KeyInfo& KeyInfo::operator=(KeyInfo&& other) noexcept {
+    if (this != &other) {
+        vscf_key_info_delete(c_ctx_);
+        c_ctx_ = other.c_ctx_;
+        other.c_ctx_ = nullptr;
+    }
+    return *this;
+}
+
+KeyInfo::~KeyInfo() { vscf_key_info_delete(c_ctx_); }
+
+vscf_key_info_t* KeyInfo::c_ctx() const noexcept { return c_ctx_; }
+
+bool KeyInfo::is_compound() const {
+    auto proxy_result = vscf_key_info_is_compound(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_hybrid() const {
+    auto proxy_result = vscf_key_info_is_hybrid(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_compound_hybrid() const {
+    auto proxy_result = vscf_key_info_is_compound_hybrid(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_compound_hybrid_cipher() const {
+    auto proxy_result = vscf_key_info_is_compound_hybrid_cipher(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_compound_hybrid_signer() const {
+    auto proxy_result = vscf_key_info_is_compound_hybrid_signer(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_hybrid_post_quantum() const {
+    auto proxy_result = vscf_key_info_is_hybrid_post_quantum(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_hybrid_post_quantum_cipher() const {
+    auto proxy_result = vscf_key_info_is_hybrid_post_quantum_cipher(c_ctx_);
+    return proxy_result;
+}
+
+bool KeyInfo::is_hybrid_post_quantum_signer() const {
+    auto proxy_result = vscf_key_info_is_hybrid_post_quantum_signer(c_ctx_);
+    return proxy_result;
+}
+
+AlgId KeyInfo::alg_id() const {
+    auto proxy_result = vscf_key_info_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::compound_cipher_alg_id() const {
+    auto proxy_result = vscf_key_info_compound_cipher_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::compound_signer_alg_id() const {
+    auto proxy_result = vscf_key_info_compound_signer_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::hybrid_first_key_alg_id() const {
+    auto proxy_result = vscf_key_info_hybrid_first_key_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::hybrid_second_key_alg_id() const {
+    auto proxy_result = vscf_key_info_hybrid_second_key_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::compound_hybrid_cipher_first_key_alg_id() const {
+    auto proxy_result = vscf_key_info_compound_hybrid_cipher_first_key_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::compound_hybrid_cipher_second_key_alg_id() const {
+    auto proxy_result = vscf_key_info_compound_hybrid_cipher_second_key_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::compound_hybrid_signer_first_key_alg_id() const {
+    auto proxy_result = vscf_key_info_compound_hybrid_signer_first_key_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+AlgId KeyInfo::compound_hybrid_signer_second_key_alg_id() const {
+    auto proxy_result = vscf_key_info_compound_hybrid_signer_second_key_alg_id(c_ctx_);
+    return static_cast<AlgId>(proxy_result);
+}
+
+}  // namespace virgil::crypto::foundation

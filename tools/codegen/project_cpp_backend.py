@@ -201,8 +201,10 @@ def _emit_doc(lines: list[str], description: str, indent: str = "") -> None:
         lines.append(f"{indent}/// {stripped}" if stripped else f"{indent}///")
 
 
-def _header_open(lines: list[str], project_ir: IRProject, includes: list[str]) -> None:
-    """Common header preamble: license, pragma once, includes, namespace open."""
+def _header_open(lines: list[str], project_ir: IRProject, includes: list[str],
+                 c_forward_decls: list[str] | None = None) -> None:
+    """Common header preamble: license, pragma once, includes, optional global-scope
+    C forward declarations, namespace open."""
     if _CPP_LICENSE:
         lines.append(_CPP_LICENSE)
         lines.append("")
@@ -212,12 +214,31 @@ def _header_open(lines: list[str], project_ir: IRProject, includes: list[str]) -
         lines.append(f"#include {inc}")
     if includes:
         lines.append("")
+    if c_forward_decls:
+        # C handle types are global; forward-declare them here so the public header
+        # need not pull the C library headers (leaner include surface for consumers).
+        for fd in c_forward_decls:
+            lines.append(f"{fd};")
+        lines.append("")
     lines.append(f"namespace {_cpp_namespace(project_ir)} {{")
     lines.append("")
 
 
 def _header_close(lines: list[str], project_ir: IRProject) -> None:
     lines.append(f"}}  // namespace {_cpp_namespace(project_ir)}")
+    lines.append("")
+
+
+def _source_open(lines: list[str], project_ir: IRProject, includes: list[str]) -> None:
+    """.cpp preamble: license, includes, namespace open (no ``#pragma once``)."""
+    if _CPP_LICENSE:
+        lines.append(_CPP_LICENSE)
+        lines.append("")
+    for inc in includes:
+        lines.append(f"#include {inc}")
+    if includes:
+        lines.append("")
+    lines.append(f"namespace {_cpp_namespace(project_ir)} {{")
     lines.append("")
 
 
@@ -564,7 +585,7 @@ def _c_call_args(project_ir, entity_name, method, is_static):
             continue
         local = cpp_method_name(arg.name)
         if _arg_is_buffer_output(arg):
-            parts.append(f"{local}_buf")
+            parts.append(f"&{local}_buf")
         elif arg.class_name == "data":
             parts.append(f"vsc_data({local}.data(), {local}.size())")
         elif arg.interface_name:
@@ -629,7 +650,7 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
     values = _method_value_returns(entity_name, method)
     buffers = [a for a in method.arguments if _arg_is_buffer_output(a)]
 
-    ind = "        "
+    ind = "    "  # method bodies are emitted out-of-line in the .cpp (function scope)
     lines: list[str] = []
 
     if has_error_arg:
@@ -640,8 +661,12 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
         local = cpp_method_name(buf.name)
         cap = _buffer_capacity_expr(project_ir, entity_name, buf, is_static, call_entity)
         lines.append(f"{ind}std::vector<uint8_t> {local}({cap});")
-        lines.append(f"{ind}vsc_buffer_t* {local}_buf = vsc_buffer_new();")
-        lines.append(f"{ind}vsc_buffer_use({local}_buf, {local}.data(), {local}.size());")
+        # The buffer control block wraps external (vector) memory, so it lives on the
+        # stack — no heap allocation. This needs the complete vsc_buffer_t type, which
+        # the .cpp pulls from private/vsc_buffer_defs.h (never exposed to consumers).
+        lines.append(f"{ind}vsc_buffer_t {local}_buf;")
+        lines.append(f"{ind}vsc_buffer_init(&{local}_buf);")
+        lines.append(f"{ind}vsc_buffer_use(&{local}_buf, {local}.data(), {local}.size());")
 
     # ``disown`` object arguments: the callee adopts (and nulls) a ``vscf_*_t **`` handle.
     # Hand it a shallow copy so the caller's wrapper keeps ownership of its own object.
@@ -671,8 +696,8 @@ def _cpp_method_body(project_ir: IRProject, entity_name: str, method: IRCMethod,
 
     for buf in buffers:
         local = cpp_method_name(buf.name)
-        lines.append(f"{ind}{local}.resize(vsc_buffer_len({local}_buf));")
-        lines.append(f"{ind}vsc_buffer_delete({local}_buf);")
+        lines.append(f"{ind}{local}.resize(vsc_buffer_len(&{local}_buf));")
+        lines.append(f"{ind}vsc_buffer_cleanup(&{local}_buf);")
 
     if has_status:
         lines.append(f"{ind}if (status != {prefix}_status_SUCCESS) {{")
@@ -738,48 +763,141 @@ def _cpp_constant_type(const) -> str:
     return "std::size_t"
 
 
-def _class_includes(project_ir: IRProject, cls: IRClass) -> list[str]:
-    """Collect #include directives a class header needs."""
+def _uses_output_buffer(methods) -> bool:
+    return any(_arg_is_buffer_output(a) for m in methods for a in m.arguments)
+
+
+_COMMON_NS_PATH = "virgil/crypto/common"
+_BUFFER_DEF_INCLUDES = [
+    f"<{_COMMON_NS_PATH}/vsc_buffer.h>",
+    f"<{_COMMON_NS_PATH}/private/vsc_buffer_defs.h>",
+]
+
+
+def _result_struct_member_classes(project_ir, entity_name, methods) -> set[str]:
+    """Local class names appearing as by-value members of a result struct — those
+    need the complete type in the .hpp (the struct is defined there)."""
+    names: set[str] = set()
+    for m in methods:
+        if not _method_should_wrap(m):
+            continue
+        values = _method_value_returns(entity_name, m)
+        buffers = [a for a in m.arguments if _arg_is_buffer_output(a)]
+        if len(values) + len(buffers) < 2:
+            continue
+        for v in values:
+            if (v.class_name and not v.interface_name
+                    and v.class_name not in {"data", "buffer", "error"}
+                    and not _ref_leaf(project_ir, v.project)):
+                names.add(v.class_name)
+    return names
+
+
+def _hpp_ref_split(project_ir, entity_name, methods, deps):
+    """(#include paths, forward-declared C++ type names) for a class/impl .hpp.
+
+    The .hpp holds only declarations, so referenced wrapper types are forward-declared
+    (avoids include cycles and keeps the header lean). Exceptions that need the complete
+    type in the header, and so are #included: enums (by-value params/returns),
+    cross-project types (a forward decl cannot re-open another project's namespace), and
+    local classes used as by-value result-struct members."""
+    includes: list[str] = []
+    fwd: list[str] = []
+    rs_members = _result_struct_member_classes(project_ir, entity_name, methods)
+
+    def _add(name, project, is_iface):
+        if _ref_leaf(project_ir, project) or (not is_iface and name in rs_members):
+            includes.append(_ref_include(project_ir, name, project))
+        else:
+            fwd.append(cpp_type_name(name))
+
+    for m in methods:
+        if not _method_should_wrap(m):
+            continue
+        for a in list(m.arguments) + list(m.returns):
+            a = _resolve_self(entity_name, a)
+            if a.enum_name and a.enum_name not in _INFRASTRUCTURE_ENUMS:
+                includes.append(_ref_include(project_ir, a.enum_name, a.project))
+            elif a.interface_name:
+                _add(a.interface_name, a.project, True)
+            elif a.class_name and a.class_name not in {"data", "buffer", "error", entity_name}:
+                _add(a.class_name, a.project, False)
+    for d in deps:
+        _add(d.type_name, d.attrs.get("project"), d.type_kind != "class")
+    return sorted(set(includes)), sorted(set(fwd))
+
+
+def _class_def_includes(project_ir, entity_name, methods, deps, *, returns_iface,
+                        iface_names=()):
+    """.cpp includes: the entity's own .hpp + the full C world it calls into."""
     ns_path = f"virgil/crypto/{_ns_leaf(project_ir)}"
-    returns_iface = _returns_interface(project_ir, cls.name, cls.methods)
-    incs = _base_std_includes(returns_iface)
-    incs += [
-        f"<{ns_path}/{project_ir.prefix}_{_entity_snake(cls.name)}.h>",
-        f"<{ns_path}/error.hpp>",
+    incs = [
+        f"<{ns_path}/{_header_stem(entity_name)}.hpp>",
+        f"<{ns_path}/{project_ir.prefix}_{_entity_snake(entity_name)}.h>",
     ]
-    for inc in _referenced_wrapper_includes(project_ir, cls.name, cls.methods, cls.dependencies):
+    # The project's own impl infrastructure header exists only when it has interfaces
+    # (foundation). phe/ratchet reach foundation's vscf_impl_t transitively via their
+    # own C headers, so must not include a non-existent vsce_impl.h / vscr_impl.h.
+    if project_ir.interfaces:
+        incs.append(f"<{ns_path}/{project_ir.prefix}_impl.h>")
+    for name in iface_names:
+        incs.append(f"<{ns_path}/{_entity_snake(name)}.hpp>")
+    for inc in _referenced_wrapper_includes(project_ir, entity_name, methods, deps):
         incs.append(f"<{inc}>")
     if returns_iface:
         incs.append(f"<{ns_path}/{_header_stem(project_ir.name)}_implementation.hpp>")
+    if _uses_output_buffer(methods):
+        incs += _BUFFER_DEF_INCLUDES
     return _dedup(incs)
 
 
-def _emit_raii_lifecycle(lines, type_name, c_type, prefix, entity):
-    """Emit the rule-of-five lifecycle over a C handle + the c_ctx() accessor."""
-    lines.append(f"    {type_name}() : c_ctx_({prefix}_{entity}_new()) {{}}")
+def _emit_raii_decls(lines, type_name, c_type):
+    """Declare the rule-of-five lifecycle + the c_ctx() accessor (in the .hpp);
+    definitions are emitted out-of-line by _emit_raii_defs."""
+    lines.append(f"    {type_name}();")
     lines.append(f"    /// Adopt ownership of an existing C handle.")
-    lines.append(f"    explicit {type_name}({c_type}* c_ctx) noexcept : c_ctx_(c_ctx) {{}}")
-    lines.append(f"    {type_name}(const {type_name}& other) : c_ctx_({prefix}_{entity}_shallow_copy(other.c_ctx_)) {{}}")
-    lines.append(f"    {type_name}({type_name}&& other) noexcept : c_ctx_(other.c_ctx_) {{ other.c_ctx_ = nullptr; }}")
-    lines.append(f"    {type_name}& operator=(const {type_name}& other) {{")
-    lines.append(f"        if (this != &other) {{")
-    lines.append(f"            {prefix}_{entity}_delete(c_ctx_);")
-    lines.append(f"            c_ctx_ = {prefix}_{entity}_shallow_copy(other.c_ctx_);")
-    lines.append(f"        }}")
-    lines.append(f"        return *this;")
-    lines.append(f"    }}")
-    lines.append(f"    {type_name}& operator=({type_name}&& other) noexcept {{")
-    lines.append(f"        if (this != &other) {{")
-    lines.append(f"            {prefix}_{entity}_delete(c_ctx_);")
-    lines.append(f"            c_ctx_ = other.c_ctx_;")
-    lines.append(f"            other.c_ctx_ = nullptr;")
-    lines.append(f"        }}")
-    lines.append(f"        return *this;")
-    lines.append(f"    }}")
-    lines.append(f"    ~{type_name}() {{ {prefix}_{entity}_delete(c_ctx_); }}")
+    lines.append(f"    explicit {type_name}({c_type}* c_ctx) noexcept;")
+    lines.append(f"    {type_name}(const {type_name}& other);")
+    lines.append(f"    {type_name}({type_name}&& other) noexcept;")
+    lines.append(f"    {type_name}& operator=(const {type_name}& other);")
+    lines.append(f"    {type_name}& operator=({type_name}&& other) noexcept;")
+    lines.append(f"    ~{type_name}();")
     lines.append("")
     lines.append(f"    /// The underlying concrete C handle (non-owning).")
-    lines.append(f"    {c_type}* c_ctx() const noexcept {{ return c_ctx_; }}")
+    lines.append(f"    {c_type}* c_ctx() const noexcept;")
+    lines.append("")
+
+
+def _emit_raii_defs(lines, type_name, c_type, prefix, entity):
+    """Emit the out-of-line rule-of-five definitions (in the .cpp)."""
+    lines.append(f"{type_name}::{type_name}() : c_ctx_({prefix}_{entity}_new()) {{}}")
+    lines.append("")
+    lines.append(f"{type_name}::{type_name}({c_type}* c_ctx) noexcept : c_ctx_(c_ctx) {{}}")
+    lines.append("")
+    lines.append(f"{type_name}::{type_name}(const {type_name}& other) : c_ctx_({prefix}_{entity}_shallow_copy(other.c_ctx_)) {{}}")
+    lines.append("")
+    lines.append(f"{type_name}::{type_name}({type_name}&& other) noexcept : c_ctx_(other.c_ctx_) {{ other.c_ctx_ = nullptr; }}")
+    lines.append("")
+    lines.append(f"{type_name}& {type_name}::operator=(const {type_name}& other) {{")
+    lines.append(f"    if (this != &other) {{")
+    lines.append(f"        {prefix}_{entity}_delete(c_ctx_);")
+    lines.append(f"        c_ctx_ = {prefix}_{entity}_shallow_copy(other.c_ctx_);")
+    lines.append(f"    }}")
+    lines.append(f"    return *this;")
+    lines.append(f"}}")
+    lines.append("")
+    lines.append(f"{type_name}& {type_name}::operator=({type_name}&& other) noexcept {{")
+    lines.append(f"    if (this != &other) {{")
+    lines.append(f"        {prefix}_{entity}_delete(c_ctx_);")
+    lines.append(f"        c_ctx_ = other.c_ctx_;")
+    lines.append(f"        other.c_ctx_ = nullptr;")
+    lines.append(f"    }}")
+    lines.append(f"    return *this;")
+    lines.append(f"}}")
+    lines.append("")
+    lines.append(f"{type_name}::~{type_name}() {{ {prefix}_{entity}_delete(c_ctx_); }}")
+    lines.append("")
+    lines.append(f"{c_type}* {type_name}::c_ctx() const noexcept {{ return c_ctx_; }}")
     lines.append("")
 
 
@@ -839,32 +957,39 @@ def _interface_ref_split(project_ir, iface):
     return sorted(set(includes)), sorted(set(fwd))
 
 
-def _emit_dependency_setter(lines, project_ir, entity, dep):
-    """Emit a ``set_<dep>`` setter that release+use-replaces a dependency.
+def _dep_setter_return_type(dep) -> str:
+    """A validating ``use_<dep>`` (marked ``is_observers_return_status``, e.g.
+    ``vscf_ctr_drbg_use_entropy_source`` which is ``VSCF_NODISCARD``) returns a status,
+    so its setter returns ``expected<void, Error>``; otherwise ``void``."""
+    return "tl::expected<void, Error>" if dep.is_observers_return_status else "void"
 
-    Most ``use_<dep>`` C functions return void, but a validating one (marked
-    ``is_observers_return_status``, e.g. ``vscf_ctr_drbg_use_entropy_source`` which
-    is ``VSCF_NODISCARD``) returns a ``vscf_status_t``; those setters return
-    ``expected<void, Error>`` and surface the failure instead of dropping it."""
+
+def _emit_dependency_setter_decl(lines, project_ir, dep):
+    dep_snake = _entity_snake(dep.name)
+    dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
+    local = cpp_method_name(dep.name)
+    lines.append(f"    {_dep_setter_return_type(dep)} set_{dep_snake}(const {dep_type}& {local});")
+    lines.append("")
+
+
+def _emit_dependency_setter_def(lines, project_ir, type_name, entity, dep):
     prefix = project_ir.prefix
     dep_snake = _entity_snake(dep.name)
     dep_type = _qual_type_name(project_ir, dep.type_name, dep.attrs.get("project"))
     local = cpp_method_name(dep.name)
     use = f"{prefix}_{entity}_use_{dep_snake}(c_ctx_, {_dep_handle_expr(dep, local)})"
+    ret = _dep_setter_return_type(dep)
+    lines.append(f"{ret} {type_name}::set_{dep_snake}(const {dep_type}& {local}) {{")
+    lines.append(f"    {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
     if dep.is_observers_return_status:
-        lines.append(f"    tl::expected<void, Error> set_{dep_snake}(const {dep_type}& {local}) {{")
-        lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
-        lines.append(f"        const {prefix}_status_t status = {use};")
-        lines.append(f"        if (status != {prefix}_status_SUCCESS) {{")
-        lines.append(f"            return tl::unexpected(static_cast<Error>(status));")
-        lines.append(f"        }}")
-        lines.append(f"        return {{}};")
+        lines.append(f"    const {prefix}_status_t status = {use};")
+        lines.append(f"    if (status != {prefix}_status_SUCCESS) {{")
+        lines.append(f"        return tl::unexpected(static_cast<Error>(status));")
         lines.append(f"    }}")
+        lines.append(f"    return {{}};")
     else:
-        lines.append(f"    void set_{dep_snake}(const {dep_type}& {local}) {{")
-        lines.append(f"        {prefix}_{entity}_release_{dep_snake}(c_ctx_);")
-        lines.append(f"        {use};")
-        lines.append(f"    }}")
+        lines.append(f"    {use};")
+    lines.append(f"}}")
     lines.append("")
 
 
@@ -900,77 +1025,101 @@ def _dedup(items: list[str]) -> list[str]:
     return [i for i in items if not (i in seen or seen.add(i))]
 
 
-def _emit_cpp_method(lines, project_ir, method, *, sig_entity, call_entity=None,
-                     static_kw="", override_kw=""):
-    """Emit a complete method (doc + signature + body). ``sig_entity`` drives the
-    signature; ``call_entity`` (defaults to ``sig_entity``) names the C funcs."""
-    ret = _cpp_signature_return(project_ir, sig_entity, method)
-    params = ", ".join(
+def _method_params(project_ir, sig_entity, method):
+    return ", ".join(
         f"{_cpp_param_type(project_ir, a)} {cpp_method_name(a.name)}"
         for a in _method_inputs(sig_entity, method)
     )
-    _emit_doc(lines, method.description, indent="    ")
+
+
+def _emit_method_decl(lines, project_ir, method, *, sig_entity, static_kw="", override_kw=""):
+    """Emit a method declaration (doc + signature + ``;``) inside the class body (.hpp)."""
+    ret = _cpp_signature_return(project_ir, sig_entity, method)
+    params = _method_params(project_ir, sig_entity, method)
     const_kw = " const" if _method_is_const(method) else ""
-    lines.append(f"    {static_kw}{ret} {cpp_method_name(method.name)}({params}){const_kw}{override_kw} {{")
-    lines.extend(_cpp_method_body(project_ir, sig_entity, method, call_entity=call_entity))
-    lines.append("    }")
+    _emit_doc(lines, method.description, indent="    ")
+    lines.append(f"    {static_kw}{ret} {cpp_method_name(method.name)}({params}){const_kw}{override_kw};")
     lines.append("")
 
 
-def generate_cpp_class(project_ir: IRProject, cls: IRClass) -> str:
-    """Generate the ``.hpp`` for a class as an idiomatic RAII wrapper."""
+def _emit_method_def(lines, project_ir, method, *, type_name, sig_entity, call_entity=None):
+    """Emit an out-of-line method definition (.cpp). ``static``/``virtual``/``override``
+    are omitted (declaration-only), ``const`` is kept, and the name is qualified with
+    ``<type_name>::``."""
+    ret = _cpp_signature_return(project_ir, sig_entity, method)
+    params = _method_params(project_ir, sig_entity, method)
+    const_kw = " const" if _method_is_const(method) else ""
+    lines.append(f"{ret} {type_name}::{cpp_method_name(method.name)}({params}){const_kw} {{")
+    lines.extend(_cpp_method_body(project_ir, sig_entity, method, call_entity=call_entity))
+    lines.append("}")
+    lines.append("")
+
+
+def generate_cpp_class(project_ir: IRProject, cls: IRClass) -> tuple[str, str]:
+    """Generate ``(header, source)`` for a class as an idiomatic RAII wrapper.
+
+    The header holds declarations only (forward-declaring the C handle so consumers
+    don't pull the C library); the source defines the bodies against the full C API."""
     type_name = cpp_type_name(cls.name)
     c_type = _c_type(project_ir, cls.name)
     entity = _entity_snake(cls.name)
     prefix = project_ir.prefix
     is_static = _is_static_class(cls)
+    methods = [m for m in cls.methods if _method_should_wrap(m)]
+    returns_iface = _returns_interface(project_ir, cls.name, cls.methods)
+    consts = [c for c in cls.constants
+              if c.attrs.get("definition") != "private"
+              and (c.attrs.get("value") or "").strip().lstrip("-").isdigit()]
 
-    lines: list[str] = []
-    _header_open(lines, project_ir, _class_includes(project_ir, cls))
+    # ---- Header (declarations) ----
+    ref_incs, fwd = _hpp_ref_split(project_ir, cls.name, cls.methods, cls.dependencies)
+    incs = _base_std_includes(returns_iface)
+    incs.append(f"<virgil/crypto/{_ns_leaf(project_ir)}/error.hpp>")
+    incs += [f"<{i}>" for i in ref_incs]
+    c_fwd = [] if is_static else [f"struct {c_type}"]
 
-    # Result structs first: methods return them by value (expected<Result,Error>
-    # needs the complete type at the declaration).
-    _emit_result_structs(lines, project_ir, cls.name, cls.methods)
-
-    _emit_doc(lines, cls.description)
-    lines.append(f"class {type_name} {{")
-    lines.append("public:")
-
+    h: list[str] = []
+    _header_open(h, project_ir, _dedup(incs), c_forward_decls=c_fwd)
+    for f in fwd:
+        h.append(f"class {f};")
+    if fwd:
+        h.append("")
+    _emit_result_structs(h, project_ir, cls.name, cls.methods)
+    _emit_doc(h, cls.description)
+    h.append(f"class {type_name} {{")
+    h.append("public:")
     if not is_static:
-        _emit_raii_lifecycle(lines, type_name, c_type, prefix, entity)
-
-    # --- Constants ---
-    for const in cls.constants:
-        if const.attrs.get("definition") == "private":
-            continue
-        value = const.attrs.get("value")
-        if value is None or not value.strip().lstrip("-").isdigit():
-            continue  # only plain integer literals in this unit
-        _emit_doc(lines, const.description, indent="    ")
-        lines.append(f"    static constexpr {_cpp_constant_type(const)} {cpp_constant_name(const.name)} = {value.strip()};")
-        lines.append("")
-
-    # --- Dependency setters ---
+        _emit_raii_decls(h, type_name, c_type)
+    for const in consts:
+        _emit_doc(h, const.description, indent="    ")
+        h.append(f"    static constexpr {_cpp_constant_type(const)} {cpp_constant_name(const.name)} = {const.attrs['value'].strip()};")
+        h.append("")
     if not is_static:
         for dep in cls.dependencies:
-            _emit_dependency_setter(lines, project_ir, entity, dep)
-
-    # --- Methods ---
-    for method in cls.methods:
-        if not _method_should_wrap(method):
-            continue
+            _emit_dependency_setter_decl(h, project_ir, dep)
+    for method in methods:
         static_kw = "static " if (is_static or _method_is_static(method)) else ""
-        _emit_cpp_method(lines, project_ir, method, sig_entity=cls.name, static_kw=static_kw)
-
+        _emit_method_decl(h, project_ir, method, sig_entity=cls.name, static_kw=static_kw)
     if not is_static:
-        lines.append("private:")
-        lines.append(f"    {c_type}* c_ctx_;")
+        h.append("private:")
+        h.append(f"    {c_type}* c_ctx_;")
+    h.append("};")
+    h.append("")
+    _header_close(h, project_ir)
 
-    lines.append("};")
-    lines.append("")
+    # ---- Source (definitions) ----
+    s: list[str] = []
+    _source_open(s, project_ir, _class_def_includes(
+        project_ir, cls.name, cls.methods, cls.dependencies, returns_iface=returns_iface))
+    if not is_static:
+        _emit_raii_defs(s, type_name, c_type, prefix, entity)
+        for dep in cls.dependencies:
+            _emit_dependency_setter_def(s, project_ir, type_name, entity, dep)
+    for method in methods:
+        _emit_method_def(s, project_ir, method, type_name=type_name, sig_entity=cls.name)
+    _header_close(s, project_ir)
 
-    _header_close(lines, project_ir)
-    return "\n".join(lines)
+    return "\n".join(h), "\n".join(s)
 
 
 # ---------------------------------------------------------------------------
@@ -980,9 +1129,8 @@ def generate_cpp_class(project_ir: IRProject, cls: IRClass) -> str:
 def generate_cpp_context(project_ir: IRProject) -> str:
     """Generate ``context.hpp``: the shared virtual base exposing the polymorphic
     C implementation handle (analogous to Swift's CContext)."""
-    ns_path = f"virgil/crypto/{_ns_leaf(project_ir)}"
     lines: list[str] = []
-    _header_open(lines, project_ir, [f"<{ns_path}/{project_ir.prefix}_impl.h>"])
+    _header_open(lines, project_ir, [], c_forward_decls=[f"struct {project_ir.prefix}_impl_t"])
     lines.append("/// Common virtual base of every interface: exposes the underlying")
     lines.append("/// polymorphic C implementation handle.")
     lines.append("class Context {")
@@ -1063,9 +1211,9 @@ def _iface_closure(iface_by_name: dict, names: list[str]) -> list[str]:
     return seen
 
 
-def generate_cpp_implementation(project_ir: IRProject, impl) -> str:
-    """Generate an implementation: an RAII class that inherits and overrides its
-    bound interfaces."""
+def generate_cpp_implementation(project_ir: IRProject, impl) -> tuple[str, str]:
+    """Generate ``(header, source)`` for an implementation: an RAII class that
+    inherits and overrides its bound interfaces."""
     type_name = cpp_type_name(impl.name)
     c_type = _c_type(project_ir, impl.name)
     entity = _entity_snake(impl.name)
@@ -1079,74 +1227,83 @@ def generate_cpp_implementation(project_ir: IRProject, impl) -> str:
     for name in all_iface_names:
         iface = iface_by_name.get(name)
         if iface:
-            iface_methods.extend((name, m) for m in iface.methods)
+            iface_methods.extend((name, m) for m in iface.methods if _method_should_wrap(m))
     own_methods = [m for m in impl.methods if _impl_own_method_is_public(m)]
     all_methods = own_methods + [m for _, m in iface_methods]
     returns_iface = _returns_interface(project_ir, impl.name, all_methods)
 
-    incs = _base_std_includes(True)  # impl() returns unique_ptr paths + impl handle
-    incs += [
-        f"<{ns_path}/{prefix}_{entity}.h>",
-        f"<{ns_path}/{prefix}_impl.h>",
-        f"<{ns_path}/error.hpp>",
-    ]
-    for name in all_iface_names:
-        incs.append(f"<{ns_path}/{_entity_snake(name)}.hpp>")
-    for inc in _referenced_wrapper_includes(project_ir, impl.name, all_methods, impl.dependencies):
-        incs.append(f"<{inc}>")
-    if returns_iface:
-        incs.append(f"<{ns_path}/{_header_stem(project_ir.name)}_implementation.hpp>")
+    def _emit_constants(dst):
+        for binding in impl.interface_bindings:
+            for bconst in binding.constants:
+                val = (bconst.value or bconst.attrs.get("value") or "").strip()
+                if val.lstrip("-").isdigit():
+                    dst.append(f"    static constexpr std::size_t {cpp_constant_name(bconst.name)} = {val};")
+                    dst.append("")
+        for const in impl.constants:
+            if const.attrs.get("definition") == "private":
+                continue
+            val = (const.attrs.get("value") or "").strip()
+            if val.lstrip("-").isdigit():
+                _emit_doc(dst, const.description, indent="    ")
+                dst.append(f"    static constexpr {_cpp_constant_type(const)} {cpp_constant_name(const.name)} = {val};")
+                dst.append("")
 
-    lines: list[str] = []
-    _header_open(lines, project_ir, _dedup(incs))
-    _emit_result_structs(lines, project_ir, impl.name, own_methods)
-    _emit_doc(lines, impl.description)
+    # ---- Header (declarations) ----
+    ref_incs, fwd = _hpp_ref_split(project_ir, impl.name, all_methods, impl.dependencies)
+    incs = _base_std_includes(True)  # unique_ptr returns
+    incs.append(f"<{ns_path}/error.hpp>")
+    for name in all_iface_names:  # base classes need the complete interface type
+        incs.append(f"<{ns_path}/{_entity_snake(name)}.hpp>")
+    incs += [f"<{i}>" for i in ref_incs]
+
+    h: list[str] = []
+    _header_open(h, project_ir, _dedup(incs),
+                 c_forward_decls=[f"struct {c_type}", f"struct {prefix}_impl_t"])
+    for f in fwd:
+        h.append(f"class {f};")
+    if fwd:
+        h.append("")
+    _emit_result_structs(h, project_ir, impl.name, own_methods)
+    _emit_doc(h, impl.description)
     bases = [f"virtual public {cpp_type_name(b)}" for b in direct_ifaces]
     base_str = (" : " + ", ".join(bases)) if bases else ""
-    lines.append(f"class {type_name}{base_str} {{")
-    lines.append("public:")
-
-    _emit_raii_lifecycle(lines, type_name, c_type, prefix, entity)
-    lines.append(f"    /// The polymorphic C implementation handle (non-owning).")
-    lines.append(f"    {prefix}_impl_t* impl() const noexcept override {{ return {prefix}_{entity}_impl(c_ctx_); }}")
-    lines.append("")
-
-    # Binding constants (interface-provided) + impl-specific constants.
-    for binding in impl.interface_bindings:
-        for bconst in binding.constants:
-            val = (bconst.value or bconst.attrs.get("value") or "").strip()
-            if val.lstrip("-").isdigit():
-                lines.append(f"    static constexpr std::size_t {cpp_constant_name(bconst.name)} = {val};")
-                lines.append("")
-    for const in impl.constants:
-        if const.attrs.get("definition") == "private":
-            continue
-        val = (const.attrs.get("value") or "").strip()
-        if val.lstrip("-").isdigit():
-            _emit_doc(lines, const.description, indent="    ")
-            lines.append(f"    static constexpr {_cpp_constant_type(const)} {cpp_constant_name(const.name)} = {val};")
-            lines.append("")
-
+    h.append(f"class {type_name}{base_str} {{")
+    h.append("public:")
+    _emit_raii_decls(h, type_name, c_type)
+    h.append(f"    /// The polymorphic C implementation handle (non-owning).")
+    h.append(f"    {prefix}_impl_t* impl() const noexcept override;")
+    h.append("")
+    _emit_constants(h)
     for dep in impl.dependencies:
-        _emit_dependency_setter(lines, project_ir, entity, dep)
-
+        _emit_dependency_setter_decl(h, project_ir, dep)
     for method in own_methods:
-        _emit_cpp_method(lines, project_ir, method, sig_entity=impl.name)
-
+        _emit_method_decl(h, project_ir, method, sig_entity=impl.name)
     for iface_name, method in iface_methods:
-        if not _method_should_wrap(method):
-            continue
-        _emit_cpp_method(
-            lines, project_ir, method,
-            sig_entity=iface_name, call_entity=impl.name, override_kw=" override",
-        )
+        _emit_method_decl(h, project_ir, method, sig_entity=iface_name, override_kw=" override")
+    h.append("private:")
+    h.append(f"    {c_type}* c_ctx_;")
+    h.append("};")
+    h.append("")
+    _header_close(h, project_ir)
 
-    lines.append("private:")
-    lines.append(f"    {c_type}* c_ctx_;")
-    lines.append("};")
-    lines.append("")
-    _header_close(lines, project_ir)
-    return "\n".join(lines)
+    # ---- Source (definitions) ----
+    s: list[str] = []
+    _source_open(s, project_ir, _class_def_includes(
+        project_ir, impl.name, all_methods, impl.dependencies,
+        returns_iface=returns_iface, iface_names=all_iface_names))
+    _emit_raii_defs(s, type_name, c_type, prefix, entity)
+    s.append(f"{prefix}_impl_t* {type_name}::impl() const noexcept {{ return {prefix}_{entity}_impl(c_ctx_); }}")
+    s.append("")
+    for dep in impl.dependencies:
+        _emit_dependency_setter_def(s, project_ir, type_name, entity, dep)
+    for method in own_methods:
+        _emit_method_def(s, project_ir, method, type_name=type_name, sig_entity=impl.name)
+    for iface_name, method in iface_methods:
+        _emit_method_def(s, project_ir, method, type_name=type_name,
+                         sig_entity=iface_name, call_entity=impl.name)
+    _header_close(s, project_ir)
+
+    return "\n".join(h), "\n".join(s)
 
 
 def _iface_impl_map(project_ir: IRProject):
@@ -1284,25 +1441,27 @@ def generate_cpp_files(
             generate_cpp_interface(project_ir, iface),
         ))
 
-    # --- Classes (RAII wrappers) ---
+    src_dir = f"wrappers/cpp/src/{_ns_leaf(project_ir)}/"
+
+    # --- Classes (RAII wrappers: declaration .hpp + definition .cpp) ---
     for cls in project_ir.classes:
         if cls.attrs.get("scope") in {"private", "internal"}:
             continue
         if cls.name == "error":
             continue
-        files.append((
-            f"{output_dir}{_header_stem(cls.name)}.hpp",
-            generate_cpp_class(project_ir, cls),
-        ))
+        hpp, cpp = generate_cpp_class(project_ir, cls)
+        stem = _header_stem(cls.name)
+        files.append((f"{output_dir}{stem}.hpp", hpp))
+        files.append((f"{src_dir}{stem}.cpp", cpp))
 
-    # --- Implementations (RAII classes implementing interfaces) ---
+    # --- Implementations (declaration .hpp + definition .cpp) ---
     for impl in project_ir.implementations:
         if impl.attrs.get("scope") in {"private", "internal"}:
             continue
-        files.append((
-            f"{output_dir}{_header_stem(impl.name)}.hpp",
-            generate_cpp_implementation(project_ir, impl),
-        ))
+        hpp, cpp = generate_cpp_implementation(project_ir, impl)
+        stem = _header_stem(impl.name)
+        files.append((f"{output_dir}{stem}.hpp", hpp))
+        files.append((f"{src_dir}{stem}.cpp", cpp))
 
     # --- {Project}Implementation dispatch (header decl + source def) ---
     if _iface_impl_map(project_ir):

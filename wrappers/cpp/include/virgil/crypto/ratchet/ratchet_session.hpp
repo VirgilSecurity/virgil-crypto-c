@@ -41,168 +41,77 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/ratchet/vscr_ratchet_session.h>
 #include <virgil/crypto/ratchet/error.hpp>
 #include <virgil/crypto/foundation/private_key.hpp>
 #include <virgil/crypto/foundation/public_key.hpp>
 #include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/ratchet/ratchet_message.hpp>
+
+struct vscr_ratchet_session_t;
 
 namespace virgil::crypto::ratchet {
+
+class RatchetMessage;
 
 /// Class for ratchet session between 2 participants
 class RatchetSession {
 public:
-    RatchetSession() : c_ctx_(vscr_ratchet_session_new()) {}
+    RatchetSession();
     /// Adopt ownership of an existing C handle.
-    explicit RatchetSession(vscr_ratchet_session_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    RatchetSession(const RatchetSession& other) : c_ctx_(vscr_ratchet_session_shallow_copy(other.c_ctx_)) {}
-    RatchetSession(RatchetSession&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    RatchetSession& operator=(const RatchetSession& other) {
-        if (this != &other) {
-            vscr_ratchet_session_delete(c_ctx_);
-            c_ctx_ = vscr_ratchet_session_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    RatchetSession& operator=(RatchetSession&& other) noexcept {
-        if (this != &other) {
-            vscr_ratchet_session_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~RatchetSession() { vscr_ratchet_session_delete(c_ctx_); }
+    explicit RatchetSession(vscr_ratchet_session_t* c_ctx) noexcept;
+    RatchetSession(const RatchetSession& other);
+    RatchetSession(RatchetSession&& other) noexcept;
+    RatchetSession& operator=(const RatchetSession& other);
+    RatchetSession& operator=(RatchetSession&& other) noexcept;
+    ~RatchetSession();
 
     /// The underlying concrete C handle (non-owning).
-    vscr_ratchet_session_t* c_ctx() const noexcept { return c_ctx_; }
+    vscr_ratchet_session_t* c_ctx() const noexcept;
 
-    void set_rng(const virgil::crypto::foundation::Random& rng) {
-        vscr_ratchet_session_release_rng(c_ctx_);
-        vscr_ratchet_session_use_rng(c_ctx_, rng.impl());
-    }
+    void set_rng(const virgil::crypto::foundation::Random& rng);
 
     /// Setups default dependencies:
     /// - RNG: CTR DRBG
-    tl::expected<void, Error> setup_defaults() {
-        const vscr_status_t status = vscr_ratchet_session_setup_defaults(c_ctx_);
-        if (status != vscr_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Initiates session
-    tl::expected<void, Error> initiate(const virgil::crypto::foundation::PrivateKey& sender_identity_private_key, std::span<const uint8_t> sender_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_identity_public_key, std::span<const uint8_t> receiver_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_long_term_public_key, std::span<const uint8_t> receiver_long_term_key_id, const virgil::crypto::foundation::PublicKey& receiver_one_time_public_key, std::span<const uint8_t> receiver_one_time_key_id) {
-        const vscr_status_t status = vscr_ratchet_session_initiate(c_ctx_, sender_identity_private_key.impl(), vsc_data(sender_identity_key_id.data(), sender_identity_key_id.size()), receiver_identity_public_key.impl(), vsc_data(receiver_identity_key_id.data(), receiver_identity_key_id.size()), receiver_long_term_public_key.impl(), vsc_data(receiver_long_term_key_id.data(), receiver_long_term_key_id.size()), receiver_one_time_public_key.impl(), vsc_data(receiver_one_time_key_id.data(), receiver_one_time_key_id.size()));
-        if (status != vscr_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> initiate(const virgil::crypto::foundation::PrivateKey& sender_identity_private_key, std::span<const uint8_t> sender_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_identity_public_key, std::span<const uint8_t> receiver_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_long_term_public_key, std::span<const uint8_t> receiver_long_term_key_id, const virgil::crypto::foundation::PublicKey& receiver_one_time_public_key, std::span<const uint8_t> receiver_one_time_key_id);
 
     /// Initiates session
-    tl::expected<void, Error> initiate_no_one_time_key(const virgil::crypto::foundation::PrivateKey& sender_identity_private_key, std::span<const uint8_t> sender_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_identity_public_key, std::span<const uint8_t> receiver_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_long_term_public_key, std::span<const uint8_t> receiver_long_term_key_id) {
-        const vscr_status_t status = vscr_ratchet_session_initiate_no_one_time_key(c_ctx_, sender_identity_private_key.impl(), vsc_data(sender_identity_key_id.data(), sender_identity_key_id.size()), receiver_identity_public_key.impl(), vsc_data(receiver_identity_key_id.data(), receiver_identity_key_id.size()), receiver_long_term_public_key.impl(), vsc_data(receiver_long_term_key_id.data(), receiver_long_term_key_id.size()));
-        if (status != vscr_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> initiate_no_one_time_key(const virgil::crypto::foundation::PrivateKey& sender_identity_private_key, std::span<const uint8_t> sender_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_identity_public_key, std::span<const uint8_t> receiver_identity_key_id, const virgil::crypto::foundation::PublicKey& receiver_long_term_public_key, std::span<const uint8_t> receiver_long_term_key_id);
 
     /// Responds to session initiation
-    tl::expected<void, Error> respond(const virgil::crypto::foundation::PublicKey& sender_identity_public_key, const virgil::crypto::foundation::PrivateKey& receiver_identity_private_key, const virgil::crypto::foundation::PrivateKey& receiver_long_term_private_key, const virgil::crypto::foundation::PrivateKey& receiver_one_time_private_key, const RatchetMessage& message) {
-        const vscr_status_t status = vscr_ratchet_session_respond(c_ctx_, sender_identity_public_key.impl(), receiver_identity_private_key.impl(), receiver_long_term_private_key.impl(), receiver_one_time_private_key.impl(), message.c_ctx());
-        if (status != vscr_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> respond(const virgil::crypto::foundation::PublicKey& sender_identity_public_key, const virgil::crypto::foundation::PrivateKey& receiver_identity_private_key, const virgil::crypto::foundation::PrivateKey& receiver_long_term_private_key, const virgil::crypto::foundation::PrivateKey& receiver_one_time_private_key, const RatchetMessage& message);
 
     /// Responds to session initiation
-    tl::expected<void, Error> respond_no_one_time_key(const virgil::crypto::foundation::PublicKey& sender_identity_public_key, const virgil::crypto::foundation::PrivateKey& receiver_identity_private_key, const virgil::crypto::foundation::PrivateKey& receiver_long_term_private_key, const RatchetMessage& message) {
-        const vscr_status_t status = vscr_ratchet_session_respond_no_one_time_key(c_ctx_, sender_identity_public_key.impl(), receiver_identity_private_key.impl(), receiver_long_term_private_key.impl(), message.c_ctx());
-        if (status != vscr_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> respond_no_one_time_key(const virgil::crypto::foundation::PublicKey& sender_identity_public_key, const virgil::crypto::foundation::PrivateKey& receiver_identity_private_key, const virgil::crypto::foundation::PrivateKey& receiver_long_term_private_key, const RatchetMessage& message);
 
     /// Returns flag that indicates is this session was initiated or responded
-    bool is_initiator() {
-        auto proxy_result = vscr_ratchet_session_is_initiator(c_ctx_);
-        return proxy_result;
-    }
+    bool is_initiator();
 
     /// Returns flag that indicates if session is post-quantum
-    bool is_pqc_enabled() {
-        auto proxy_result = vscr_ratchet_session_is_pqc_enabled(c_ctx_);
-        return proxy_result;
-    }
+    bool is_pqc_enabled();
 
     /// Returns true if at least 1 response was successfully decrypted, false - otherwise
-    bool received_first_response() {
-        auto proxy_result = vscr_ratchet_session_received_first_response(c_ctx_);
-        return proxy_result;
-    }
+    bool received_first_response();
 
     /// Returns true if receiver had one time public key
-    bool receiver_has_one_time_public_key() {
-        auto proxy_result = vscr_ratchet_session_receiver_has_one_time_public_key(c_ctx_);
-        return proxy_result;
-    }
+    bool receiver_has_one_time_public_key();
 
     /// Encrypts data
-    tl::expected<RatchetMessage, Error> encrypt(std::span<const uint8_t> plain_text) {
-        vscr_error_t error;
-        vscr_error_reset(&error);
-        auto proxy_result = vscr_ratchet_session_encrypt(c_ctx_, vsc_data(plain_text.data(), plain_text.size()), &error);
-        if (vscr_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscr_error_status(&error)));
-        }
-        return RatchetMessage(proxy_result);
-    }
+    tl::expected<RatchetMessage, Error> encrypt(std::span<const uint8_t> plain_text);
 
     /// Calculates size of buffer sufficient to store decrypted message
-    std::size_t decrypt_len(const RatchetMessage& message) {
-        auto proxy_result = vscr_ratchet_session_decrypt_len(c_ctx_, message.c_ctx());
-        return proxy_result;
-    }
+    std::size_t decrypt_len(const RatchetMessage& message);
 
     /// Decrypts message
-    tl::expected<std::vector<uint8_t>, Error> decrypt(const RatchetMessage& message) {
-        std::vector<uint8_t> plain_text(this->decrypt_len(message));
-        vsc_buffer_t* plain_text_buf = vsc_buffer_new();
-        vsc_buffer_use(plain_text_buf, plain_text.data(), plain_text.size());
-        const vscr_status_t status = vscr_ratchet_session_decrypt(c_ctx_, message.c_ctx(), plain_text_buf);
-        plain_text.resize(vsc_buffer_len(plain_text_buf));
-        vsc_buffer_delete(plain_text_buf);
-        if (status != vscr_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return plain_text;
-    }
+    tl::expected<std::vector<uint8_t>, Error> decrypt(const RatchetMessage& message);
 
     /// Serializes session to buffer
-    std::vector<uint8_t> serialize() {
-        auto proxy_result = vscr_ratchet_session_serialize(c_ctx_);
-        std::vector<uint8_t> result(vsc_buffer_bytes(proxy_result), vsc_buffer_bytes(proxy_result) + vsc_buffer_len(proxy_result));
-        vsc_buffer_delete(proxy_result);
-        return result;
-    }
+    std::vector<uint8_t> serialize();
 
     /// Deserializes session from buffer.
     /// NOTE: Deserialized session needs dependencies to be set. Check setup defaults
-    static tl::expected<RatchetSession, Error> deserialize(std::span<const uint8_t> input) {
-        vscr_error_t error;
-        vscr_error_reset(&error);
-        auto proxy_result = vscr_ratchet_session_deserialize(vsc_data(input.data(), input.size()), &error);
-        if (vscr_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscr_error_status(&error)));
-        }
-        return RatchetSession(proxy_result);
-    }
+    static tl::expected<RatchetSession, Error> deserialize(std::span<const uint8_t> input);
 
 private:
     vscr_ratchet_session_t* c_ctx_;

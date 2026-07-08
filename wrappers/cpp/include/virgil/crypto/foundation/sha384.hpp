@@ -42,104 +42,60 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_sha384.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg.hpp>
 #include <virgil/crypto/foundation/hash.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_sha384_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// This is MbedTLS implementation of SHA384.
 class Sha384 : virtual public Alg, virtual public Hash {
 public:
-    Sha384() : c_ctx_(vscf_sha384_new()) {}
+    Sha384();
     /// Adopt ownership of an existing C handle.
-    explicit Sha384(vscf_sha384_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    Sha384(const Sha384& other) : c_ctx_(vscf_sha384_shallow_copy(other.c_ctx_)) {}
-    Sha384(Sha384&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    Sha384& operator=(const Sha384& other) {
-        if (this != &other) {
-            vscf_sha384_delete(c_ctx_);
-            c_ctx_ = vscf_sha384_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    Sha384& operator=(Sha384&& other) noexcept {
-        if (this != &other) {
-            vscf_sha384_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~Sha384() { vscf_sha384_delete(c_ctx_); }
+    explicit Sha384(vscf_sha384_t* c_ctx) noexcept;
+    Sha384(const Sha384& other);
+    Sha384(Sha384&& other) noexcept;
+    Sha384& operator=(const Sha384& other);
+    Sha384& operator=(Sha384&& other) noexcept;
+    ~Sha384();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_sha384_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_sha384_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_sha384_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     static constexpr std::size_t DIGEST_LEN = 48;
 
     static constexpr std::size_t BLOCK_LEN = 128;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_sha384_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
     /// Produce object with algorithm information and configuration parameters.
-    std::unique_ptr<AlgInfo> produce_alg_info() const override {
-        auto proxy_result = vscf_sha384_produce_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(proxy_result);
-    }
+    std::unique_ptr<AlgInfo> produce_alg_info() const override;
 
     /// Restore algorithm configuration from the given object.
-    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override {
-        const vscf_status_t status = vscf_sha384_restore_alg_info(c_ctx_, alg_info.impl());
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> restore_alg_info(const AlgInfo& alg_info) override;
 
     /// Calculate hash over given data.
-    std::vector<uint8_t> hash(std::span<const uint8_t> data) override {
-        std::vector<uint8_t> digest(Sha384::DIGEST_LEN);
-        vsc_buffer_t* digest_buf = vsc_buffer_new();
-        vsc_buffer_use(digest_buf, digest.data(), digest.size());
-        vscf_sha384_hash(vsc_data(data.data(), data.size()), digest_buf);
-        digest.resize(vsc_buffer_len(digest_buf));
-        vsc_buffer_delete(digest_buf);
-        return digest;
-    }
+    std::vector<uint8_t> hash(std::span<const uint8_t> data) override;
 
     /// Start a new hashing.
-    void start() override {
-        vscf_sha384_start(c_ctx_);
-    }
+    void start() override;
 
     /// Add given data to the hash.
-    void update(std::span<const uint8_t> data) override {
-        vscf_sha384_update(c_ctx_, vsc_data(data.data(), data.size()));
-    }
+    void update(std::span<const uint8_t> data) override;
 
     /// Accompilsh hashing and return it's result (a message digest).
-    std::vector<uint8_t> finish() override {
-        std::vector<uint8_t> digest(this->DIGEST_LEN);
-        vsc_buffer_t* digest_buf = vsc_buffer_new();
-        vsc_buffer_use(digest_buf, digest.data(), digest.size());
-        vscf_sha384_finish(c_ctx_, digest_buf);
-        digest.resize(vsc_buffer_len(digest_buf));
-        vsc_buffer_delete(digest_buf);
-        return digest;
-    }
+    std::vector<uint8_t> finish() override;
 
 private:
     vscf_sha384_t* c_ctx_;

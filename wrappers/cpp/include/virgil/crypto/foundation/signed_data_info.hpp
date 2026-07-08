@@ -42,46 +42,31 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_signed_data_info.h>
 #include <virgil/crypto/foundation/error.hpp>
-#include <virgil/crypto/foundation/alg_info.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_signed_data_info_t;
 
 namespace virgil::crypto::foundation {
+
+class AlgInfo;
 
 /// Handle meta information about signed data.
 class SignedDataInfo {
 public:
-    SignedDataInfo() : c_ctx_(vscf_signed_data_info_new()) {}
+    SignedDataInfo();
     /// Adopt ownership of an existing C handle.
-    explicit SignedDataInfo(vscf_signed_data_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    SignedDataInfo(const SignedDataInfo& other) : c_ctx_(vscf_signed_data_info_shallow_copy(other.c_ctx_)) {}
-    SignedDataInfo(SignedDataInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    SignedDataInfo& operator=(const SignedDataInfo& other) {
-        if (this != &other) {
-            vscf_signed_data_info_delete(c_ctx_);
-            c_ctx_ = vscf_signed_data_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    SignedDataInfo& operator=(SignedDataInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_signed_data_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~SignedDataInfo() { vscf_signed_data_info_delete(c_ctx_); }
+    explicit SignedDataInfo(vscf_signed_data_info_t* c_ctx) noexcept;
+    SignedDataInfo(const SignedDataInfo& other);
+    SignedDataInfo(SignedDataInfo&& other) noexcept;
+    SignedDataInfo& operator=(const SignedDataInfo& other);
+    SignedDataInfo& operator=(SignedDataInfo&& other) noexcept;
+    ~SignedDataInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_signed_data_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_signed_data_info_t* c_ctx() const noexcept;
 
     /// Return information about algorithm that was used to produce data digest.
-    std::unique_ptr<AlgInfo> hash_alg_info() const {
-        auto proxy_result = vscf_signed_data_info_hash_alg_info(c_ctx_);
-        return FoundationImplementation::wrap_alg_info(vscf_impl_shallow_copy(const_cast<vscf_impl_t*>(proxy_result)));
-    }
+    std::unique_ptr<AlgInfo> hash_alg_info() const;
 
 private:
     vscf_signed_data_info_t* c_ctx_;

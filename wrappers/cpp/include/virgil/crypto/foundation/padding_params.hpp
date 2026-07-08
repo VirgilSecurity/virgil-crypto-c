@@ -41,38 +41,26 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_padding_params.h>
 #include <virgil/crypto/foundation/error.hpp>
+
+struct vscf_padding_params_t;
 
 namespace virgil::crypto::foundation {
 
 /// Handles padding parameters and constraints.
 class PaddingParams {
 public:
-    PaddingParams() : c_ctx_(vscf_padding_params_new()) {}
+    PaddingParams();
     /// Adopt ownership of an existing C handle.
-    explicit PaddingParams(vscf_padding_params_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    PaddingParams(const PaddingParams& other) : c_ctx_(vscf_padding_params_shallow_copy(other.c_ctx_)) {}
-    PaddingParams(PaddingParams&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    PaddingParams& operator=(const PaddingParams& other) {
-        if (this != &other) {
-            vscf_padding_params_delete(c_ctx_);
-            c_ctx_ = vscf_padding_params_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    PaddingParams& operator=(PaddingParams&& other) noexcept {
-        if (this != &other) {
-            vscf_padding_params_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~PaddingParams() { vscf_padding_params_delete(c_ctx_); }
+    explicit PaddingParams(vscf_padding_params_t* c_ctx) noexcept;
+    PaddingParams(const PaddingParams& other);
+    PaddingParams(PaddingParams&& other) noexcept;
+    PaddingParams& operator=(const PaddingParams& other);
+    PaddingParams& operator=(PaddingParams&& other) noexcept;
+    ~PaddingParams();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_padding_params_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_padding_params_t* c_ctx() const noexcept;
 
     static constexpr std::size_t DEFAULT_FRAME_MIN = 32;
 
@@ -81,16 +69,10 @@ public:
     static constexpr std::size_t DEFAULT_FRAME_MAX = 256;
 
     /// Return padding frame in bytes.
-    std::size_t frame() const {
-        auto proxy_result = vscf_padding_params_frame(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t frame() const;
 
     /// Return maximum padding frame in bytes.
-    std::size_t frame_max() const {
-        auto proxy_result = vscf_padding_params_frame_max(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t frame_max() const;
 
 private:
     vscf_padding_params_t* c_ctx_;

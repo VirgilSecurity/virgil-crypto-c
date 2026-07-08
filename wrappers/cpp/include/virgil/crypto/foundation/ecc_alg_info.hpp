@@ -42,63 +42,42 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_ecc_alg_info.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_info.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
 #include <virgil/crypto/foundation/oid_id.hpp>
+
+struct vscf_ecc_alg_info_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
 /// Handle algorithm information about ECP.
 class EccAlgInfo : virtual public AlgInfo {
 public:
-    EccAlgInfo() : c_ctx_(vscf_ecc_alg_info_new()) {}
+    EccAlgInfo();
     /// Adopt ownership of an existing C handle.
-    explicit EccAlgInfo(vscf_ecc_alg_info_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    EccAlgInfo(const EccAlgInfo& other) : c_ctx_(vscf_ecc_alg_info_shallow_copy(other.c_ctx_)) {}
-    EccAlgInfo(EccAlgInfo&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    EccAlgInfo& operator=(const EccAlgInfo& other) {
-        if (this != &other) {
-            vscf_ecc_alg_info_delete(c_ctx_);
-            c_ctx_ = vscf_ecc_alg_info_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    EccAlgInfo& operator=(EccAlgInfo&& other) noexcept {
-        if (this != &other) {
-            vscf_ecc_alg_info_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~EccAlgInfo() { vscf_ecc_alg_info_delete(c_ctx_); }
+    explicit EccAlgInfo(vscf_ecc_alg_info_t* c_ctx) noexcept;
+    EccAlgInfo(const EccAlgInfo& other);
+    EccAlgInfo(EccAlgInfo&& other) noexcept;
+    EccAlgInfo& operator=(const EccAlgInfo& other);
+    EccAlgInfo& operator=(EccAlgInfo&& other) noexcept;
+    ~EccAlgInfo();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_ecc_alg_info_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_ecc_alg_info_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_ecc_alg_info_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
-    OidId key_id() const {
-        auto proxy_result = vscf_ecc_alg_info_key_id(c_ctx_);
-        return static_cast<OidId>(proxy_result);
-    }
+    OidId key_id() const;
 
     /// Return EC domain group identificator.
-    OidId domain_id() const {
-        auto proxy_result = vscf_ecc_alg_info_domain_id(c_ctx_);
-        return static_cast<OidId>(proxy_result);
-    }
+    OidId domain_id() const;
 
     /// Provide algorithm identificator.
-    AlgId alg_id() const override {
-        auto proxy_result = vscf_ecc_alg_info_alg_id(c_ctx_);
-        return static_cast<AlgId>(proxy_result);
-    }
+    AlgId alg_id() const override;
 
 private:
     vscf_ecc_alg_info_t* c_ctx_;

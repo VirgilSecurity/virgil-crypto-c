@@ -56,12 +56,16 @@ FetchContent_MakeAvailable(tl_expected)
 
 set(VIRGIL_CPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+# Each wrapper is a header (declarations) + .cpp (definitions) pair, so every library
+# is a STATIC target compiling its generated sources. The public headers forward-declare
+# the C handles, so consumers do not transitively pull the C library headers.
+
 # ---------------------------------------------------------------------------
-#   foundation-cpp (has a generated dispatch translation unit -> STATIC)
+#   foundation-cpp
 # ---------------------------------------------------------------------------
-add_library(foundation-cpp STATIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/foundation_implementation.cpp"
-)
+file(GLOB VIRGIL_FOUNDATION_CPP_SRCS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/foundation/*.cpp")
+add_library(foundation-cpp STATIC ${VIRGIL_FOUNDATION_CPP_SRCS})
 add_library(virgil::foundation-cpp ALIAS foundation-cpp)
 target_include_directories(foundation-cpp PUBLIC
     "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
@@ -71,24 +75,20 @@ target_compile_features(foundation-cpp PUBLIC cxx_std_20)
 target_link_libraries(foundation-cpp PUBLIC vsc::foundation tl::expected)
 
 # ---------------------------------------------------------------------------
-#   ratchet-cpp / phe-cpp (header-only -> INTERFACE libraries)
+#   ratchet-cpp / phe-cpp
 # ---------------------------------------------------------------------------
 # Both depend on foundation types (Random, PrivateKey, PublicKey), so they link
 # virgil::foundation-cpp for its headers + include dir, plus their own C library.
-add_library(ratchet-cpp INTERFACE)
+file(GLOB VIRGIL_RATCHET_CPP_SRCS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/ratchet/*.cpp")
+add_library(ratchet-cpp STATIC ${VIRGIL_RATCHET_CPP_SRCS})
 add_library(virgil::ratchet-cpp ALIAS ratchet-cpp)
-target_include_directories(ratchet-cpp INTERFACE
-    "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
-    "$<INSTALL_INTERFACE:include>"
-)
-target_compile_features(ratchet-cpp INTERFACE cxx_std_20)
-target_link_libraries(ratchet-cpp INTERFACE virgil::foundation-cpp vsc::ratchet tl::expected)
+target_compile_features(ratchet-cpp PUBLIC cxx_std_20)
+target_link_libraries(ratchet-cpp PUBLIC virgil::foundation-cpp vsc::ratchet tl::expected)
 
-add_library(phe-cpp INTERFACE)
+file(GLOB VIRGIL_PHE_CPP_SRCS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/phe/*.cpp")
+add_library(phe-cpp STATIC ${VIRGIL_PHE_CPP_SRCS})
 add_library(virgil::phe-cpp ALIAS phe-cpp)
-target_include_directories(phe-cpp INTERFACE
-    "$<BUILD_INTERFACE:${VIRGIL_CPP_INCLUDE_DIR}>"
-    "$<INSTALL_INTERFACE:include>"
-)
-target_compile_features(phe-cpp INTERFACE cxx_std_20)
-target_link_libraries(phe-cpp INTERFACE virgil::foundation-cpp vsc::phe tl::expected)
+target_compile_features(phe-cpp PUBLIC cxx_std_20)
+target_link_libraries(phe-cpp PUBLIC virgil::foundation-cpp vsc::phe tl::expected)

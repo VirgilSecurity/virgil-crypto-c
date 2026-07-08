@@ -41,7 +41,6 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/foundation/vscf_oid.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
 #include <virgil/crypto/foundation/oid_id.hpp>
@@ -52,40 +51,22 @@ namespace virgil::crypto::foundation {
 class Oid {
 public:
     /// Return OID for given algorithm identifier.
-    static std::vector<uint8_t> from_alg_id(AlgId alg_id) {
-        auto proxy_result = vscf_oid_from_alg_id(static_cast<vscf_alg_id_t>(alg_id));
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    static std::vector<uint8_t> from_alg_id(AlgId alg_id);
 
     /// Return algorithm identifier for given OID.
-    static AlgId to_alg_id(std::span<const uint8_t> oid) {
-        auto proxy_result = vscf_oid_to_alg_id(vsc_data(oid.data(), oid.size()));
-        return static_cast<AlgId>(proxy_result);
-    }
+    static AlgId to_alg_id(std::span<const uint8_t> oid);
 
     /// Return OID for a given identifier.
-    static std::vector<uint8_t> from_id(OidId oid_id) {
-        auto proxy_result = vscf_oid_from_id(static_cast<vscf_oid_id_t>(oid_id));
-        return std::vector<uint8_t>(proxy_result.bytes, proxy_result.bytes + proxy_result.len);
-    }
+    static std::vector<uint8_t> from_id(OidId oid_id);
 
     /// Return identifier for a given OID.
-    static OidId to_id(std::span<const uint8_t> oid) {
-        auto proxy_result = vscf_oid_to_id(vsc_data(oid.data(), oid.size()));
-        return static_cast<OidId>(proxy_result);
-    }
+    static OidId to_id(std::span<const uint8_t> oid);
 
     /// Map oid identifier to the algorithm identifier.
-    static AlgId id_to_alg_id(OidId oid_id) {
-        auto proxy_result = vscf_oid_id_to_alg_id(static_cast<vscf_oid_id_t>(oid_id));
-        return static_cast<AlgId>(proxy_result);
-    }
+    static AlgId id_to_alg_id(OidId oid_id);
 
     /// Return true if given OIDs are equal.
-    static bool equal(std::span<const uint8_t> lhs, std::span<const uint8_t> rhs) {
-        auto proxy_result = vscf_oid_equal(vsc_data(lhs.data(), lhs.size()), vsc_data(rhs.data(), rhs.size()));
-        return proxy_result;
-    }
+    static bool equal(std::span<const uint8_t> lhs, std::span<const uint8_t> rhs);
 
 };
 

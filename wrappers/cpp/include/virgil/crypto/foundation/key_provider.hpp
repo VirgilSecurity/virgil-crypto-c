@@ -42,74 +42,43 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/alg_id.hpp>
-#include <virgil/crypto/foundation/private_key.hpp>
-#include <virgil/crypto/foundation/public_key.hpp>
-#include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/foundation/foundation_implementation.hpp>
+
+struct vscf_key_provider_t;
 
 namespace virgil::crypto::foundation {
+
+class PrivateKey;
+class PublicKey;
+class Random;
 
 /// Provide functionality for private key generation and importing that
 /// relies on the software default implementations.
 class KeyProvider {
 public:
-    KeyProvider() : c_ctx_(vscf_key_provider_new()) {}
+    KeyProvider();
     /// Adopt ownership of an existing C handle.
-    explicit KeyProvider(vscf_key_provider_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    KeyProvider(const KeyProvider& other) : c_ctx_(vscf_key_provider_shallow_copy(other.c_ctx_)) {}
-    KeyProvider(KeyProvider&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    KeyProvider& operator=(const KeyProvider& other) {
-        if (this != &other) {
-            vscf_key_provider_delete(c_ctx_);
-            c_ctx_ = vscf_key_provider_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    KeyProvider& operator=(KeyProvider&& other) noexcept {
-        if (this != &other) {
-            vscf_key_provider_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~KeyProvider() { vscf_key_provider_delete(c_ctx_); }
+    explicit KeyProvider(vscf_key_provider_t* c_ctx) noexcept;
+    KeyProvider(const KeyProvider& other);
+    KeyProvider(KeyProvider&& other) noexcept;
+    KeyProvider& operator=(const KeyProvider& other);
+    KeyProvider& operator=(KeyProvider&& other) noexcept;
+    ~KeyProvider();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_key_provider_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_key_provider_t* c_ctx() const noexcept;
 
-    void set_random(const Random& random) {
-        vscf_key_provider_release_random(c_ctx_);
-        vscf_key_provider_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const Random& random);
 
     /// Setup predefined values to the uninitialized class dependencies.
-    tl::expected<void, Error> setup_defaults() {
-        const vscf_status_t status = vscf_key_provider_setup_defaults(c_ctx_);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Setup parameters that is used during RSA key generation.
-    void set_rsa_params(std::size_t bitlen) {
-        vscf_key_provider_set_rsa_params(c_ctx_, bitlen);
-    }
+    void set_rsa_params(std::size_t bitlen);
 
     /// Generate new private key with a given algorithm.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_private_key(AlgId alg_id) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_generate_private_key(c_ctx_, static_cast<vscf_alg_id_t>(alg_id), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_private_key(AlgId alg_id);
 
     /// Generate new post-quantum private key with default algorithms.
     /// Note, that a post-quantum key combines classic private keys
@@ -121,121 +90,45 @@ public:
     /// - signer private key "hybrid private key" where:
     /// - first key is a classic private key;
     /// - second key is a post-quantum private key.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_post_quantum_private_key() {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_generate_post_quantum_private_key(c_ctx_, &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_post_quantum_private_key();
 
     /// Generate new compound private key with given algorithms.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_compound_private_key(AlgId cipher_alg_id, AlgId signer_alg_id) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_generate_compound_private_key(c_ctx_, static_cast<vscf_alg_id_t>(cipher_alg_id), static_cast<vscf_alg_id_t>(signer_alg_id), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_compound_private_key(AlgId cipher_alg_id, AlgId signer_alg_id);
 
     /// Generate new hybrid private key with given algorithms.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_hybrid_private_key(AlgId first_key_alg_id, AlgId second_key_alg_id) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_generate_hybrid_private_key(c_ctx_, static_cast<vscf_alg_id_t>(first_key_alg_id), static_cast<vscf_alg_id_t>(second_key_alg_id), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_hybrid_private_key(AlgId first_key_alg_id, AlgId second_key_alg_id);
 
     /// Generate new compound private key with nested hybrid private keys.
     ///
     /// Note, second key algorithm identifiers can be NONE, in this case,
     /// a regular key will be crated instead of a hybrid key.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_compound_hybrid_private_key(AlgId cipher_first_key_alg_id, AlgId cipher_second_key_alg_id, AlgId signer_first_key_alg_id, AlgId signer_second_key_alg_id) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_generate_compound_hybrid_private_key(c_ctx_, static_cast<vscf_alg_id_t>(cipher_first_key_alg_id), static_cast<vscf_alg_id_t>(cipher_second_key_alg_id), static_cast<vscf_alg_id_t>(signer_first_key_alg_id), static_cast<vscf_alg_id_t>(signer_second_key_alg_id), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> generate_compound_hybrid_private_key(AlgId cipher_first_key_alg_id, AlgId cipher_second_key_alg_id, AlgId signer_first_key_alg_id, AlgId signer_second_key_alg_id);
 
     /// Import private key from the PKCS#8 format.
-    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(std::span<const uint8_t> key_data) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_import_private_key(c_ctx_, vsc_data(key_data.data(), key_data.size()), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_private_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PrivateKey>, Error> import_private_key(std::span<const uint8_t> key_data);
 
     /// Import public key from the PKCS#8 format.
-    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(std::span<const uint8_t> key_data) {
-        vscf_error_t error;
-        vscf_error_reset(&error);
-        auto proxy_result = vscf_key_provider_import_public_key(c_ctx_, vsc_data(key_data.data(), key_data.size()), &error);
-        if (vscf_error_has_error(&error)) {
-            return tl::unexpected(static_cast<Error>(vscf_error_status(&error)));
-        }
-        return FoundationImplementation::wrap_public_key(proxy_result);
-    }
+    tl::expected<std::unique_ptr<PublicKey>, Error> import_public_key(std::span<const uint8_t> key_data);
 
     /// Calculate buffer size enough to hold exported public key.
     ///
     /// Precondition: public key must be exportable.
-    std::size_t exported_public_key_len(const PublicKey& public_key) {
-        auto proxy_result = vscf_key_provider_exported_public_key_len(c_ctx_, public_key.impl());
-        return proxy_result;
-    }
+    std::size_t exported_public_key_len(const PublicKey& public_key);
 
     /// Export given public key to the PKCS#8 DER format.
     ///
     /// Precondition: public key must be exportable.
-    tl::expected<std::vector<uint8_t>, Error> export_public_key(const PublicKey& public_key) {
-        std::vector<uint8_t> out(this->exported_public_key_len(public_key));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_key_provider_export_public_key(c_ctx_, public_key.impl(), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> export_public_key(const PublicKey& public_key);
 
     /// Calculate buffer size enough to hold exported private key.
     ///
     /// Precondition: private key must be exportable.
-    std::size_t exported_private_key_len(const PrivateKey& private_key) {
-        auto proxy_result = vscf_key_provider_exported_private_key_len(c_ctx_, private_key.impl());
-        return proxy_result;
-    }
+    std::size_t exported_private_key_len(const PrivateKey& private_key);
 
     /// Export given private key to the PKCS#8 or SEC1 DER format.
     ///
     /// Precondition: private key must be exportable.
-    tl::expected<std::vector<uint8_t>, Error> export_private_key(const PrivateKey& private_key) {
-        std::vector<uint8_t> out(this->exported_private_key_len(private_key));
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_key_provider_export_private_key(c_ctx_, private_key.impl(), out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> export_private_key(const PrivateKey& private_key);
 
 private:
     vscf_key_provider_t* c_ctx_;

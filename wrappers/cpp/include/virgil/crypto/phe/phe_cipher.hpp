@@ -41,9 +41,10 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/phe/vsce_phe_cipher.h>
 #include <virgil/crypto/phe/error.hpp>
 #include <virgil/crypto/foundation/random.hpp>
+
+struct vsce_phe_cipher_t;
 
 namespace virgil::crypto::phe {
 
@@ -51,112 +52,40 @@ namespace virgil::crypto::phe {
 /// This class is thread-safe.
 class PheCipher {
 public:
-    PheCipher() : c_ctx_(vsce_phe_cipher_new()) {}
+    PheCipher();
     /// Adopt ownership of an existing C handle.
-    explicit PheCipher(vsce_phe_cipher_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    PheCipher(const PheCipher& other) : c_ctx_(vsce_phe_cipher_shallow_copy(other.c_ctx_)) {}
-    PheCipher(PheCipher&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    PheCipher& operator=(const PheCipher& other) {
-        if (this != &other) {
-            vsce_phe_cipher_delete(c_ctx_);
-            c_ctx_ = vsce_phe_cipher_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    PheCipher& operator=(PheCipher&& other) noexcept {
-        if (this != &other) {
-            vsce_phe_cipher_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~PheCipher() { vsce_phe_cipher_delete(c_ctx_); }
+    explicit PheCipher(vsce_phe_cipher_t* c_ctx) noexcept;
+    PheCipher(const PheCipher& other);
+    PheCipher(PheCipher&& other) noexcept;
+    PheCipher& operator=(const PheCipher& other);
+    PheCipher& operator=(PheCipher&& other) noexcept;
+    ~PheCipher();
 
     /// The underlying concrete C handle (non-owning).
-    vsce_phe_cipher_t* c_ctx() const noexcept { return c_ctx_; }
+    vsce_phe_cipher_t* c_ctx() const noexcept;
 
-    void set_random(const virgil::crypto::foundation::Random& random) {
-        vsce_phe_cipher_release_random(c_ctx_);
-        vsce_phe_cipher_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const virgil::crypto::foundation::Random& random);
 
     /// Setups dependencies with default values.
-    tl::expected<void, Error> setup_defaults() {
-        const vsce_status_t status = vsce_phe_cipher_setup_defaults(c_ctx_);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Returns buffer capacity needed to fit cipher text
-    std::size_t encrypt_len(std::size_t plain_text_len) {
-        auto proxy_result = vsce_phe_cipher_encrypt_len(c_ctx_, plain_text_len);
-        return proxy_result;
-    }
+    std::size_t encrypt_len(std::size_t plain_text_len);
 
     /// Returns buffer capacity needed to fit plain text
-    std::size_t decrypt_len(std::size_t cipher_text_len) {
-        auto proxy_result = vsce_phe_cipher_decrypt_len(c_ctx_, cipher_text_len);
-        return proxy_result;
-    }
+    std::size_t decrypt_len(std::size_t cipher_text_len);
 
     /// Encrypts data using account key
-    tl::expected<std::vector<uint8_t>, Error> encrypt(std::span<const uint8_t> plain_text, std::span<const uint8_t> account_key) {
-        std::vector<uint8_t> cipher_text(this->encrypt_len(plain_text.size()));
-        vsc_buffer_t* cipher_text_buf = vsc_buffer_new();
-        vsc_buffer_use(cipher_text_buf, cipher_text.data(), cipher_text.size());
-        const vsce_status_t status = vsce_phe_cipher_encrypt(c_ctx_, vsc_data(plain_text.data(), plain_text.size()), vsc_data(account_key.data(), account_key.size()), cipher_text_buf);
-        cipher_text.resize(vsc_buffer_len(cipher_text_buf));
-        vsc_buffer_delete(cipher_text_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return cipher_text;
-    }
+    tl::expected<std::vector<uint8_t>, Error> encrypt(std::span<const uint8_t> plain_text, std::span<const uint8_t> account_key);
 
     /// Decrypts data using account key
-    tl::expected<std::vector<uint8_t>, Error> decrypt(std::span<const uint8_t> cipher_text, std::span<const uint8_t> account_key) {
-        std::vector<uint8_t> plain_text(this->decrypt_len(cipher_text.size()));
-        vsc_buffer_t* plain_text_buf = vsc_buffer_new();
-        vsc_buffer_use(plain_text_buf, plain_text.data(), plain_text.size());
-        const vsce_status_t status = vsce_phe_cipher_decrypt(c_ctx_, vsc_data(cipher_text.data(), cipher_text.size()), vsc_data(account_key.data(), account_key.size()), plain_text_buf);
-        plain_text.resize(vsc_buffer_len(plain_text_buf));
-        vsc_buffer_delete(plain_text_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return plain_text;
-    }
+    tl::expected<std::vector<uint8_t>, Error> decrypt(std::span<const uint8_t> cipher_text, std::span<const uint8_t> account_key);
 
     /// Encrypts data (and authenticates additional data) using account key
-    tl::expected<std::vector<uint8_t>, Error> auth_encrypt(std::span<const uint8_t> plain_text, std::span<const uint8_t> additional_data, std::span<const uint8_t> account_key) {
-        std::vector<uint8_t> cipher_text(this->encrypt_len(plain_text.size()));
-        vsc_buffer_t* cipher_text_buf = vsc_buffer_new();
-        vsc_buffer_use(cipher_text_buf, cipher_text.data(), cipher_text.size());
-        const vsce_status_t status = vsce_phe_cipher_auth_encrypt(c_ctx_, vsc_data(plain_text.data(), plain_text.size()), vsc_data(additional_data.data(), additional_data.size()), vsc_data(account_key.data(), account_key.size()), cipher_text_buf);
-        cipher_text.resize(vsc_buffer_len(cipher_text_buf));
-        vsc_buffer_delete(cipher_text_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return cipher_text;
-    }
+    tl::expected<std::vector<uint8_t>, Error> auth_encrypt(std::span<const uint8_t> plain_text, std::span<const uint8_t> additional_data, std::span<const uint8_t> account_key);
 
     /// Decrypts data (and verifies additional data) using account key
-    tl::expected<std::vector<uint8_t>, Error> auth_decrypt(std::span<const uint8_t> cipher_text, std::span<const uint8_t> additional_data, std::span<const uint8_t> account_key) {
-        std::vector<uint8_t> plain_text(this->decrypt_len(cipher_text.size()));
-        vsc_buffer_t* plain_text_buf = vsc_buffer_new();
-        vsc_buffer_use(plain_text_buf, plain_text.data(), plain_text.size());
-        const vsce_status_t status = vsce_phe_cipher_auth_decrypt(c_ctx_, vsc_data(cipher_text.data(), cipher_text.size()), vsc_data(additional_data.data(), additional_data.size()), vsc_data(account_key.data(), account_key.size()), plain_text_buf);
-        plain_text.resize(vsc_buffer_len(plain_text_buf));
-        vsc_buffer_delete(plain_text_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return plain_text;
-    }
+    tl::expected<std::vector<uint8_t>, Error> auth_decrypt(std::span<const uint8_t> cipher_text, std::span<const uint8_t> additional_data, std::span<const uint8_t> account_key);
 
 private:
     vsce_phe_cipher_t* c_ctx_;

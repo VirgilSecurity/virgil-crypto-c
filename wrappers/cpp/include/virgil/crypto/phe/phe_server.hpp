@@ -41,10 +41,10 @@
 #include <string_view>
 #include <vector>
 #include <tl/expected.hpp>
-#include <virgil/crypto/phe/vsce_phe_server.h>
 #include <virgil/crypto/phe/error.hpp>
 #include <virgil/crypto/foundation/random.hpp>
-#include <virgil/crypto/phe/phe_common.hpp>
+
+struct vsce_phe_server_t;
 
 namespace virgil::crypto::phe {
 
@@ -65,138 +65,45 @@ struct PheServerRotateKeysResult {
 /// This class is thread-safe in case if .(c_global_macros_multi_threading) defined.
 class PheServer {
 public:
-    PheServer() : c_ctx_(vsce_phe_server_new()) {}
+    PheServer();
     /// Adopt ownership of an existing C handle.
-    explicit PheServer(vsce_phe_server_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    PheServer(const PheServer& other) : c_ctx_(vsce_phe_server_shallow_copy(other.c_ctx_)) {}
-    PheServer(PheServer&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    PheServer& operator=(const PheServer& other) {
-        if (this != &other) {
-            vsce_phe_server_delete(c_ctx_);
-            c_ctx_ = vsce_phe_server_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    PheServer& operator=(PheServer&& other) noexcept {
-        if (this != &other) {
-            vsce_phe_server_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~PheServer() { vsce_phe_server_delete(c_ctx_); }
+    explicit PheServer(vsce_phe_server_t* c_ctx) noexcept;
+    PheServer(const PheServer& other);
+    PheServer(PheServer&& other) noexcept;
+    PheServer& operator=(const PheServer& other);
+    PheServer& operator=(PheServer&& other) noexcept;
+    ~PheServer();
 
     /// The underlying concrete C handle (non-owning).
-    vsce_phe_server_t* c_ctx() const noexcept { return c_ctx_; }
+    vsce_phe_server_t* c_ctx() const noexcept;
 
-    void set_random(const virgil::crypto::foundation::Random& random) {
-        vsce_phe_server_release_random(c_ctx_);
-        vsce_phe_server_use_random(c_ctx_, random.impl());
-    }
+    void set_random(const virgil::crypto::foundation::Random& random);
 
-    void set_operation_random(const virgil::crypto::foundation::Random& operation_random) {
-        vsce_phe_server_release_operation_random(c_ctx_);
-        vsce_phe_server_use_operation_random(c_ctx_, operation_random.impl());
-    }
+    void set_operation_random(const virgil::crypto::foundation::Random& operation_random);
 
     /// Setups dependencies with default values.
-    tl::expected<void, Error> setup_defaults() {
-        const vsce_status_t status = vsce_phe_server_setup_defaults(c_ctx_);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return {};
-    }
+    tl::expected<void, Error> setup_defaults();
 
     /// Generates new NIST P-256 server key pair for some client
-    tl::expected<PheServerGenerateServerKeyPairResult, Error> generate_server_key_pair() {
-        std::vector<uint8_t> server_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-        vsc_buffer_t* server_private_key_buf = vsc_buffer_new();
-        vsc_buffer_use(server_private_key_buf, server_private_key.data(), server_private_key.size());
-        std::vector<uint8_t> server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-        vsc_buffer_t* server_public_key_buf = vsc_buffer_new();
-        vsc_buffer_use(server_public_key_buf, server_public_key.data(), server_public_key.size());
-        const vsce_status_t status = vsce_phe_server_generate_server_key_pair(c_ctx_, server_private_key_buf, server_public_key_buf);
-        server_private_key.resize(vsc_buffer_len(server_private_key_buf));
-        vsc_buffer_delete(server_private_key_buf);
-        server_public_key.resize(vsc_buffer_len(server_public_key_buf));
-        vsc_buffer_delete(server_public_key_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return PheServerGenerateServerKeyPairResult{.server_private_key = std::move(server_private_key), .server_public_key = std::move(server_public_key)};
-    }
+    tl::expected<PheServerGenerateServerKeyPairResult, Error> generate_server_key_pair();
 
     /// Buffer size needed to fit EnrollmentResponse
-    std::size_t enrollment_response_len() {
-        auto proxy_result = vsce_phe_server_enrollment_response_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t enrollment_response_len();
 
     /// Generates a new random enrollment and proof for a new user
-    tl::expected<std::vector<uint8_t>, Error> get_enrollment(std::span<const uint8_t> server_private_key, std::span<const uint8_t> server_public_key) {
-        std::vector<uint8_t> enrollment_response(this->enrollment_response_len());
-        vsc_buffer_t* enrollment_response_buf = vsc_buffer_new();
-        vsc_buffer_use(enrollment_response_buf, enrollment_response.data(), enrollment_response.size());
-        const vsce_status_t status = vsce_phe_server_get_enrollment(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), vsc_data(server_public_key.data(), server_public_key.size()), enrollment_response_buf);
-        enrollment_response.resize(vsc_buffer_len(enrollment_response_buf));
-        vsc_buffer_delete(enrollment_response_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return enrollment_response;
-    }
+    tl::expected<std::vector<uint8_t>, Error> get_enrollment(std::span<const uint8_t> server_private_key, std::span<const uint8_t> server_public_key);
 
     /// Buffer size needed to fit VerifyPasswordResponse
-    std::size_t verify_password_response_len() {
-        auto proxy_result = vsce_phe_server_verify_password_response_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t verify_password_response_len();
 
     /// Verifies existing user's password and generates response with proof
-    tl::expected<std::vector<uint8_t>, Error> verify_password(std::span<const uint8_t> server_private_key, std::span<const uint8_t> server_public_key, std::span<const uint8_t> verify_password_request) {
-        std::vector<uint8_t> verify_password_response(this->verify_password_response_len());
-        vsc_buffer_t* verify_password_response_buf = vsc_buffer_new();
-        vsc_buffer_use(verify_password_response_buf, verify_password_response.data(), verify_password_response.size());
-        const vsce_status_t status = vsce_phe_server_verify_password(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), vsc_data(server_public_key.data(), server_public_key.size()), vsc_data(verify_password_request.data(), verify_password_request.size()), verify_password_response_buf);
-        verify_password_response.resize(vsc_buffer_len(verify_password_response_buf));
-        vsc_buffer_delete(verify_password_response_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return verify_password_response;
-    }
+    tl::expected<std::vector<uint8_t>, Error> verify_password(std::span<const uint8_t> server_private_key, std::span<const uint8_t> server_public_key, std::span<const uint8_t> verify_password_request);
 
     /// Buffer size needed to fit UpdateToken
-    std::size_t update_token_len() {
-        auto proxy_result = vsce_phe_server_update_token_len(c_ctx_);
-        return proxy_result;
-    }
+    std::size_t update_token_len();
 
     /// Updates server's private and public keys and issues an update token for use on client's side
-    tl::expected<PheServerRotateKeysResult, Error> rotate_keys(std::span<const uint8_t> server_private_key) {
-        std::vector<uint8_t> new_server_private_key(PheCommon::PHE_PRIVATE_KEY_LENGTH);
-        vsc_buffer_t* new_server_private_key_buf = vsc_buffer_new();
-        vsc_buffer_use(new_server_private_key_buf, new_server_private_key.data(), new_server_private_key.size());
-        std::vector<uint8_t> new_server_public_key(PheCommon::PHE_PUBLIC_KEY_LENGTH);
-        vsc_buffer_t* new_server_public_key_buf = vsc_buffer_new();
-        vsc_buffer_use(new_server_public_key_buf, new_server_public_key.data(), new_server_public_key.size());
-        std::vector<uint8_t> update_token(this->update_token_len());
-        vsc_buffer_t* update_token_buf = vsc_buffer_new();
-        vsc_buffer_use(update_token_buf, update_token.data(), update_token.size());
-        const vsce_status_t status = vsce_phe_server_rotate_keys(c_ctx_, vsc_data(server_private_key.data(), server_private_key.size()), new_server_private_key_buf, new_server_public_key_buf, update_token_buf);
-        new_server_private_key.resize(vsc_buffer_len(new_server_private_key_buf));
-        vsc_buffer_delete(new_server_private_key_buf);
-        new_server_public_key.resize(vsc_buffer_len(new_server_public_key_buf));
-        vsc_buffer_delete(new_server_public_key_buf);
-        update_token.resize(vsc_buffer_len(update_token_buf));
-        vsc_buffer_delete(update_token_buf);
-        if (status != vsce_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return PheServerRotateKeysResult{.new_server_private_key = std::move(new_server_private_key), .new_server_public_key = std::move(new_server_public_key), .update_token = std::move(update_token)};
-    }
+    tl::expected<PheServerRotateKeysResult, Error> rotate_keys(std::span<const uint8_t> server_private_key);
 
 private:
     vsce_phe_server_t* c_ctx_;

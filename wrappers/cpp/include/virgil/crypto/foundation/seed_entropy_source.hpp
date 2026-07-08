@@ -42,68 +42,40 @@
 #include <vector>
 #include <tl/expected.hpp>
 #include <memory>
-#include <virgil/crypto/foundation/vscf_seed_entropy_source.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
 #include <virgil/crypto/foundation/error.hpp>
 #include <virgil/crypto/foundation/entropy_source.hpp>
+
+struct vscf_seed_entropy_source_t;
+struct vscf_impl_t;
 
 namespace virgil::crypto::foundation {
 
 /// Deterministic entropy source that is based only on the given seed.
 class SeedEntropySource : virtual public EntropySource {
 public:
-    SeedEntropySource() : c_ctx_(vscf_seed_entropy_source_new()) {}
+    SeedEntropySource();
     /// Adopt ownership of an existing C handle.
-    explicit SeedEntropySource(vscf_seed_entropy_source_t* c_ctx) noexcept : c_ctx_(c_ctx) {}
-    SeedEntropySource(const SeedEntropySource& other) : c_ctx_(vscf_seed_entropy_source_shallow_copy(other.c_ctx_)) {}
-    SeedEntropySource(SeedEntropySource&& other) noexcept : c_ctx_(other.c_ctx_) { other.c_ctx_ = nullptr; }
-    SeedEntropySource& operator=(const SeedEntropySource& other) {
-        if (this != &other) {
-            vscf_seed_entropy_source_delete(c_ctx_);
-            c_ctx_ = vscf_seed_entropy_source_shallow_copy(other.c_ctx_);
-        }
-        return *this;
-    }
-    SeedEntropySource& operator=(SeedEntropySource&& other) noexcept {
-        if (this != &other) {
-            vscf_seed_entropy_source_delete(c_ctx_);
-            c_ctx_ = other.c_ctx_;
-            other.c_ctx_ = nullptr;
-        }
-        return *this;
-    }
-    ~SeedEntropySource() { vscf_seed_entropy_source_delete(c_ctx_); }
+    explicit SeedEntropySource(vscf_seed_entropy_source_t* c_ctx) noexcept;
+    SeedEntropySource(const SeedEntropySource& other);
+    SeedEntropySource(SeedEntropySource&& other) noexcept;
+    SeedEntropySource& operator=(const SeedEntropySource& other);
+    SeedEntropySource& operator=(SeedEntropySource&& other) noexcept;
+    ~SeedEntropySource();
 
     /// The underlying concrete C handle (non-owning).
-    vscf_seed_entropy_source_t* c_ctx() const noexcept { return c_ctx_; }
+    vscf_seed_entropy_source_t* c_ctx() const noexcept;
 
     /// The polymorphic C implementation handle (non-owning).
-    vscf_impl_t* impl() const noexcept override { return vscf_seed_entropy_source_impl(c_ctx_); }
+    vscf_impl_t* impl() const noexcept override;
 
     /// Set a new seed as an entropy source.
-    void reset_seed(std::span<const uint8_t> seed) {
-        vscf_seed_entropy_source_reset_seed(c_ctx_, vsc_data(seed.data(), seed.size()));
-    }
+    void reset_seed(std::span<const uint8_t> seed);
 
     /// Defines that implemented source is strong.
-    bool is_strong() override {
-        auto proxy_result = vscf_seed_entropy_source_is_strong(c_ctx_);
-        return proxy_result;
-    }
+    bool is_strong() override;
 
     /// Gather entropy of the requested length.
-    tl::expected<std::vector<uint8_t>, Error> gather(std::size_t len) override {
-        std::vector<uint8_t> out(len);
-        vsc_buffer_t* out_buf = vsc_buffer_new();
-        vsc_buffer_use(out_buf, out.data(), out.size());
-        const vscf_status_t status = vscf_seed_entropy_source_gather(c_ctx_, len, out_buf);
-        out.resize(vsc_buffer_len(out_buf));
-        vsc_buffer_delete(out_buf);
-        if (status != vscf_status_SUCCESS) {
-            return tl::unexpected(static_cast<Error>(status));
-        }
-        return out;
-    }
+    tl::expected<std::vector<uint8_t>, Error> gather(std::size_t len) override;
 
 private:
     vscf_seed_entropy_source_t* c_ctx_;
