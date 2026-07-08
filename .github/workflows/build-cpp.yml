@@ -81,9 +81,17 @@ jobs:
                 ${{ matrix.cmake_extra }} \
                 -Bbuild -S.
 
-      - name: Build C++ wrapper libraries
+      - name: Build C++ wrapper libraries + tests
         shell: bash
-        run: cmake --build build --config Release --target foundation-cpp ratchet-cpp phe-cpp --parallel
+        run: |
+          cmake --build build --config Release --parallel \
+                --target foundation-cpp ratchet-cpp phe-cpp \
+                         foundation_cpp_test phe_cpp_test ratchet_cpp_test
+
+      - name: Run C++ SDK tests (ctest)
+        shell: bash
+        working-directory: build
+        run: ctest -C Release -R _cpp_test --output-on-failure
 
       # Full FetchContent consumption is a second from-scratch build of the whole
       # library, so run it on Linux only; the matrix above already proves the wrapper
