@@ -1345,6 +1345,21 @@ def main() -> int:
                 out_path.write_text(content)
                 written.append(out_path)
 
+        # --- C++ wrapper files ---
+        if "cpp" in wrappers_set:
+            from tools.codegen.project_cpp_backend import generate_cpp_files
+            for rel_path, content in generate_cpp_files(
+                project_ir, license_text=license_text,
+                repo_root=str(repo_root),
+            ):
+                out_path = out_root / rel_path
+                # Hand-written test files must NOT be overwritten.
+                if out_path.parent.name == "test":
+                    continue
+                ensure_parent(out_path)
+                out_path.write_text(content)
+                written.append(out_path)
+
         # --- PHP wrapper files ---
         if "php" in wrappers_set:
             from tools.codegen.project_php_backend import generate_php_files

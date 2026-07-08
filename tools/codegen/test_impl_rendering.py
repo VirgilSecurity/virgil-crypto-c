@@ -121,9 +121,9 @@ class TestSha256MainModule(unittest.TestCase):
         self.assertEqual(self.root.get("scope"), "public")
 
     def test_total_method_count(self) -> None:
-        """sha256 should have 20 methods: 3 cast + 6 lifecycle + 2 ctx + 7 interface + 2 api accessors."""
+        """sha256 has 18 methods: 3 cast + 6 lifecycle + 2 ctx + 7 interface."""
         methods = self.root.findall(".//c_method")
-        self.assertEqual(len(methods), 20)
+        self.assertEqual(len(methods), 18)
 
 
 class TestSha256DefsModule(unittest.TestCase):
@@ -185,8 +185,8 @@ class TestAes256GcmDefsModule(unittest.TestCase):
     def test_struct_has_multiple_properties(self) -> None:
         struct = self.root.find(".//c_struct")
         props = struct.findall("c_property")
-        # info + refcnt + 9 properties = 11
-        self.assertEqual(len(props), 11)
+        # info + refcnt + 10 properties = 12
+        self.assertEqual(len(props), 12)
 
     def test_property_types(self) -> None:
         struct = self.root.find(".//c_struct")

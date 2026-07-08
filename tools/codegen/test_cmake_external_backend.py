@@ -280,10 +280,13 @@ class TestLoadExternalLibraryMbedtls(unittest.TestCase):
         hard_deps = [r for r in ecp.requires if len(r) == 1]
         self.assertTrue(any("BIGNUM C" in r for r in hard_deps))
 
-    def test_ctr_drbg_c_or_group_has_three_alternatives(self) -> None:
+    def test_ctr_drbg_c_or_group_has_two_alternatives(self) -> None:
+        # mbedTLS 3.x removed HAVEGE, so CTR_DRBG's entropy OR-group is now
+        # {TIMING_C, PLATFORM_ENTROPY} (was 3 with HAVEGE_C pre-3.0).
         ctr = next(f for f in self.source.features if f.name == "CTR_DRBG C")
         or_groups = [r for r in ctr.requires if len(r) > 1]
-        self.assertTrue(any(len(r) == 3 for r in or_groups))
+        self.assertTrue(any(len(r) == 2 for r in or_groups))
+        self.assertFalse(any("HAVEGE C" in r for r in or_groups))
 
     def test_sha256_alt_default_off(self) -> None:
         feat = next(f for f in self.source.features if f.name == "SHA256 ALT")
@@ -395,8 +398,9 @@ class TestRoundTripMbedtls(unittest.TestCase):
         self.assertIn("if(MBEDTLS_ECP_C AND NOT MBEDTLS_BIGNUM_C)", self.cmake)
 
     def test_ctr_drbg_or_group(self) -> None:
+        # mbedTLS 3.x dropped HAVEGE from the CTR_DRBG entropy OR-group.
         self.assertIn(
-            "if(MBEDTLS_CTR_DRBG_C AND NOT (MBEDTLS_TIMING_C OR MBEDTLS_HAVEGE_C OR MBEDTLS_PLATFORM_ENTROPY))",
+            "if(MBEDTLS_CTR_DRBG_C AND NOT (MBEDTLS_TIMING_C OR MBEDTLS_PLATFORM_ENTROPY))",
             self.cmake,
         )
 
