@@ -137,7 +137,10 @@ if(VIRGIL_INSTALL_HDRS)
     )
 endif()
 
-if(VIRGIL_INSTALL_CMAKE)
+# Requires VIRGIL_INSTALL_LIBS too: the export set is populated by the
+# install(TARGETS ... EXPORT ...) above, so exporting it without installing the
+# targets would fail with "unknown export VirgilCryptoCppTargets".
+if(VIRGIL_INSTALL_CMAKE AND VIRGIL_INSTALL_LIBS)
     set(VIRGIL_CPP_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/VirgilCryptoCpp")
     install(EXPORT VirgilCryptoCppTargets
         NAMESPACE virgil::
