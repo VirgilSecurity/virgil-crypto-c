@@ -1,24 +1,62 @@
 name: Release Python
+# Publishes Python wheels + sdist to PyPI (production) or TestPyPI (pre-release)
+# via PyPI Trusted Publishing.
+#
+# This workflow is intentionally NOT a reusable (`workflow_call`) workflow:
+# PyPI Trusted Publishing does not support reusable workflows, and PEP 740
+# attestations are signed with the top-level `workflow_ref`. Running standalone
+# keeps `workflow_ref == job_workflow_ref == release-python.yml`, so both OIDC
+# auth and attestation verification match the configured Trusted Publisher.
+#
+# Triggers:
+#   * push of a `v*.*.*` tag  — normal path for a human-pushed release tag.
+#   * workflow_dispatch        — used by release.yml (app-token dispatch, since a
+#     GITHUB_TOKEN-pushed tag does not trigger `on: push`) and for backfilling an
+#     already-published tag. `ref` is the tag to build & publish from.
 on:
-  workflow_call:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
     inputs:
-      version:
-        description: 'Version string (e.g. 0.19.0-rc.1)'
-        type: string
-        required: true
       ref:
-        description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
+        description: 'Tag ref to build & publish (e.g. refs/tags/v0.23.0)'
         type: string
         required: true
 
 jobs:
+  prepare:
+    name: Resolve version and ref
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.vars.outputs.ref }}
+      version: ${{ steps.vars.outputs.version }}
+    steps:
+      - name: Resolve ref and version
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REF="${{ inputs.ref }}"
+          else
+            REF="${{ github.ref }}"
+          fi
+          case "$REF" in
+            refs/tags/v*) : ;;
+            *) echo "ERROR: ref '$REF' is not a refs/tags/v* tag"; exit 1 ;;
+          esac
+          VERSION="${REF#refs/tags/v}"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
   build-and-test:
+    needs: [prepare]
     uses: ./.github/workflows/build-python.yml
     with:
-      ref: ${{ inputs.ref }}
+      ref: ${{ needs.prepare.outputs.ref }}
 
   is-prerelease:
     name: Check if pre-release
+    needs: [prepare]
     runs-on: ubuntu-latest
     outputs:
       prerelease: ${{ steps.check.outputs.prerelease }}
@@ -26,10 +64,9 @@ jobs:
       - name: Detect pre-release tag
         id: check
         run: |
-          TAG="v${{ inputs.version }}"
-          # A tag with a hyphen after the version (e.g. v0.17.3-rc1, v1.0.0-alpha1)
+          # A version with a hyphen after MAJOR.MINOR.PATCH (e.g. 0.17.3-rc1)
           # indicates a pre-release
-          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
+          if [[ "${{ needs.prepare.outputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
             echo "prerelease=true" >> "$GITHUB_OUTPUT"
           else
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
@@ -61,6 +98,8 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
 
   publish-testpypi:
     name: Publish to TestPyPI
@@ -90,3 +129,4 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true

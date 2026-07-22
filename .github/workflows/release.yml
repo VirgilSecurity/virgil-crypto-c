@@ -182,11 +182,27 @@ jobs:
   publish-python:
     name: Publish Python
     needs: [release-commit]
-    uses: ./.github/workflows/release-python.yml
-    with:
-      version: ${{ inputs.version }}
-      ref: refs/tags/v${{ inputs.version }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      # release-python.yml is standalone (NOT workflow_call) because PyPI Trusted
+      # Publishing does not support reusable workflows. A tag pushed by the default
+      # GITHUB_TOKEN does not trigger its `on: push`, so we dispatch it explicitly
+      # with the release-bot app token (a non-Actions identity, which does trigger).
+      - name: Generate release-bot token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Dispatch Python release for the tag
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh workflow run release-python.yml \
+            --repo "${{ github.repository }}" \
+            --ref "${{ inputs.branch }}" \
+            -f ref="refs/tags/v${{ inputs.version }}"
 
   publish-wasm:
     name: Publish WASM
