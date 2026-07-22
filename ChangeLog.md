@@ -1,5 +1,11 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.23.0 released 2026-07-21
+
+### New
+
+- **C++20 wrapper (new SDK)** — a C++20 binding for the `foundation`, `ratchet`, and `phe` libraries, generated from the same IR models as the other wrappers. Provides RAII-managed classes with an `expected<>`-based result type (no exceptions on the API surface), const-correct methods, and `std::string_view` inputs. Consumable via CMake as a package (`find_package` / FetchContent) with per-library targets (`foundation-cpp`, `ratchet-cpp`, `phe-cpp`), gated on the corresponding `VIRGIL_LIB_*` options.
+
 ## Version 0.22.0 released 2026-07-07
 
 ### New
