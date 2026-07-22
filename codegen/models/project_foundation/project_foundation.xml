@@ -6,10 +6,10 @@
         prefix="vscf"
         path="../library/foundation/"
         work_path="generated/foundation/"
-        wrappers="swift,java,python,wasm,go,php"
+        wrappers="swift,java,python,wasm,go,php,cpp"
         >
 
-    <version major="0" minor="21" patch="0"/>
+    <version major="0" minor="23" patch="0"/>
 
     <require project="common" feature="library"/>
     <require library="mbedtls" feature="library"/>
@@ -106,7 +106,6 @@
     <class name="ecies"/>
     <class name="ecies envelope"/>
     <class name="recipient cipher"/>
-    <class name="chunk cipher"/>
     <class name="key recipient list"/>
     <class name="kek recipient list"/>
     <class name="list key value node"/>
@@ -156,6 +155,7 @@
     <implementor name="alg info der"/>
     <implementor name="message info der serializer"/>
     <implementor name="padding"/>
+    <implementor name="chunk cipher"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

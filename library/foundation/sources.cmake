@@ -189,11 +189,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_chunk_cipher.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_custom_params.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -704,6 +699,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_chunked_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pbe_alg_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -730,6 +730,11 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_random_padding.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_chunk_cipher.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -798,8 +803,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.h>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_recipient_cipher.h>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_recipient_cipher_defs.h>"
-            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_chunk_cipher.h>"
-            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_chunk_cipher_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.h>"
             "$<$<BOOL:${VSCF_KEK_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_list.h>"
             "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_list_key_value_node.h>"
@@ -1074,6 +1077,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf_alg_info.h>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_salted_kdf_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_internal.h>"
+            "$<$<BOOL:${VSCF_CHUNKED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_chunked_alg_info.h>"
+            "$<$<BOOL:${VSCF_CHUNKED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_chunked_alg_info_defs.h>"
+            "$<$<BOOL:${VSCF_CHUNKED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunked_alg_info_internal.h>"
             "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pbe_alg_info.h>"
             "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pbe_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info_internal.h>"
@@ -1092,6 +1098,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_random_padding.h>"
             "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_random_padding_defs.h>"
             "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding_internal.h>"
+            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_chunk_cipher.h>"
+            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_chunk_cipher_defs.h>"
+            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunk_cipher_internal.h>"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
@@ -1141,8 +1150,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.c>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher.c>"
             "$<$<BOOL:${VSCF_RECIPIENT_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_recipient_cipher_defs.c>"
-            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunk_cipher.c>"
-            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunk_cipher_defs.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_list.c>"
             "$<$<BOOL:${VSCF_KEK_RECIPIENT_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_list.c>"
             "$<$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_list_key_value_node.c>"
@@ -1416,6 +1423,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info.c>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_internal.c>"
+            "$<$<BOOL:${VSCF_CHUNKED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunked_alg_info.c>"
+            "$<$<BOOL:${VSCF_CHUNKED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunked_alg_info_defs.c>"
+            "$<$<BOOL:${VSCF_CHUNKED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunked_alg_info_internal.c>"
             "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info.c>"
             "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info_internal.c>"
@@ -1434,6 +1444,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding.c>"
             "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding_defs.c>"
             "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding_internal.c>"
+            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunk_cipher.c>"
+            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunk_cipher_defs.c>"
+            "$<$<BOOL:${VSCF_CHUNK_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_chunk_cipher_internal.c>"
         )
 
 target_include_directories(foundation

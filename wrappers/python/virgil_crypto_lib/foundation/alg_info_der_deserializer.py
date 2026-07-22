@@ -106,6 +106,21 @@ https://tools.ietf.org/html/draft-housley-hkdf-oids-00."""
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def deserialize_chunked_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with the chunk cipher
+parameters and validate them.
+
+ChunkedParams ::= SEQUENCE {
+    version INTEGER,
+    chunkSize INTEGER,
+    initialNonce OCTET STRING
+}"""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_chunked_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def deserialize_pbkdf2_alg_info(self, oid_id):
         """Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
 defined in the RFC 8018."""

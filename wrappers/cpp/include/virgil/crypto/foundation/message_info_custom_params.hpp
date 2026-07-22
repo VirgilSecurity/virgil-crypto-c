@@ -1,0 +1,92 @@
+// Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#pragma once
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+#include <string>
+#include <string_view>
+#include <vector>
+#include <tl/expected.hpp>
+#include <virgil/crypto/foundation/error.hpp>
+
+struct vscf_message_info_custom_params_t;
+
+namespace virgil::crypto::foundation {
+
+class MessageInfoCustomParams {
+public:
+    MessageInfoCustomParams();
+    /// Adopt ownership of an existing C handle.
+    explicit MessageInfoCustomParams(vscf_message_info_custom_params_t* c_ctx) noexcept;
+    MessageInfoCustomParams(const MessageInfoCustomParams& other);
+    MessageInfoCustomParams(MessageInfoCustomParams&& other) noexcept;
+    MessageInfoCustomParams& operator=(const MessageInfoCustomParams& other);
+    MessageInfoCustomParams& operator=(MessageInfoCustomParams&& other) noexcept;
+    ~MessageInfoCustomParams();
+
+    /// The underlying concrete C handle (non-owning).
+    vscf_message_info_custom_params_t* c_ctx() const noexcept;
+
+    /// Add custom parameter with integer value.
+    void add_int(std::span<const uint8_t> key, int32_t value);
+
+    /// Add custom parameter with UTF8 string value.
+    void add_string(std::span<const uint8_t> key, std::span<const uint8_t> value);
+
+    /// Add custom parameter with octet string value.
+    void add_data(std::span<const uint8_t> key, std::span<const uint8_t> value);
+
+    /// Remove all parameters.
+    void clear();
+
+    /// Return custom parameter with integer value.
+    tl::expected<int32_t, Error> find_int(std::span<const uint8_t> key);
+
+    /// Return custom parameter with UTF8 string value.
+    tl::expected<std::vector<uint8_t>, Error> find_string(std::span<const uint8_t> key);
+
+    /// Return custom parameter with octet string value.
+    tl::expected<std::vector<uint8_t>, Error> find_data(std::span<const uint8_t> key);
+
+    /// Return true if at least one param exists.
+    bool has_params() const;
+
+private:
+    vscf_message_info_custom_params_t* c_ctx_;
+};
+
+}  // namespace virgil::crypto::foundation

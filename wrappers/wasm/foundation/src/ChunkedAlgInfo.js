@@ -1,0 +1,104 @@
+/**
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+ */
+
+
+const precondition = require('./precondition');
+
+const initChunkedAlgInfo = (Module, modules) => {
+    class ChunkedAlgInfo {
+
+        constructor(ctxPtr) {
+            this.name = 'ChunkedAlgInfo';
+
+            if (typeof ctxPtr === 'undefined') {
+                this.ctxPtr = Module._vscf_chunked_alg_info_new();
+            } else {
+                this.ctxPtr = ctxPtr;
+            }
+        }
+
+        static newAndUseCContext(ctxPtr) {
+            // assert(typeof ctxPtr === 'number');
+            return new ChunkedAlgInfo(Module._vscf_chunked_alg_info_shallow_copy(ctxPtr));
+        }
+
+        static newAndTakeCContext(ctxPtr) {
+            // assert(typeof ctxPtr === 'number');
+            return new ChunkedAlgInfo(ctxPtr);
+        }
+
+        delete() {
+            if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
+                Module._vscf_chunked_alg_info_delete(this.ctxPtr);
+                this.ctxPtr = null;
+            }
+        }
+
+        algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunked_alg_info_alg_id(this.ctxPtr);
+            return proxyResult;
+        }
+
+        version() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunked_alg_info_version(this.ctxPtr);
+            return proxyResult;
+        }
+
+        chunkSize() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_chunked_alg_info_chunk_size(this.ctxPtr);
+            return proxyResult;
+        }
+
+        nonce() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_chunked_alg_info_nonce(this.ctxPtr);
+        }
+
+    }
+
+    return ChunkedAlgInfo;
+};
+
+module.exports = initChunkedAlgInfo;

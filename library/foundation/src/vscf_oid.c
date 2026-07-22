@@ -165,6 +165,14 @@ static const byte oid_random_padding_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x
 static const vsc_data_t oid_random_padding = {oid_random_padding_bytes, sizeof(oid_random_padding_bytes)};
 
 //
+//  1.3.6.1.4.1.54811.1.4
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  construction(1) aes256-gcm-chunked(4)
+//
+static const byte oid_aes256_gcm_chunked_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x04};
+static const vsc_data_t oid_aes256_gcm_chunked = {oid_aes256_gcm_chunked_bytes, sizeof(oid_aes256_gcm_chunked_bytes)};
+
+//
 //  1.3.6.1.4.1.54811.2.1
 //  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
 //  post-quantum-crypto(2) falcon(1)
@@ -279,6 +287,9 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 
     case vscf_alg_id_RANDOM_PADDING:
         return oid_random_padding;
+
+    case vscf_alg_id_AES256_GCM_CHUNKED:
+        return oid_aes256_gcm_chunked;
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier");
@@ -410,6 +421,10 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_RANDOM_PADDING;
     }
 
+    if (vscf_oid_equal(oid, oid_aes256_gcm_chunked)) {
+        return vscf_alg_id_AES256_GCM_CHUNKED;
+    }
+
     return vscf_alg_id_NONE;
 }
 
@@ -513,6 +528,9 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_RANDOM_PADDING:
         return oid_random_padding;
+
+    case vscf_oid_id_AES256_GCM_CHUNKED:
+        return oid_aes256_gcm_chunked;
 
     case vscf_oid_id_ML_KEM_768:
         return oid_ml_kem_768;
@@ -658,6 +676,10 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_RANDOM_PADDING;
     }
 
+    if (vscf_oid_equal(oid, oid_aes256_gcm_chunked)) {
+        return vscf_oid_id_AES256_GCM_CHUNKED;
+    }
+
     if (vscf_oid_equal(oid, oid_ml_kem_768)) {
         return vscf_oid_id_ML_KEM_768;
     }
@@ -748,6 +770,9 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_RANDOM_PADDING:
         return vscf_alg_id_RANDOM_PADDING;
+
+    case vscf_oid_id_AES256_GCM_CHUNKED:
+        return vscf_alg_id_AES256_GCM_CHUNKED;
 
     case vscf_oid_id_ML_KEM_768:
         return vscf_alg_id_ML_KEM_768;

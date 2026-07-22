@@ -1,0 +1,254 @@
+<implementor name="chunk cipher" is_default="1">
+    Contains the chunked AES-256-GCM stream cipher implementation.
+
+    <implementation name="chunk cipher">
+        Provides stream encryption in fixed-size chunks, where each encrypted
+        chunk carries its own AES-256-GCM authentication tag.
+
+        Nonce derivation follows the TLS 1.3 construction:
+            nonce_i = initial_nonce XOR (0x00000000 || uint64_be(i))
+
+        Each encrypted frame layout:
+            counter_le64[8] | ciphertext[N] | tag[16]
+
+        The construction is self-describing: it produces and restores a
+        'chunked alg info' (algorithm id 'aes256 gcm chunked' carrying version,
+        chunk size, and the initial nonce) via the 'alg' interface, so the
+        generic decryptor (recipient cipher / alg factory) can reconstruct and
+        drive it through the 'cipher' interface without out-of-band parameters.
+
+        <interface name="alg"/>
+        <interface name="encrypt"/>
+        <interface name="decrypt"/>
+        <interface name="cipher info">
+            <constant name="nonce len" value="12"/>
+            <constant name="key len" value="32"/>
+            <constant name="key bitlen" value="256"/>
+            <constant name="block len" value="16"/>
+        </interface>
+        <interface name="cipher"/>
+
+        <require class="aes256 gcm"/>
+        <require impl="chunked alg info"/>
+
+        <dependency name="random" interface="random"/>
+
+        <property name="aes256 gcm" impl="aes256 gcm"/>
+        <property name="key" class="buffer"/>
+        <property name="nonce buffer" class="buffer"/>
+        <property name="chunk size" type="size"/>
+        <property name="chunk index" type="unsigned" size="8"/>
+        <property name="pending" class="buffer"/>
+        <property name="auth data" class="buffer">
+            Associated data bound into the stream authentication (frame 0 AAD).
+            Set by the generic encryptor/decryptor (recipient cipher) to the
+            serialized CMS 'data encryption alg info' so an OID swap or a
+            chunk_size/initial_nonce tamper fails closed. Empty for the raw
+            (non-CMS) seek/stream API, keeping the shipped frame format.
+        </property>
+        <property name="state" enum="cipher state"/>
+        <property name="cipher error" enum="status">
+            Deferred error captured by the void 'start encryption'/'start decryption'
+            (e.g. RNG failure) and surfaced from the first 'update'/'finish'.
+        </property>
+
+        <method name="set chunk size" declaration="public">
+            Set the plaintext chunk size in bytes. Default is 65536.
+
+            <argument name="chunk size" type="size"/>
+        </method>
+
+        <method name="nonce" is_const="1" declaration="public">
+            Return the 12-byte initial nonce.
+            Valid after calling start_encryption. On the generic CMS path the
+            nonce is carried in the produced 'chunked alg info' (self-describing),
+            so no out-of-band custom params are needed.
+
+            <return class="data"/>
+        </method>
+
+<!--
+            'nonce len' is NOT declared as a method: the inherited 'cipher info'
+            interface already exposes the nonce length via its <constant name="nonce len"
+            value="12"/> (rendered as the vscf_chunk_cipher_NONCE_LEN constant and wired
+            into the cipher_info API), mirroring aes256_gcm. A redundant getter method
+            collides with that constant in wrappers (Swift: 'let nonceLen' vs 'func
+            nonceLen()' invalid redeclaration).
+        -->
+
+        <method name="encryption out len" is_const="1" declaration="public">
+            Return buffer length required to hold output of process_encryption and finish_encryption.
+
+            <argument name="data len" type="size"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="process encryption" declaration="public">
+            Process encryption of a new portion of data.
+
+            <argument name="data" class="data"/>
+            <argument name="out" class="buffer">
+                <length method="encryption out len">
+                    <proxy argument="data" to="data len" cast="data_length"/>
+                </length>
+            </argument>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="finish encryption" declaration="public">
+            Encrypt any remaining pending data and finalize the stream.
+
+            <argument name="out" class="buffer">
+                <length method="encryption out len">
+                    <proxy constant="0" to="data len"/>
+                </length>
+            </argument>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="decryption out len" is_const="1" declaration="public">
+            Return buffer length required to hold output of process_decryption and finish_decryption.
+
+            <argument name="data len" type="size"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="process decryption" declaration="public">
+            Process decryption of a new portion of data.
+
+            <argument name="data" class="data"/>
+            <argument name="out" class="buffer">
+                <length method="decryption out len">
+                    <proxy argument="data" to="data len" cast="data_length"/>
+                </length>
+            </argument>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="finish decryption" declaration="public">
+            Decrypt any remaining pending data and finalize the stream.
+
+            <argument name="out" class="buffer">
+                <length method="decryption out len">
+                    <proxy constant="0" to="data len"/>
+                </length>
+            </argument>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="chunk count" is_const="1" declaration="public">
+            Return the number of frames the sequential encryption path emits for a plaintext of the
+            given length: floor(data_len / chunk_size) + 1. The trailing frame (the one with is_last=true)
+            is empty when data_len is an exact multiple of chunk_size. Use this to drive random-access /
+            parallel encryption via encrypt_at over indices 0 .. chunk_count-1, placing is_last on the
+            highest index. Requires chunk_size to be set (&gt; 0).
+
+            <argument name="data len" type="size"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="encrypt at" declaration="public">
+            Encrypt a single chunk at an explicit index for random-access / parallel encryption, writing
+            the frame counter_le64[8] | ciphertext | tag[16]. Independent of the start/process/finish
+            state machine; requires key, initial nonce, and chunk_size to be set, and the instance to be
+            in the INITIAL state (call before, or instead of, start_encryption).
+
+            WARNING (nonce safety): each chunk_index must be encrypted at most ONCE per (key, initial_nonce);
+            AES-GCM nonce reuse is catastrophic. This API is per-call and does NOT track or enforce
+            uniqueness — the caller owns it. Thread-safe: each call uses a per-call local cipher context and
+            only reads the instance's key/nonce/chunk_size, so a single configured instance may be used
+            concurrently from multiple threads for parallel encryption (no shared mutable cipher state, no
+            lock). Whole-file only: the caller must know the total chunk count (see chunk_count) to place
+            exactly one is_last frame.
+
+            <argument name="chunk index" type="unsigned" size="8"/>
+            <argument name="is last" type="boolean"/>
+            <argument name="plaintext" class="data"/>
+            <argument name="out" class="buffer">
+                <length method="encryption out len">
+                    <proxy argument="plaintext" to="data len" cast="data_length"/>
+                </length>
+            </argument>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="decrypt at" declaration="public">
+            Authenticate and decrypt a single frame as an explicit chunk index for random-access reads.
+            The frame's embedded counter is validated against the passed-in chunk_index (a mismatch returns
+            ERROR_BAD_ENCRYPTED_DATA), so callers must pass the true positional index and never trust the
+            frame's own counter. Independent of the streaming state machine; requires key, initial nonce,
+            and chunk_size to be set, and the instance to be in the INITIAL state.
+
+            Thread-safe: uses a per-call local cipher context and only reads the instance's
+            key/nonce/chunk_size, so a single configured instance may be used concurrently from multiple
+            threads for parallel/random-access decryption (no shared mutable cipher state, no lock). Note:
+            this authenticates which frame is last (is_last) and each frame's position, but not the total
+            number of frames — protect against truncation by authenticating the chunk count out of band
+            (or deriving it from the ciphertext length).
+
+            <argument name="chunk index" type="unsigned" size="8"/>
+            <argument name="is last" type="boolean"/>
+            <argument name="frame" class="data"/>
+            <argument name="out" class="buffer">
+                <length method="decryption out len">
+                    <proxy argument="frame" to="data len" cast="data_length"/>
+                </length>
+            </argument>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="encrypt chunk" declaration="private">
+            Encrypt one plaintext chunk and write frame: counter_le64[8] | ciphertext | tag[16].
+
+            <argument name="plaintext" class="data"/>
+            <argument name="chunk index" type="unsigned" size="8"/>
+            <argument name="is last" type="boolean"/>
+            <argument name="out" class="buffer" access="readwrite"/>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="decrypt chunk" declaration="private">
+            Authenticate and decrypt one ciphertext frame: counter_le64[8] | ciphertext | tag[16].
+            The frame's embedded counter is validated against expected_index.
+
+            <argument name="frame" class="data"/>
+            <argument name="expected index" type="unsigned" size="8"/>
+            <argument name="is last" type="boolean"/>
+            <argument name="out" class="buffer" access="readwrite"/>
+
+            <return enum="status"/>
+        </method>
+
+        <!--
+            set_nonce, set_key, start_encryption, start_decryption, update,
+            out_len, encrypted_out_len, decrypted_out_len, and finish are
+            provided by the inherited 'cipher' interface (see interface_cipher.xml)
+            and must NOT be redeclared here: a direct redeclaration emits the
+            method twice in wrappers that key on the C symbol (e.g. Go: "method
+            already declared"). aes256_gcm follows the same rule. Only chunk_cipher-
+            specific methods not covered by an interface are declared below.
+        -->
+        <method name="set auth data" declaration="public">
+            Set associated data bound into the stream authentication.
+            The generic encryptor/decryptor (recipient cipher) sets this to the
+            serialized CMS 'data encryption alg info' so metadata tampering
+            (OID swap, chunk_size/initial_nonce change) fails closed. Must be
+            set before start_encryption/start_decryption (and before
+            encrypt_at/decrypt_at). Empty auth_data preserves the shipped raw
+            frame format.
+
+            <argument name="auth data" class="data"/>
+        </method>
+
+    </implementation>
+</implementor>

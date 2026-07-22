@@ -59,7 +59,6 @@ const initAlgFactory = require('./AlgFactory');
 const initKeyAlgFactory = require('./KeyAlgFactory');
 const initEcies = require('./Ecies');
 const initRecipientCipher = require('./RecipientCipher');
-const initChunkCipher = require('./ChunkCipher');
 const initMessageInfoCustomParams = require('./MessageInfoCustomParams');
 const initKeyProvider = require('./KeyProvider');
 const initSigner = require('./Signer');
@@ -128,12 +127,14 @@ const initSimpleAlgInfo = require('./SimpleAlgInfo');
 const initHashBasedAlgInfo = require('./HashBasedAlgInfo');
 const initCipherAlgInfo = require('./CipherAlgInfo');
 const initSaltedKdfAlgInfo = require('./SaltedKdfAlgInfo');
+const initChunkedAlgInfo = require('./ChunkedAlgInfo');
 const initPbeAlgInfo = require('./PbeAlgInfo');
 const initEccAlgInfo = require('./EccAlgInfo');
 const initAlgInfoDerSerializer = require('./AlgInfoDerSerializer');
 const initAlgInfoDerDeserializer = require('./AlgInfoDerDeserializer');
 const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
 const initRandomPadding = require('./RandomPadding');
+const initChunkCipher = require('./ChunkCipher');
 
 const initProject = options => {
     return new Promise((resolve, reject) => {
@@ -164,7 +165,6 @@ const initProject = options => {
             modules.KeyAlgFactory = initKeyAlgFactory(foundationModule, modules);
             modules.Ecies = initEcies(foundationModule, modules);
             modules.RecipientCipher = initRecipientCipher(foundationModule, modules);
-            modules.ChunkCipher = initChunkCipher(foundationModule, modules);
             modules.MessageInfoCustomParams = initMessageInfoCustomParams(foundationModule, modules);
             modules.KeyProvider = initKeyProvider(foundationModule, modules);
             modules.Signer = initSigner(foundationModule, modules);
@@ -233,12 +233,14 @@ const initProject = options => {
             modules.HashBasedAlgInfo = initHashBasedAlgInfo(foundationModule, modules);
             modules.CipherAlgInfo = initCipherAlgInfo(foundationModule, modules);
             modules.SaltedKdfAlgInfo = initSaltedKdfAlgInfo(foundationModule, modules);
+            modules.ChunkedAlgInfo = initChunkedAlgInfo(foundationModule, modules);
             modules.PbeAlgInfo = initPbeAlgInfo(foundationModule, modules);
             modules.EccAlgInfo = initEccAlgInfo(foundationModule, modules);
             modules.AlgInfoDerSerializer = initAlgInfoDerSerializer(foundationModule, modules);
             modules.AlgInfoDerDeserializer = initAlgInfoDerDeserializer(foundationModule, modules);
             modules.MessageInfoDerSerializer = initMessageInfoDerSerializer(foundationModule, modules);
             modules.RandomPadding = initRandomPadding(foundationModule, modules);
+            modules.ChunkCipher = initChunkCipher(foundationModule, modules);
             resolve(modules);
         }).catch(error => {
             reject(error);

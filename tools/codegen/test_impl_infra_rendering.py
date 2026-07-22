@@ -147,13 +147,24 @@ class TestImplModule(unittest.TestCase):
         impl_names_from_ir = sorted(i.name for i in self.pir.implementations)
         expected = [f"vscf_impl_tag_{n.replace(' ', '_').upper()}" for n in impl_names_from_ir]
         self.assertEqual(impl_constants, expected)
-        self.assertEqual(len(impl_constants), 56)
+        self.assertEqual(len(impl_constants), 58)
 
     def test_impl_tag_enum_sorted_alphabetically(self):
         enum = self.root.find(".//c_enum[@name='vscf_impl_tag_t']")
         constants = enum.findall("c_constant")
         impl_names = [c.attrib["name"] for c in constants[1:-1]]
-        self.assertEqual(impl_names, sorted(impl_names))
+        # The generator orders the enum by the sorted IR implementation names
+        # (space-separated, lower-case: see project_c_backend `sorted(i.name ...)`),
+        # then transforms each to the vscf_impl_tag_<UPPER_UNDERSCORE> constant.
+        # Re-sorting the *transformed* strings would use a different key: for
+        # adjacent names like "chunk cipher"/"chunked alg info", ' ' (0x20) sorts
+        # before 'e' whereas '_' (0x5F) sorts after 'E', flipping the order. So
+        # compare against the IR-name sort key the generator actually uses.
+        expected = [
+            f"vscf_impl_tag_{n.replace(' ', '_').upper()}"
+            for n in sorted(i.name for i in self.pir.implementations)
+        ]
+        self.assertEqual(impl_names, expected)
 
     def test_impl_t_forward_declaration(self):
         struct = self.root.find(".//c_struct[@name='vscf_impl_t']")

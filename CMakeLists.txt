@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.21.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.23.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "rc.1" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -124,6 +124,7 @@ option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 option(VIRGIL_WRAP_JAVA "Build 'Java' wrapper" OFF)
 option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
+option(VIRGIL_WRAP_CPP "Build 'C++' wrapper" OFF)
 
 
 # ---------------------------------------------------------------------------
@@ -294,6 +295,10 @@ endif()
 
 if(VIRGIL_WRAP_WASM)
     add_subdirectory("wrappers/wasm")
+endif()
+
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_CPP)
+    add_subdirectory("wrappers/cpp")
 endif()
 
 

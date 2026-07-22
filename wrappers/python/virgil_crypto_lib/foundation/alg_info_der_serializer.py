@@ -128,6 +128,30 @@ AlgorithmIdentifier with no parameters."""
         result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_cipher_alg_info(self.ctx, alg_info.c_impl)
         return result
 
+    def serialized_chunked_alg_info_len(self, alg_info):
+        """Return buffer size enough to hold ASN.1 structure
+"AlgorithmIdentifier" with the chunk cipher parameters:
+
+ChunkedParams ::= SEQUENCE {
+    version INTEGER,
+    chunkSize INTEGER,
+    initialNonce OCTET STRING
+}"""
+        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_chunked_alg_info_len(self.ctx, alg_info.c_impl)
+        return result
+
+    def serialize_chunked_alg_info(self, alg_info):
+        """Serialize class "chunked alg info" to the ASN.1 structure
+"AlgorithmIdentifier" with the chunk cipher parameters.
+
+ChunkedParams ::= SEQUENCE {
+    version INTEGER,
+    chunkSize INTEGER,
+    initialNonce OCTET STRING
+}"""
+        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_chunked_alg_info(self.ctx, alg_info.c_impl)
+        return result
+
     def serialized_pbkdf2_alg_info_len(self, alg_info):
         """Return buffer size enough to hold ASN.1 structure
 "PBKDF2Algorithm" from the RFC 8018."""

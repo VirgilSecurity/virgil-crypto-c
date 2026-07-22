@@ -63,7 +63,8 @@ public enum AlgId {
     FALCON(22),
     RANDOM_PADDING(23),
     ML_KEM_768(24),
-    ML_DSA_65(25);
+    ML_DSA_65(25),
+    AES256_GCM_CHUNKED(26);
 
     private final int code;
 

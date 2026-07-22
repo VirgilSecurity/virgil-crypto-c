@@ -6,10 +6,10 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="java,python,wasm,go,php"
+        wrappers="java,python,wasm,go,php,cpp"
         >
 
-    <version major="0" minor="21" patch="0"/>
+    <version major="0" minor="23" patch="0"/>
 
     <require project="common" feature="library"/>
 

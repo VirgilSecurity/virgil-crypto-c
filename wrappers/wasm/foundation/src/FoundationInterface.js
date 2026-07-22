@@ -65,6 +65,12 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.ASN1WR:
                     return modules.Asn1wr.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.CHUNKED_ALG_INFO:
+                    return modules.ChunkedAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CHUNK_CIPHER:
+                    return modules.ChunkCipher.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.CIPHER_ALG_INFO:
                     return modules.CipherAlgInfo.newAndTakeCContext(ctxPtr);
 

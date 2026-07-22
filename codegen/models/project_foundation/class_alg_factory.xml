@@ -15,6 +15,7 @@
     <require impl="hkdf" is_optional="1"/>
     <require impl="aes256 gcm" is_optional="1"/>
     <require impl="aes256 cbc" is_optional="1"/>
+    <require impl="chunk cipher" is_optional="1"/>
     <require impl="hash based alg info" is_optional="1"/>
     <require impl="cipher alg info" is_optional="1"/>
     <require impl="salted kdf alg info" is_optional="1"/>
