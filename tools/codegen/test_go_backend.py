@@ -867,15 +867,6 @@ class BootstrapWiringTests(unittest.TestCase):
             self.assertFalse(any(n.endswith("_test.go") for n in generated))
 
 
-def _windows_ldflags_libs(generated: str, arch: str) -> str:
-    """Return the ``-l`` library list from a windows/<arch> LDFLAGS line."""
-    prefix = f"// #cgo windows,{arch} LDFLAGS: "
-    for line in generated.splitlines():
-        if line.startswith(prefix):
-            return line[len(prefix):].split(" ", 1)[1]
-    raise AssertionError(f"no windows,{arch} LDFLAGS line in generated output")
-
-
 class PlatformGoTests(unittest.TestCase):
     """platform.go generation — cgo CFLAGS/LDFLAGS directives."""
 
@@ -907,11 +898,15 @@ class PlatformGoTests(unittest.TestCase):
         self.assertIn("// #cgo windows,arm64 CFLAGS: -I${SRCDIR}/../pkg/windows_arm64/include/", gen)
         self.assertIn("// #cgo windows,arm64 LDFLAGS: -L${SRCDIR}/../pkg/windows_arm64/lib ", gen)
         self.assertNotIn("// #cgo windows CFLAGS", gen)
-        # Both arches share one library list; the table varies paths only.
-        amd64_libs = _windows_ldflags_libs(gen, "amd64")
-        arm64_libs = _windows_ldflags_libs(gen, "arm64")
-        self.assertEqual(amd64_libs, arm64_libs)
-        self.assertIn("-lbcrypt", arm64_libs)
+        self.assertNotIn("// #cgo windows LDFLAGS", gen)
+        # The arm64 line carries the real library list, not just a path.
+        arm64_ldflags = next(
+            line for line in gen.splitlines()
+            if line.startswith("// #cgo windows,arm64 LDFLAGS: ")
+        )
+        self.assertIn("-lvsc_foundation", arm64_ldflags)
+        self.assertIn("-lbcrypt", arm64_ldflags)
+        self.assertNotIn("windows_amd64", arm64_ldflags)
 
     def test_unrecognized_platform_silently_skipped(self) -> None:
         from tools.codegen.project_ir import IRProject

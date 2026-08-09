@@ -161,6 +161,7 @@ jobs:
         shell: msys2 {0}
         run: |
           set -x
+          command -v clang
           clang -dumpmachine
           cmake --version
           ninja --version
@@ -168,11 +169,27 @@ jobs:
           python3 --version
           go env GOOS GOARCH
           set +x
+          # Match the GNU-ABI triple specifically. path-type: inherit makes the
+          # Windows PATH visible here, so a native aarch64-pc-windows-msvc clang
+          # could otherwise satisfy a bare aarch64* match and produce MSVC-ABI
+          # objects that break the lib<name>.a / -l<name> cgo contract.
           triple=$(clang -dumpmachine)
           case "$triple" in
-            aarch64*) echo "OK: compiler targets $triple" ;;
-            *) echo "ERROR: expected an aarch64 target, got '$triple'"; exit 1 ;;
+            aarch64*-w64-*|aarch64*-mingw*)
+              echo "OK: compiler targets $triple" ;;
+            *)
+              echo "ERROR: expected an aarch64 GNU-ABI (w64-mingw32) target, got '$triple'"
+              exit 1 ;;
           esac
+          # Assert GOARCH too, not just print it: an emulated x64 Go would
+          # select the windows,amd64 cgo constraints and fail later as an
+          # opaque link error instead of here.
+          if command -v go >/dev/null 2>&1; then
+            goarch=$(go env GOARCH)
+            [ "$goarch" = arm64 ] || {
+              echo "ERROR: expected GOARCH=arm64, got '$goarch'"; exit 1; }
+            echo "OK: GOARCH=$goarch"
+          fi
 
       - name: Setup Python virtual environment
         if: runner.os != 'Windows'
@@ -224,14 +241,33 @@ jobs:
             exit 1
           fi
           expected="${{ matrix.expected_pe_machine }}"
+          libdir="wrappers/go/pkg/${{ matrix.target }}/lib"
+          # Glob every installed archive rather than a hand-maintained list:
+          # the whole install prefix is uploaded and committed, so anything
+          # left unchecked can ship wrong-arch.
+          shopt -s nullglob
+          libs=("$libdir"/*.a)
+          shopt -u nullglob
+          if [ ${#libs[@]} -eq 0 ]; then
+            echo "ERROR: no .a archives found under $libdir"
+            exit 1
+          fi
           failed=0
-          for lib in \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_foundation.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_ratchet.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libmlkem768.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libfalcon.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libmbedcrypto.a; do
-            actual=$(llvm-readobj --file-headers "$lib" 2>&1 | awk '/Machine:/{print $2}' | sort -u | tr '\n' ' ')
+          for lib in "${libs[@]}"; do
+            # Keep llvm-readobj's exit status and stderr out of the parsed
+            # stream: folding them in lets a partial read look like a clean
+            # single-architecture result.
+            if ! out=$(llvm-readobj --file-headers "$lib" 2>/dev/null); then
+              echo "ERROR: llvm-readobj failed on $lib"
+              failed=1
+              continue
+            fi
+            actual=$(printf '%s\n' "$out" | awk '/Machine:/{print $2}' | sort -u | tr '\n' ' ')
+            if [ -z "$actual" ]; then
+              echo "ERROR: $lib reported no Machine headers"
+              failed=1
+              continue
+            fi
             case "$actual" in
               "$expected "|"$expected")
                 echo "OK: $lib ($expected)" ;;
@@ -240,6 +276,7 @@ jobs:
                 failed=1 ;;
             esac
           done
+          echo "Verified ${#libs[@]} archives against $expected."
           [ $failed -eq 0 ] || { echo "Wrong-architecture archives detected."; exit 1; }
 
       - name: Run Go tests
