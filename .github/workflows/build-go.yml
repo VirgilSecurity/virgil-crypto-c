@@ -145,6 +145,23 @@ jobs:
             mingw-w64-clang-aarch64-toolchain
             mingw-w64-clang-aarch64-cmake
             mingw-w64-clang-aarch64-ninja
+            mingw-w64-clang-aarch64-python-pip
+
+      # MSYS2 prepends its own bin dirs, so python3 here is MSYS2's, not the
+      # one actions/setup-python installed. The root CMakeLists runs
+      # `pip3 install -r requirements.txt` at configure time and ignores the
+      # result, so a failure there surfaces later as a missing nanopb
+      # generator. grpcio-tools has no mingw aarch64 wheel and would abort the
+      # whole transaction; the Go target only needs the nanopb generator, so
+      # install just that and let CMake find it on PATH.
+      - name: Python codegen deps (Windows ARM64)
+        if: matrix.msys2
+        shell: msys2 {0}
+        run: |
+          python3 -m venv /c/venv
+          /c/venv/bin/pip3 install -q -U protobuf nanopb
+          test -x /c/venv/bin/protoc-gen-nanopb
+          echo "OK: $(/c/venv/bin/protoc-gen-nanopb --help >/dev/null 2>&1; echo generator installed)"
 
       # Steps do not inherit each other's shell environment, so CC/CXX must go
       # through GITHUB_ENV or the build step falls back to the emulated
@@ -215,6 +232,14 @@ jobs:
       - name: Build native libraries
         shell: ${{ matrix.shell || 'bash' }}
         run: |
+          # Put the nanopb generator on PATH for the MSYS2 target. CMake finds
+          # it through PATH (its $VIRTUAL_ENV HINTS use a POSIX path that the
+          # native cmake.exe cannot resolve), so activating the venv here is
+          # what actually makes configure succeed.
+          if [ -d /c/venv/bin ]; then
+            export VIRTUAL_ENV=/c/venv
+            export PATH="/c/venv/bin:$PATH"
+          fi
           cmake -Cconfigs/go-config.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/wrappers/go/pkg/${{ matrix.target }}" \
