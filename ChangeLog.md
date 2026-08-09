@@ -1,5 +1,19 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.23.1 released 2026-08-09
+
+### New
+
+- **Go wrapper: prebuilt static libraries for `windows/arm64`** — the Go module now ships a sixth target, `wrappers/go/pkg/windows_arm64/`, built with the MSYS2 CLANGARM64 (`aarch64-w64-windows-gnu`) toolchain. Windows ARM64 consumers must link with a compatible LLVM/CLANGARM64 GNU-ABI toolchain; MSVC is not usable, as cgo requires a GCC-compatible driver.
+
+### Bugfix
+
+- **cgo directives sent every Windows build to the amd64 libraries** — the generated `platform.go` carried an unconstrained `#cgo windows` directive hardcoded to `pkg/windows_amd64`, so a `GOOS=windows GOARCH=arm64` build linked x86-64 archives and failed to link. The directives are now constrained per architecture.
+
+### Build
+
+- **Release archives are architecture-verified before upload** — the CI check previously covered only ELF targets and stopped at the first archive member, so both Windows targets shipped unverified and a mixed-architecture archive could pass. Every installed archive is now checked on all Linux and Windows targets (`readelf` for ELF, `llvm-readobj` for PE).
+
 ## Version 0.23.0 released 2026-07-21
 
 ### New

@@ -882,6 +882,32 @@ class PlatformGoTests(unittest.TestCase):
         legacy = (REPO_ROOT / "wrappers" / "go" / "phe" / "platform.go").read_text()
         self.assertEqual(gen, legacy)
 
+    def test_ratchet_byte_identical_to_legacy(self) -> None:
+        ir = project_to_ir(load_named_project_source("ratchet", str(REPO_ROOT)))
+        gen = generate_go_platform(ir)
+        legacy = (REPO_ROOT / "wrappers" / "go" / "ratchet" / "platform.go").read_text()
+        self.assertEqual(gen, legacy)
+
+    def test_windows_expands_to_both_arches(self) -> None:
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        gen = generate_go_platform(ir)
+        # An unconstrained ``windows`` directive would send a windows/arm64
+        # build to the amd64 lib path, so each arch must be constrained and
+        # pointed at its own pkg directory.
+        self.assertIn("// #cgo windows,amd64 CFLAGS: -I${SRCDIR}/../pkg/windows_amd64/include/", gen)
+        self.assertIn("// #cgo windows,arm64 CFLAGS: -I${SRCDIR}/../pkg/windows_arm64/include/", gen)
+        self.assertIn("// #cgo windows,arm64 LDFLAGS: -L${SRCDIR}/../pkg/windows_arm64/lib ", gen)
+        self.assertNotIn("// #cgo windows CFLAGS", gen)
+        self.assertNotIn("// #cgo windows LDFLAGS", gen)
+        # The arm64 line carries the real library list, not just a path.
+        arm64_ldflags = next(
+            line for line in gen.splitlines()
+            if line.startswith("// #cgo windows,arm64 LDFLAGS: ")
+        )
+        self.assertIn("-lvsc_foundation", arm64_ldflags)
+        self.assertIn("-lbcrypt", arm64_ldflags)
+        self.assertNotIn("windows_amd64", arm64_ldflags)
+
     def test_unrecognized_platform_silently_skipped(self) -> None:
         from tools.codegen.project_ir import IRProject
         ir = IRProject(name="test", cgo_links=[

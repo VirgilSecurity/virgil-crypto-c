@@ -190,7 +190,8 @@ endif()
 #   nanopb::protoc-gen-nanopb  - IMPORTED GLOBAL executable target for the above
 #
 # The generator is virgil's venv copy, which is self-contained (it bundles
-# nanopb + protobuf + grpc_tools and its shebang points at the venv python).
+# nanopb + protobuf and its shebang points at the venv python). protoc itself
+# is the SHA-pinned binary downloaded above, not a Python-provided one.
 # virgil's own build populates that venv at configure time, so the copy already
 # exists here for any consumer that added this repo as a subproject.
 #

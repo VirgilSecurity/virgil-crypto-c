@@ -35,6 +35,14 @@ jobs:
   build:
     name: Go (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}
+    # windows_arm64 builds inside the MSYS2 CLANGARM64 shell; every other
+    # target uses bash. The `shell` key on a step allows no contexts, so the
+    # matrix-driven choice has to live here. Steps that must not follow the
+    # matrix -- anything running before the MSYS2 setup -- keep an explicit
+    # `shell: bash`.
+    defaults:
+      run:
+        shell: ${{ matrix.shell || 'bash' }}
     strategy:
       fail-fast: false
       matrix:
@@ -75,6 +83,20 @@ jobs:
             cmake_extra: >-
               -G "MinGW Makefiles"
             run_tests: true
+            expected_pe_machine: IMAGE_FILE_MACHINE_AMD64
+
+          # MSYS2 CLANGARM64 supplies the aarch64-w64-mingw32 GNU-ABI
+          # toolchain. The image's preinstalled gcc is niXman mingw-builds,
+          # x86_64/i686 only, running under emulation — it cannot emit
+          # aarch64 objects, so it must not be picked up as CC.
+          - target: windows_arm64
+            runner: windows-11-arm
+            cmake_extra: >-
+              -G Ninja
+            msys2: true
+            shell: msys2 {0}
+            run_tests: true
+            expected_pe_machine: IMAGE_FILE_MACHINE_ARM64
 
     steps:
       - uses: actions/checkout@v6
@@ -82,11 +104,25 @@ jobs:
           ref: ${{ inputs.ref || github.ref }}
 
       - name: Setup Java (for bumpver Maven step)
-        if: inputs.version != ''
+        if: inputs.version != '' && !matrix.msys2
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '11'
+          cache: maven
+
+      # Temurin publishes no Windows/aarch64 JDK below 21 (verified against the
+      # Adoptium API: 0 builds for 11 and 17, 1 for 21), so the ARM64 runner
+      # takes the x64 JDK under emulation rather than diverging on version.
+      # bumpver only runs Maven versions:set, which is indifferent to this.
+      # Kept as a separate step so the other five targets are untouched.
+      - name: Setup Java (Windows ARM64 — x64 JDK under emulation)
+        if: inputs.version != '' && matrix.msys2
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          architecture: x64
           cache: maven
 
       - name: Bump version (release builds only)
@@ -117,12 +153,111 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build
 
+      # path-type: inherit keeps the Windows PATH visible inside the MSYS2
+      # shell, so python3, go, and java from the setup-* actions above still
+      # resolve in the build and test steps.
+      - name: Setup MSYS2 CLANGARM64 toolchain
+        if: matrix.msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANGARM64
+          path-type: inherit
+          update: false
+          install: >-
+            mingw-w64-clang-aarch64-toolchain
+            mingw-w64-clang-aarch64-cmake
+            mingw-w64-clang-aarch64-ninja
+            mingw-w64-clang-aarch64-python-pip
+
+      # MSYS2 prepends its own bin dirs, so python3 here is MSYS2's, not the
+      # one actions/setup-python installed. The root CMakeLists runs
+      # `pip3 install -r requirements.txt` at configure time and ignores the
+      # result, so a failure there surfaces later as a missing nanopb
+      # generator. Its venv is also unreachable on Windows -- CMakeLists joins
+      # the venv path onto PATH with a POSIX ':' separator, which the native
+      # cmake.exe cannot parse -- so the venv is built and activated here.
+      - name: Python codegen deps (Windows ARM64)
+        if: matrix.msys2
+        shell: msys2 {0}
+        run: |
+          python3 -m venv /c/venv
+          /c/venv/bin/pip3 install -q -U -r requirements.txt
+          test -x /c/venv/bin/protoc-gen-nanopb
+          # Hand the venv to the later steps through GitHub's own mechanism.
+          # The build needs it *active*, not just discoverable: nanopb's
+          # ExternalProject install step installs its Python package into
+          # whichever interpreter is active, and without a venv that is the
+          # system Python, which is not writable.
+          echo "VIRTUAL_ENV=C:/venv" >> "$GITHUB_ENV"
+          echo "C:/venv/bin" >> "$GITHUB_PATH"
+
+      # Steps do not inherit each other's shell environment, so CC/CXX must go
+      # through GITHUB_ENV or the build step falls back to the emulated
+      # x86_64 gcc and silently produces wrong-arch archives.
+      - name: Export aarch64 toolchain
+        if: matrix.msys2
+        shell: msys2 {0}
+        run: |
+          echo "CC=clang" >> "$GITHUB_ENV"
+          echo "CXX=clang++" >> "$GITHUB_ENV"
+
+      - name: Toolchain sanity probe
+        if: matrix.msys2
+        shell: msys2 {0}
+        run: |
+          set -x
+          command -v clang
+          clang -dumpmachine
+          cmake --version
+          ninja --version
+          llvm-readobj --version
+          python3 --version
+          go env GOOS GOARCH
+          set +x
+          # Match the GNU-ABI triple specifically. path-type: inherit makes the
+          # Windows PATH visible here, so a native aarch64-pc-windows-msvc clang
+          # could otherwise satisfy a bare aarch64* match and produce MSVC-ABI
+          # objects that break the lib<name>.a / -l<name> cgo contract.
+          triple=$(clang -dumpmachine)
+          case "$triple" in
+            aarch64*-w64-*|aarch64*-mingw*)
+              echo "OK: compiler targets $triple" ;;
+            *)
+              echo "ERROR: expected an aarch64 GNU-ABI (w64-mingw32) target, got '$triple'"
+              exit 1 ;;
+          esac
+          # Assert GOARCH too, not just print it: an emulated x64 Go would
+          # select the windows,amd64 cgo constraints and fail later as an
+          # opaque link error instead of here.
+          if command -v go >/dev/null 2>&1; then
+            goarch=$(go env GOARCH)
+            [ "$goarch" = arm64 ] || {
+              echo "ERROR: expected GOARCH=arm64, got '$goarch'"; exit 1; }
+            echo "OK: GOARCH=$goarch"
+          fi
+
+      # windows_arm64 gets llvm-readobj from the MSYS2 toolchain above, but the
+      # windows_amd64 retrofit would otherwise depend on the floating
+      # windows-latest image happening to ship LLVM on PATH. Install it only
+      # when it is missing, so a previously-green target cannot go red because
+      # of an image refresh.
+      - name: Ensure llvm-readobj (Windows x64)
+        if: matrix.expected_pe_machine != '' && !matrix.msys2
+        shell: bash
+        run: |
+          if command -v llvm-readobj >/dev/null 2>&1; then
+            echo "llvm-readobj already present: $(command -v llvm-readobj)"
+            exit 0
+          fi
+          echo "llvm-readobj missing; installing LLVM."
+          choco install llvm --no-progress -y
+          echo "C:/Program Files/LLVM/bin" >> "$GITHUB_PATH"
+
       - name: Setup Python virtual environment
         if: runner.os != 'Windows'
         run: python3 -m venv .venv
 
       - name: Build native libraries
-        shell: bash
         run: |
           cmake -Cconfigs/go-config.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
@@ -138,22 +273,88 @@ jobs:
         shell: bash
         run: |
           expected="${{ matrix.expected_elf_arch }}"
+          libdir="wrappers/go/pkg/${{ matrix.target }}/lib"
+          shopt -s nullglob
+          libs=("$libdir"/*.a)
+          shopt -u nullglob
+          if [ ${#libs[@]} -eq 0 ]; then
+            echo "ERROR: no .a archives found under $libdir"
+            exit 1
+          fi
           failed=0
-          for lib in \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_foundation.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_ratchet.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libmlkem768.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libfalcon.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libmbedcrypto.a; do
-            actual=$(readelf -h "$lib" 2>&1 | awk '/Machine:/{print $NF; exit}')
-            if [ "$actual" != "$expected" ]; then
-              echo "ERROR: $lib Machine type '$actual', expected '$expected'"
+          for lib in "${libs[@]}"; do
+            if ! out=$(readelf -h "$lib" 2>/dev/null); then
+              echo "ERROR: readelf failed on $lib"
               failed=1
-            else
-              echo "OK: $lib ($actual)"
+              continue
             fi
+            # Aggregate across every archive member. Stopping at the first
+            # match would let a mixed-architecture archive pass.
+            actual=$(printf '%s\n' "$out" | awk '/Machine:/{print $NF}' | sort -u | tr '\n' ' ')
+            if [ -z "$actual" ]; then
+              echo "ERROR: $lib reported no Machine headers"
+              failed=1
+              continue
+            fi
+            case "$actual" in
+              "$expected "|"$expected")
+                echo "OK: $lib ($expected)" ;;
+              *)
+                echo "ERROR: $lib Machine type '$actual', expected '$expected'"
+                failed=1 ;;
+            esac
           done
+          echo "Verified ${#libs[@]} archives against $expected."
           [ $failed -eq 0 ] || { echo "Cross-compilation misconfiguration detected."; exit 1; }
+
+      # readelf cannot read PE/COFF, so Windows targets need their own check.
+      # llvm-readobj reads .a archive members directly and prints the machine
+      # as the full constant, e.g. "Machine: IMAGE_FILE_MACHINE_ARM64 (0xAA64)".
+      - name: Verify binary architecture (PE)
+        if: matrix.expected_pe_machine != ''
+        run: |
+          if ! command -v llvm-readobj >/dev/null 2>&1; then
+            echo "ERROR: llvm-readobj not found on PATH; cannot verify PE architecture."
+            exit 1
+          fi
+          expected="${{ matrix.expected_pe_machine }}"
+          libdir="wrappers/go/pkg/${{ matrix.target }}/lib"
+          # Glob every installed archive rather than a hand-maintained list:
+          # the whole install prefix is uploaded and committed, so anything
+          # left unchecked can ship wrong-arch.
+          shopt -s nullglob
+          libs=("$libdir"/*.a)
+          shopt -u nullglob
+          if [ ${#libs[@]} -eq 0 ]; then
+            echo "ERROR: no .a archives found under $libdir"
+            exit 1
+          fi
+          failed=0
+          for lib in "${libs[@]}"; do
+            # Keep llvm-readobj's exit status and stderr out of the parsed
+            # stream: folding them in lets a partial read look like a clean
+            # single-architecture result.
+            if ! out=$(llvm-readobj --file-headers "$lib" 2>/dev/null); then
+              echo "ERROR: llvm-readobj failed on $lib"
+              failed=1
+              continue
+            fi
+            actual=$(printf '%s\n' "$out" | awk '/Machine:/{print $2}' | sort -u | tr '\n' ' ')
+            if [ -z "$actual" ]; then
+              echo "ERROR: $lib reported no Machine headers"
+              failed=1
+              continue
+            fi
+            case "$actual" in
+              "$expected "|"$expected")
+                echo "OK: $lib ($expected)" ;;
+              *)
+                echo "ERROR: $lib Machine '$actual', expected '$expected'"
+                failed=1 ;;
+            esac
+          done
+          echo "Verified ${#libs[@]} archives against $expected."
+          [ $failed -eq 0 ] || { echo "Wrong-architecture archives detected."; exit 1; }
 
       - name: Run Go tests
         if: matrix.run_tests
