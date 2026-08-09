@@ -35,6 +35,14 @@ jobs:
   build:
     name: Go (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}
+    # windows_arm64 builds inside the MSYS2 CLANGARM64 shell; every other
+    # target uses bash. The `shell` key on a step allows no contexts, so the
+    # matrix-driven choice has to live here. Steps that must not follow the
+    # matrix -- anything running before the MSYS2 setup -- keep an explicit
+    # `shell: bash`.
+    defaults:
+      run:
+        shell: ${{ matrix.shell || 'bash' }}
     strategy:
       fail-fast: false
       matrix:
@@ -236,7 +244,6 @@ jobs:
         run: python3 -m venv .venv
 
       - name: Build native libraries
-        shell: ${{ matrix.shell || 'bash' }}
         run: |
           cmake -Cconfigs/go-config.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
@@ -291,7 +298,6 @@ jobs:
       # as the full constant, e.g. "Machine: IMAGE_FILE_MACHINE_ARM64 (0xAA64)".
       - name: Verify binary architecture (PE)
         if: matrix.expected_pe_machine != ''
-        shell: ${{ matrix.shell || 'bash' }}
         run: |
           if ! command -v llvm-readobj >/dev/null 2>&1; then
             echo "ERROR: llvm-readobj not found on PATH; cannot verify PE architecture."
@@ -338,7 +344,6 @@ jobs:
 
       - name: Run Go tests
         if: matrix.run_tests
-        shell: ${{ matrix.shell || 'bash' }}
         working-directory: wrappers/go
         run: go test ./...
 
