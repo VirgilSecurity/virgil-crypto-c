@@ -104,11 +104,25 @@ jobs:
           ref: ${{ inputs.ref || github.ref }}
 
       - name: Setup Java (for bumpver Maven step)
-        if: inputs.version != ''
+        if: inputs.version != '' && !matrix.msys2
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '11'
+          cache: maven
+
+      # Temurin publishes no Windows/aarch64 JDK below 21 (verified against the
+      # Adoptium API: 0 builds for 11 and 17, 1 for 21), so the ARM64 runner
+      # takes the x64 JDK under emulation rather than diverging on version.
+      # bumpver only runs Maven versions:set, which is indifferent to this.
+      # Kept as a separate step so the other five targets are untouched.
+      - name: Setup Java (Windows ARM64 — x64 JDK under emulation)
+        if: inputs.version != '' && matrix.msys2
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          architecture: x64
           cache: maven
 
       - name: Bump version (release builds only)
