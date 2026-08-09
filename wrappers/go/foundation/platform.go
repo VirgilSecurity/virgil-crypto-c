@@ -10,7 +10,9 @@ package foundation
 // #cgo linux,amd64,legacy LDFLAGS: -L${SRCDIR}/../pkg/linux_amd64__legacy_os/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lfalcon -lmlkem768 -lmldsa65 -lpthread
 // #cgo linux,arm64 CFLAGS: -I${SRCDIR}/../pkg/linux_arm64/include/
 // #cgo linux,arm64 LDFLAGS: -L${SRCDIR}/../pkg/linux_arm64/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lfalcon -lmlkem768 -lmldsa65 -lpthread
-// #cgo windows CFLAGS: -I${SRCDIR}/../pkg/windows_amd64/include/
-// #cgo windows LDFLAGS: -L${SRCDIR}/../pkg/windows_amd64/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lfalcon -lmlkem768 -lmldsa65 -lbcrypt
+// #cgo windows,amd64 CFLAGS: -I${SRCDIR}/../pkg/windows_amd64/include/
+// #cgo windows,amd64 LDFLAGS: -L${SRCDIR}/../pkg/windows_amd64/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lfalcon -lmlkem768 -lmldsa65 -lbcrypt
+// #cgo windows,arm64 CFLAGS: -I${SRCDIR}/../pkg/windows_arm64/include/
+// #cgo windows,arm64 LDFLAGS: -L${SRCDIR}/../pkg/windows_arm64/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lfalcon -lmlkem768 -lmldsa65 -lbcrypt
 import "C"
 

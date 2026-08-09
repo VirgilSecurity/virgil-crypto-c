@@ -116,7 +116,7 @@ Version format: bare `MAJOR.MINOR.PATCH` for production or `MAJOR.MINOR.PATCH-LA
 | Stage | Action |
 |-------|--------|
 | `validate` | Rejects malformed version strings immediately |
-| `build-go` (parallel) | Cross-compiles static libs for 5 platforms (linux amd64/arm64, darwin amd64/arm64, windows amd64) |
+| `build-go` (parallel) | Cross-compiles static libs for 6 platforms (linux amd64/arm64, darwin amd64/arm64, windows amd64/arm64) |
 | `build-apple` (parallel) | Builds Apple xcframeworks on macOS |
 | `release-commit` | Bumps version across all wrappers, merges all compiled artifacts, verifies xcframework checksums, runs `swift build` + `swift test`, commits binaries to the source branch, pushes both the Go module tag (`wrappers/go/vX.Y.Z`) and the release tag (`vX.Y.Z`) atomically |
 
