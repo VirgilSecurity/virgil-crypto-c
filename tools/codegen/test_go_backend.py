@@ -867,6 +867,15 @@ class BootstrapWiringTests(unittest.TestCase):
             self.assertFalse(any(n.endswith("_test.go") for n in generated))
 
 
+def _windows_ldflags_libs(generated: str, arch: str) -> str:
+    """Return the ``-l`` library list from a windows/<arch> LDFLAGS line."""
+    prefix = f"// #cgo windows,{arch} LDFLAGS: "
+    for line in generated.splitlines():
+        if line.startswith(prefix):
+            return line[len(prefix):].split(" ", 1)[1]
+    raise AssertionError(f"no windows,{arch} LDFLAGS line in generated output")
+
+
 class PlatformGoTests(unittest.TestCase):
     """platform.go generation — cgo CFLAGS/LDFLAGS directives."""
 
@@ -881,6 +890,28 @@ class PlatformGoTests(unittest.TestCase):
         gen = generate_go_platform(ir)
         legacy = (REPO_ROOT / "wrappers" / "go" / "phe" / "platform.go").read_text()
         self.assertEqual(gen, legacy)
+
+    def test_ratchet_byte_identical_to_legacy(self) -> None:
+        ir = project_to_ir(load_named_project_source("ratchet", str(REPO_ROOT)))
+        gen = generate_go_platform(ir)
+        legacy = (REPO_ROOT / "wrappers" / "go" / "ratchet" / "platform.go").read_text()
+        self.assertEqual(gen, legacy)
+
+    def test_windows_expands_to_both_arches(self) -> None:
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        gen = generate_go_platform(ir)
+        # An unconstrained ``windows`` directive would send a windows/arm64
+        # build to the amd64 lib path, so each arch must be constrained and
+        # pointed at its own pkg directory.
+        self.assertIn("// #cgo windows,amd64 CFLAGS: -I${SRCDIR}/../pkg/windows_amd64/include/", gen)
+        self.assertIn("// #cgo windows,arm64 CFLAGS: -I${SRCDIR}/../pkg/windows_arm64/include/", gen)
+        self.assertIn("// #cgo windows,arm64 LDFLAGS: -L${SRCDIR}/../pkg/windows_arm64/lib ", gen)
+        self.assertNotIn("// #cgo windows CFLAGS", gen)
+        # Both arches share one library list; the table varies paths only.
+        amd64_libs = _windows_ldflags_libs(gen, "amd64")
+        arm64_libs = _windows_ldflags_libs(gen, "arm64")
+        self.assertEqual(amd64_libs, arm64_libs)
+        self.assertIn("-lbcrypt", arm64_libs)
 
     def test_unrecognized_platform_silently_skipped(self) -> None:
         from tools.codegen.project_ir import IRProject

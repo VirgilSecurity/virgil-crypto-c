@@ -2583,7 +2583,7 @@ def generate_go_project_implementation(project_ir: IRProject) -> str:
 #   - ``darwin`` → amd64 + arm64 (two distinct paths)
 #   - ``linux,!legacy`` → amd64,!legacy + arm64 (arm64 has no legacy variant)
 #   - ``linux,legacy`` → amd64,legacy only
-#   - ``windows`` → keeps no arch suffix, path defaults to windows_amd64
+#   - ``windows`` → amd64 + arm64 (two distinct paths)
 #
 # Adding new platforms (e.g. riscv64, freebsd) requires editing this
 # table. This was an explicit design choice (user chose "fully codegen
@@ -2604,7 +2604,11 @@ _PLATFORM_EXPANSIONS: dict[str, list[tuple[str, str | None]]] = {
         ("linux,arm64", "linux_arm64"),
     ],
     "windows": [
-        ("windows", None),               # use source path or default
+        # An unconstrained ``windows`` directive would resolve a
+        # windows/arm64 build to the amd64 lib path and fail at link
+        # time, so both arches carry an explicit constraint and path.
+        ("windows,amd64", "windows_amd64"),
+        ("windows,arm64", "windows_arm64"),
     ],
 }
 
