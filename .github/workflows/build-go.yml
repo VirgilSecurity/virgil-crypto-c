@@ -191,6 +191,23 @@ jobs:
             echo "OK: GOARCH=$goarch"
           fi
 
+      # windows_arm64 gets llvm-readobj from the MSYS2 toolchain above, but the
+      # windows_amd64 retrofit would otherwise depend on the floating
+      # windows-latest image happening to ship LLVM on PATH. Install it only
+      # when it is missing, so a previously-green target cannot go red because
+      # of an image refresh.
+      - name: Ensure llvm-readobj (Windows x64)
+        if: matrix.expected_pe_machine != '' && !matrix.msys2
+        shell: bash
+        run: |
+          if command -v llvm-readobj >/dev/null 2>&1; then
+            echo "llvm-readobj already present: $(command -v llvm-readobj)"
+            exit 0
+          fi
+          echo "llvm-readobj missing; installing LLVM."
+          choco install llvm --no-progress -y
+          echo "C:/Program Files/LLVM/bin" >> "$GITHUB_PATH"
+
       - name: Setup Python virtual environment
         if: runner.os != 'Windows'
         run: python3 -m venv .venv
@@ -212,21 +229,38 @@ jobs:
         shell: bash
         run: |
           expected="${{ matrix.expected_elf_arch }}"
+          libdir="wrappers/go/pkg/${{ matrix.target }}/lib"
+          shopt -s nullglob
+          libs=("$libdir"/*.a)
+          shopt -u nullglob
+          if [ ${#libs[@]} -eq 0 ]; then
+            echo "ERROR: no .a archives found under $libdir"
+            exit 1
+          fi
           failed=0
-          for lib in \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_foundation.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_ratchet.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libmlkem768.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libfalcon.a \
-              wrappers/go/pkg/${{ matrix.target }}/lib/libmbedcrypto.a; do
-            actual=$(readelf -h "$lib" 2>&1 | awk '/Machine:/{print $NF; exit}')
-            if [ "$actual" != "$expected" ]; then
-              echo "ERROR: $lib Machine type '$actual', expected '$expected'"
+          for lib in "${libs[@]}"; do
+            if ! out=$(readelf -h "$lib" 2>/dev/null); then
+              echo "ERROR: readelf failed on $lib"
               failed=1
-            else
-              echo "OK: $lib ($actual)"
+              continue
             fi
+            # Aggregate across every archive member. Stopping at the first
+            # match would let a mixed-architecture archive pass.
+            actual=$(printf '%s\n' "$out" | awk '/Machine:/{print $NF}' | sort -u | tr '\n' ' ')
+            if [ -z "$actual" ]; then
+              echo "ERROR: $lib reported no Machine headers"
+              failed=1
+              continue
+            fi
+            case "$actual" in
+              "$expected "|"$expected")
+                echo "OK: $lib ($expected)" ;;
+              *)
+                echo "ERROR: $lib Machine type '$actual', expected '$expected'"
+                failed=1 ;;
+            esac
           done
+          echo "Verified ${#libs[@]} archives against $expected."
           [ $failed -eq 0 ] || { echo "Cross-compilation misconfiguration detected."; exit 1; }
 
       # readelf cannot read PE/COFF, so Windows targets need their own check.
