@@ -125,7 +125,7 @@ jobs:
 
   build-jvm-macos-arm64:
     name: Build JVM (macOS arm64)
-    runs-on: macos-14  # M1/ARM runner
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v6
         with:
