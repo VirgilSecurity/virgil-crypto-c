@@ -343,7 +343,8 @@ vscf_compound_key_alg_import_public_key_data(const vscf_compound_key_alg_t *self
     const vscf_status_t asn1_status = vscf_asn1rd_status(&asn1rd);
     vscf_asn1rd_cleanup(&asn1rd);
 
-    if (asn1_status != vscf_status_SUCCESS) {
+    if (asn1_status != vscf_status_SUCCESS || vsc_data_is_empty(cipher_key_data) ||
+            vsc_data_is_empty(signer_key_data)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY);
         return NULL;
     }
@@ -673,7 +674,8 @@ vscf_compound_key_alg_import_private_key_data(const vscf_compound_key_alg_t *sel
     const vscf_status_t asn1_status = vscf_asn1rd_status(&asn1rd);
     vscf_asn1rd_cleanup(&asn1rd);
 
-    if (asn1_status != vscf_status_SUCCESS) {
+    if (asn1_status != vscf_status_SUCCESS || vsc_data_is_empty(cipher_key_data) ||
+            vsc_data_is_empty(signer_key_data)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY);
         return NULL;
     }

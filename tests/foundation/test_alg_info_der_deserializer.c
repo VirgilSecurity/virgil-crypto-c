@@ -279,6 +279,47 @@ test__deserialize__hybrid_key_alg_info_with_unsupported_second_alg_info___error_
     vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
+// --------------------------------------------------------------------------
+//  Malformed input: must be rejected, not abort.
+// --------------------------------------------------------------------------
+//  AlgorithmIdentifier { id-aes256-GCM, nonce OCTET STRING (empty) }
+static const byte aes256_gcm_with_empty_nonce_bytes[] = {
+        0x30, 0x0D, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E, 0x04, 0x00};
+
+//  AlgorithmIdentifier { id-ecPublicKey, namedCurve id-ecPublicKey } - OID is known but is not a curve
+static const byte ecc_with_non_curve_named_curve_bytes[] = {0x30, 0x12, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02,
+        0x01, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01};
+
+static void
+inner_test__deserialize__returns_error(vsc_data_t data, vscf_status_t expected_status) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(deserializer, data, &error);
+
+    TEST_ASSERT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(expected_status, vscf_error_status(&error));
+
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__aes256_gcm_with_empty_nonce__returns_error(void) {
+    inner_test__deserialize__returns_error(
+            vsc_data(aes256_gcm_with_empty_nonce_bytes, sizeof(aes256_gcm_with_empty_nonce_bytes)),
+            vscf_status_ERROR_BAD_ASN1_ALGORITHM);
+}
+
+void
+test__deserialize__ecc_with_non_curve_named_curve__returns_error_unsupported_algorithm(void) {
+    inner_test__deserialize__returns_error(
+            vsc_data(ecc_with_non_curve_named_curve_bytes, sizeof(ecc_with_non_curve_named_curve_bytes)),
+            vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+}
+
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -303,6 +344,8 @@ main(void) {
     RUN_TEST(test__deserialize__compound_key_alg_info_with_unsupported_signer_alg_info___error_unsupported_algorithm);
     RUN_TEST(test__deserialize__hybrid_key_alg_info_with_unsupported_first_alg_info___error_unsupported_algorithm);
     RUN_TEST(test__deserialize__hybrid_key_alg_info_with_unsupported_second_alg_info___error_unsupported_algorithm);
+    RUN_TEST(test__deserialize__aes256_gcm_with_empty_nonce__returns_error);
+    RUN_TEST(test__deserialize__ecc_with_non_curve_named_curve__returns_error_unsupported_algorithm);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

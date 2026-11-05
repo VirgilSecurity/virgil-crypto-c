@@ -666,6 +666,97 @@ test__deserialize_private_key__hybrid_curve25519_ml_kem_768_der__success(void) {
 #endif
 }
 
+// --------------------------------------------------------------------------
+//  Malformed input: empty key material must be rejected, not abort.
+// --------------------------------------------------------------------------
+//  Found by fuzzy_test__key_provider__import_public_key (empty subjectPublicKey BIT STRING).
+static const byte fuzz_public_key_with_empty_bits_bytes[] = {0x30, 0x06, 0x30, 0x02, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+        0x65, 0x03, 0x04, 0x01, 0x19, 0x03, 0x00, 0x86, 0x06, 0x04, 0x48, 0x01, 0x01, 0x19, 0x23, 0xFF};
+
+//  SubjectPublicKeyInfo { AlgorithmIdentifier { id-Ed25519 }, subjectPublicKey BIT STRING (empty) }
+static const byte ed25519_public_key_with_empty_bits_bytes[] = {
+        0x30, 0x08, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65, 0x70, 0x03, 0x01, 0x00};
+
+//  PrivateKeyInfo { version 0, AlgorithmIdentifier { id-Ed25519 }, privateKey OCTET STRING { OCTET STRING (empty) } }
+static const byte ed25519_pkcs8_private_key_with_empty_key_bytes[] = {
+        0x30, 0x0E, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65, 0x70, 0x04, 0x02, 0x04, 0x00};
+
+//  ECPrivateKey { version 1, privateKey OCTET STRING (empty), [0] secp256r1, [1] BIT STRING (empty) }
+static const byte secp256r1_sec1_private_key_with_empty_key_bytes[] = {0x30, 0x16, 0x02, 0x01, 0x01, 0x04, 0x00, 0xA0,
+        0x0A, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0xA1, 0x03, 0x03, 0x01, 0x00};
+
+//  ECPrivateKey { version 1, privateKey OCTET STRING, [0] id-ecPublicKey (known OID, not a curve), [1] BIT STRING }
+static const byte sec1_private_key_with_non_curve_named_curve_bytes[] = {0x30, 0x16, 0x02, 0x01, 0x01, 0x04, 0x01, 0xAA,
+        0xA0, 0x09, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01, 0xA1, 0x03, 0x03, 0x01, 0x00};
+
+static void
+inner_test__deserialize_public_key__returns_error(vsc_data_t key_data) {
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_key_asn1_deserializer_deserialize_public_key(key_deserializer, key_data, &error);
+
+    TEST_ASSERT_NULL(raw_public_key);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_DER_PUBLIC_KEY, vscf_error_status(&error));
+
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+}
+
+static void
+inner_test__deserialize_private_key__returns_error(vsc_data_t key_data, vscf_status_t expected_status) {
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_raw_private_key_t *raw_private_key =
+            vscf_key_asn1_deserializer_deserialize_private_key(key_deserializer, key_data, &error);
+
+    TEST_ASSERT_NULL(raw_private_key);
+    TEST_ASSERT_EQUAL(expected_status, vscf_error_status(&error));
+
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+}
+
+void
+test__deserialize_public_key__fuzz_input_with_empty_bits__returns_error(void) {
+    inner_test__deserialize_public_key__returns_error(
+            vsc_data(fuzz_public_key_with_empty_bits_bytes, sizeof(fuzz_public_key_with_empty_bits_bytes)));
+}
+
+void
+test__deserialize_public_key__ed25519_with_empty_bits__returns_error(void) {
+    inner_test__deserialize_public_key__returns_error(
+            vsc_data(ed25519_public_key_with_empty_bits_bytes, sizeof(ed25519_public_key_with_empty_bits_bytes)));
+}
+
+void
+test__deserialize_private_key__ed25519_pkcs8_with_empty_key__returns_error(void) {
+    inner_test__deserialize_private_key__returns_error(vsc_data(ed25519_pkcs8_private_key_with_empty_key_bytes,
+                                                               sizeof(ed25519_pkcs8_private_key_with_empty_key_bytes)),
+            vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY);
+}
+
+void
+test__deserialize_private_key__secp256r1_sec1_with_empty_key__returns_error(void) {
+    inner_test__deserialize_private_key__returns_error(vsc_data(secp256r1_sec1_private_key_with_empty_key_bytes,
+                                                               sizeof(secp256r1_sec1_private_key_with_empty_key_bytes)),
+            vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY);
+}
+
+void
+test__deserialize_private_key__sec1_with_non_curve_named_curve__returns_error(void) {
+    inner_test__deserialize_private_key__returns_error(
+            vsc_data(sec1_private_key_with_non_curve_named_curve_bytes,
+                    sizeof(sec1_private_key_with_non_curve_named_curve_bytes)),
+            vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -704,6 +795,12 @@ main(void) {
     RUN_TEST(test__deserialize_private_key__hybrid_curve25519_curve25519_der__success);
     RUN_TEST(test__deserialize_public_key__hybrid_curve25519_ml_kem_768_der__success);
     RUN_TEST(test__deserialize_private_key__hybrid_curve25519_ml_kem_768_der__success);
+
+    RUN_TEST(test__deserialize_public_key__fuzz_input_with_empty_bits__returns_error);
+    RUN_TEST(test__deserialize_public_key__ed25519_with_empty_bits__returns_error);
+    RUN_TEST(test__deserialize_private_key__ed25519_pkcs8_with_empty_key__returns_error);
+    RUN_TEST(test__deserialize_private_key__secp256r1_sec1_with_empty_key__returns_error);
+    RUN_TEST(test__deserialize_private_key__sec1_with_non_curve_named_curve__returns_error);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
