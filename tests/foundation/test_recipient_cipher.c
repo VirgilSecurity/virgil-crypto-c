@@ -1964,6 +1964,38 @@ test__kek__misaligned_encrypted_key__fails_without_abort(void) {
     vsc_buffer_destroy(&mi);
 }
 
+//  An empty message (no message info received) must fail finish_decryption, not abort.
+//  Found by fuzzy_test__recipient_cipher__ed25519_decrypt_message with an empty input.
+static void
+test__decrypt__with_ed25519_key_recipient_and_empty_message__fails_without_abort(void) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_decryption_with_key(
+                    recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_data_empty(), dec_msg));
+    TEST_ASSERT_EQUAL(
+            vscf_status_ERROR_BAD_ENCRYPTED_DATA, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+    TEST_ASSERT_EQUAL(0, vsc_buffer_len(dec_msg));
+
+    vsc_buffer_destroy(&dec_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
 // --------------------------------------------------------------------------
 //  Chunk cipher envelope: authenticated metadata binding (R8).
 //
@@ -2343,6 +2375,7 @@ main(void) {
     RUN_TEST(test__kek__empty_encrypted_key__fails_without_abort);
     RUN_TEST(test__kek__short_encrypted_key__fails_without_abort);
     RUN_TEST(test__kek__misaligned_encrypted_key__fails_without_abort);
+    RUN_TEST(test__decrypt__with_ed25519_key_recipient_and_empty_message__fails_without_abort);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

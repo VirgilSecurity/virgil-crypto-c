@@ -1250,12 +1250,12 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT_PTR(self->decryption_staging);
 
     if (self->decryption_state != vscf_recipient_cipher_decryption_state_PROCESSING_DATA) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 
+    VSCF_ASSERT_PTR(self->decryption_staging);
     VSCF_ASSERT_PTR(self->decryption_cipher);
 
     //

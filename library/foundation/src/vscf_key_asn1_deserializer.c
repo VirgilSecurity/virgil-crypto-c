@@ -220,7 +220,7 @@ vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserial
     //
     //  Finalize
     //
-    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || vsc_data_is_empty(public_key_bits)) {
         vscf_impl_destroy(&alg_info);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_DER_PUBLIC_KEY);
         return NULL;
@@ -371,7 +371,7 @@ vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
 
         vsc_data_t private_key_data = vscf_asn1_reader_read_octet_str(self->asn1_reader);
 
-        if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        if (vscf_asn1_reader_has_error(self->asn1_reader) || vsc_data_is_empty(private_key_data)) {
             VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY);
         } else {
             raw_key = vscf_raw_private_key_new_with_data(private_key_data, &alg_info);
@@ -471,7 +471,7 @@ vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_de
 
     vsc_data_t named_curve_oid = vscf_asn1_reader_read_oid(self->asn1_reader);
     const vscf_oid_id_t named_curve_id = vscf_oid_to_id(named_curve_oid);
-    if (named_curve_id == vscf_oid_id_NONE) {
+    if (named_curve_id != vscf_oid_id_EC_DOMAIN_SECP256R1) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY);
         return NULL;
     }
@@ -496,7 +496,7 @@ vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_de
     //
     //  Check errors
     //
-    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || vsc_data_is_empty(private_key_data)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY);
         return NULL;
     }

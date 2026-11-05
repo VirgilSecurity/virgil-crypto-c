@@ -1801,6 +1801,14 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
         return;
     }
 
+    //  encryptedKey comes from untrusted message info; an empty OCTET STRING violates the
+    //  key_recipient_info constructor's precondition. Reject it here as malformed message data.
+    if (encrypted_key.len == 0) {
+        vscf_impl_destroy(&key_encryption_alg_info);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return;
+    }
+
     vscf_key_recipient_info_t *key_recipient_info =
             vscf_key_recipient_info_new_with_data(rid, key_encryption_alg_info, encrypted_key);
 
@@ -1857,6 +1865,14 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 
     if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         vscf_impl_destroy(&key_encryption_alg_info);
+        return;
+    }
+
+    //  encryptedKey comes from untrusted message info; an empty OCTET STRING violates the
+    //  password_recipient_info constructor's precondition. Reject it here as malformed message data.
+    if (encrypted_key.len == 0) {
+        vscf_impl_destroy(&key_encryption_alg_info);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
         return;
     }
 
@@ -2032,7 +2048,10 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
     }
 
     const vscf_oid_id_t content_type = vscf_oid_to_id(content_type_oid);
-    VSCF_ASSERT(content_type == vscf_oid_id_CMS_DATA);
+    if (content_type != vscf_oid_id_CMS_DATA) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
+        return;
+    }
 
     vscf_impl_t *content_encryption_algorithm =
             vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
@@ -2133,7 +2152,10 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
     }
 
     const vscf_oid_id_t content_type = vscf_oid_to_id(content_type_oid);
-    VSCF_ASSERT(content_type == vscf_oid_id_CMS_ENVELOPED_DATA);
+    if (content_type != vscf_oid_id_CMS_ENVELOPED_DATA) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
+        return;
+    }
 
     const size_t content_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
     if (vscf_asn1_reader_has_error(self->asn1_reader) || content_tag_len == 0) {

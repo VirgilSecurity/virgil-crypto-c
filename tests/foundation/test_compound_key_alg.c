@@ -464,6 +464,68 @@ test__sign_verify__with_curve25519_and_ed25519_keys__success(void) {
     vscf_impl_destroy(&private_key);
 }
 
+// --------------------------------------------------------------------------
+//  Malformed input: an empty inner key must be rejected, not abort.
+// --------------------------------------------------------------------------
+//  CompoundKey ::= SEQUENCE { cipherKey OCTET STRING (empty), signerKey OCTET STRING }
+static const byte compound_key_with_empty_cipher_key_bytes[] = {0x30, 0x05, 0x04, 0x00, 0x04, 0x01, 0xAA};
+//  CompoundKey ::= SEQUENCE { cipherKey OCTET STRING, signerKey OCTET STRING (empty) }
+static const byte compound_key_with_empty_signer_key_bytes[] = {0x30, 0x05, 0x04, 0x01, 0xAA, 0x04, 0x00};
+
+static void
+inner_test__import_key_data__with_empty_inner_key__returns_error(vsc_data_t key_data, bool is_private) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_compound_key_alg_t *key_alg = vscf_compound_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *cipher_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
+    vscf_impl_t *signer_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
+
+    vscf_impl_t *key = NULL;
+    if (is_private) {
+        key = vscf_compound_key_alg_import_private_key_data(key_alg, key_data, alg_info, &error);
+        TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY, vscf_error_status(&error));
+    } else {
+        key = vscf_compound_key_alg_import_public_key_data(key_alg, key_data, alg_info, &error);
+        TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY, vscf_error_status(&error));
+    }
+    TEST_ASSERT_NULL(key);
+
+    vscf_impl_destroy(&alg_info);
+    vscf_compound_key_alg_destroy(&key_alg);
+}
+
+void
+test__import_public_key_data__empty_cipher_key__returns_error(void) {
+    inner_test__import_key_data__with_empty_inner_key__returns_error(
+            vsc_data(compound_key_with_empty_cipher_key_bytes, sizeof(compound_key_with_empty_cipher_key_bytes)),
+            false);
+}
+
+void
+test__import_public_key_data__empty_signer_key__returns_error(void) {
+    inner_test__import_key_data__with_empty_inner_key__returns_error(
+            vsc_data(compound_key_with_empty_signer_key_bytes, sizeof(compound_key_with_empty_signer_key_bytes)),
+            false);
+}
+
+void
+test__import_private_key_data__empty_cipher_key__returns_error(void) {
+    inner_test__import_key_data__with_empty_inner_key__returns_error(
+            vsc_data(compound_key_with_empty_cipher_key_bytes, sizeof(compound_key_with_empty_cipher_key_bytes)), true);
+}
+
+void
+test__import_private_key_data__empty_signer_key__returns_error(void) {
+    inner_test__import_key_data__with_empty_inner_key__returns_error(
+            vsc_data(compound_key_with_empty_signer_key_bytes, sizeof(compound_key_with_empty_signer_key_bytes)), true);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -481,6 +543,10 @@ main(void) {
     RUN_TEST(test__import_private_key_then_export_public_key__curve25519_ed25519__should_match);
     RUN_TEST(test__encrypt_decrypt__with_curve25519_and_ed25519_keys__plain_text_match);
     RUN_TEST(test__sign_verify__with_curve25519_and_ed25519_keys__success);
+    RUN_TEST(test__import_public_key_data__empty_cipher_key__returns_error);
+    RUN_TEST(test__import_public_key_data__empty_signer_key__returns_error);
+    RUN_TEST(test__import_private_key_data__empty_cipher_key__returns_error);
+    RUN_TEST(test__import_private_key_data__empty_signer_key__returns_error);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
