@@ -1,5 +1,20 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.23.2 released 2026-11-05
+
+### Bugfix
+
+- **Malformed keys and messages no longer abort the process** — several decoders reached an internal `VSCF_ASSERT` (enabled in release builds) on crafted input instead of returning an error, so importing a peer's key or decrypting a message could crash the host application. They now return a status code:
+  - key import: public key with empty key bits; empty PKCS#8 or SEC1 private key; SEC1 key naming an unsupported curve (`BAD_DER_PUBLIC_KEY` / `BAD_PKCS8_PRIVATE_KEY` / `BAD_SEC1_PRIVATE_KEY`);
+  - compound and hybrid keys with an empty component key (public and private import);
+  - algorithm info: AES-GCM/AES-CBC with an empty nonce (`BAD_ASN1_ALGORITHM`); EC algorithm whose curve OID is not a supported curve (`UNSUPPORTED_ALGORITHM`);
+  - message info: unexpected CMS content type at either level; key or password recipient with an empty encrypted key (`BAD_MESSAGE_INFO` / `BAD_ASN1`);
+  - `recipient_cipher`: `finish_decryption` on an empty message now reports the state error instead of asserting.
+
+### Build
+
+- **WASM dev dependencies** — bumped transitive npm dev dependencies (`brace-expansion`, `js-yaml`, `@babel/core`, `browserslist`) to clear Dependabot alerts. The published WASM package is unaffected.
+
 ## Version 0.23.1 released 2026-08-09
 
 ### New
