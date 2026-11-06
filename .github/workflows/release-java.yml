@@ -11,6 +11,17 @@ on:
         description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
         type: string
         required: true
+  # Backfill an already-tagged release whose Java publish failed.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string (e.g. 0.19.0-rc.1)'
+        type: string
+        required: true
+      ref:
+        description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
+        type: string
+        required: true
 
 jobs:
   build:
