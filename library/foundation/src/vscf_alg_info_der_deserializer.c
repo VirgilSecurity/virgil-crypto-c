@@ -454,13 +454,18 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
         cipher_nonce = vscf_asn1_reader_read_octet_str(self->asn1_reader);
     }
 
-    if (!vscf_asn1_reader_has_error(self->asn1_reader)) {
-        const vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(oid_id);
-        return vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(alg_id, cipher_nonce));
-    } else {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
         return NULL;
     }
+
+    if (vsc_data_is_empty(cipher_nonce)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1_ALGORITHM);
+        return NULL;
+    }
+
+    const vscf_alg_id_t alg_id = vscf_oid_id_to_alg_id(oid_id);
+    return vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(alg_id, cipher_nonce));
 }
 
 //
@@ -644,7 +649,7 @@ vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(
     }
 
     const vscf_oid_id_t named_curve_id = vscf_oid_to_id(named_curve_oid);
-    if (named_curve_id == vscf_oid_id_NONE) {
+    if (named_curve_id != vscf_oid_id_EC_DOMAIN_SECP256R1) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         return NULL;
     }
